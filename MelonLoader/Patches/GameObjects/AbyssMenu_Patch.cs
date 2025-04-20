@@ -5,7 +5,7 @@ using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using Unity.VisualScripting;
 using UnityEngine;
-using static MelonLoader.MelonLogger;
+using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -34,7 +34,27 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.levelInfo)
             {
+                string regexStr = "第(\\d+)关\n场景：([^\\s]+)\n总波数：(\\d+)波\n特殊环境：([^\\s：]+)\n减伤强度：(\\d+)";
 
+                Regex regex = new Regex(regexStr);
+
+                if(regex.IsMatch(txt.text))
+                {   
+                    Match match = regex.Match(txt.text);
+                    int groupCount = match.Groups.Count;
+
+                    List<string> dynamicParts = [];
+
+                    for (int i = 1; i < groupCount; i++)
+                    {
+                        string groupValue = match.Groups[i].Value;
+                        string translatedValue = StringStore.translationString.ContainsKey(groupValue) ? StringStore.translationString[groupValue] : groupValue;
+                        dynamicParts.Add(translatedValue);
+                    }
+
+                    txt.text = string.Format(StringStore.translationStringRegex[regexStr], [.. dynamicParts]);
+                    txt.font = fontAsset;
+                }
             }
         }
     }
