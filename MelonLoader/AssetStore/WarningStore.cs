@@ -1,6 +1,10 @@
-﻿using Il2Cpp;
+﻿using System.Runtime.CompilerServices;
+using Il2Cpp;
 using Il2CppTMPro;
+using MelonLoader;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using static MelonLoader.MelonLogger;
 
 namespace PvZ_Fusion_Translator.AssetStore
 {
@@ -114,39 +118,55 @@ namespace PvZ_Fusion_Translator.AssetStore
 		}
 		#endif
 
-		public static void WarningLoad()
+		public static void WarningLoad(NoticeMenu noticeMenu)
 		{
-			GameAPP.theGameStatus = -2;
-			GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("UI/MainMenu/NoticePauseMenu"), GameAPP.canvas.transform);
-			gameObject.name = "WarningMessage";
-			TextMeshProUGUI warning = gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-			TextMeshProUGUI warningShadow = gameObject.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
-			Transform button = gameObject.transform.GetChild(1);
-			warning.transform.position = new Vector3(0.7f, 0.4f, 0f);
-			warningShadow.transform.position = new Vector3(0.7f, 0.4f, 0f);
+			//GameAPP.theGameStatus = GameStatus.OpenOptions;
+			//GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("UI/Prefabs/NoticePauseMenu"), GameAPP.canvas.transform);
+			//gameObject.name = "WarningMessage";
+			//TextMeshProUGUI warning = gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+			//TextMeshProUGUI warningShadow = gameObject.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+			//Transform button = gameObject.transform.GetChild(1);
+			//warning.transform.position = new Vector3(0.7f, 0.4f, 0f);
+			//warningShadow.transform.position = new Vector3(0.7f, 0.4f, 0f);
 
 			#if MULTI_LANGUAGE
 			var (warningMessage, okayButton) = WarningStore.GetWarningMessage(Utils.Language);
+
+			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+			Transform warningTransform = noticeMenu.transform.FindChild("窗口");
+			Transform warningTextTransform = warningTransform.FindChild("文字");
+			Transform warningTextShadowTransform = warningTransform.FindChild("文字2");
+
+			Transform[] array = [warningTextTransform, warningTextShadowTransform];
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (array[i] != null)
+				{
+					array[i].GetComponent<TextMeshProUGUI>().text = warningMessage;
+					array[i].GetComponent<TextMeshProUGUI>().font = fontAsset;
+				}
+			}
 			#endif
 
-			warning.text = warningMessage;
-			warningShadow.text = warningMessage;
-			warning.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-			warningShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+			//warning.text = warningMessage;
+			//warningShadow.text = warningMessage;
+			//warning.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+			//warningShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-			button.GetComponent<PauseMenu_Btn>().buttonNumber = 10;
-			button.GetChild(0).GetComponent<TextMeshProUGUI>().text = okayButton;
-			button.GetChild(0).GetComponent<TextMeshProUGUI>().font = FontStore.LoadTMPFont(Utils.Language.ToString());
-			button.GetChild(1).GetComponent<TextMeshProUGUI>().text = okayButton;
-			gameObject.SetActive(false);
-			gameObject.SetActive(true);
+			//button.GetComponent<PauseMenu_Btn>().buttonNumber = 10;
+			//button.GetChild(0).GetComponent<TextMeshProUGUI>().text = okayButton;
+			//button.GetChild(0).GetComponent<TextMeshProUGUI>().font = FontStore.LoadTMPFont(Utils.Language.ToString());
+			//button.GetChild(1).GetComponent<TextMeshProUGUI>().text = okayButton;
+			//gameObject.SetActive(false);
+			//gameObject.SetActive(true);
 		}
 
 		#if MULTI_LANGUAGE
 		
 		public static bool isWarningMessageLoaded = false;
 
-		public static void WarningReload(Utils.LanguageEnum language)
+		public static void WarningReload(Utils.LanguageEnum language, NoticeMenu noticeMenu)
 		{
 			// Log.LogInfo("Current Language is " + Utils.OldLanguage);
 			// Log.LogInfo("Changed Language to " + language);
@@ -157,7 +177,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 			}
 			if (!isWarningMessageLoaded)
 			{
-				WarningLoad();
+				WarningLoad(noticeMenu);
 				isWarningMessageLoaded = true;
 			}
 

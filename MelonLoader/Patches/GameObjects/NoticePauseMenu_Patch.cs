@@ -14,8 +14,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		private static void Start(NoticeMenu __instance)
 		{
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-			Transform warningTransform = __instance.transform.GetChild(0);
-			Transform warningTextTransform = warningTransform.FindChild("文字");
+			Transform warningTransform = __instance.transform.FindChild("窗口");
+            Transform warningTextTransform = warningTransform.FindChild("文字");
 			Transform warningTextShadowTransform = warningTransform.FindChild("文字2");
 			Transform[] array = [warningTextTransform, warningTextShadowTransform];
 

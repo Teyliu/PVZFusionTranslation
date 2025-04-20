@@ -360,4 +360,7 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
+
 FodyWeavers.xsd
+PvZ-Fusion-Blooms-master/MelonLoader/PvZ Fusion Translator \[MelonLoader\].csproj
+

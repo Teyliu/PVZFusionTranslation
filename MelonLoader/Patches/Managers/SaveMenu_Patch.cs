@@ -18,6 +18,11 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             __instance.title.font = fontAsset;
             __instance.title_shadow.text = StringStore.TranslateText(__instance.title_shadow.text);
             __instance.title_shadow.font = fontAsset;
+
+            foreach(SaveMenuBtn level in __instance.levels)
+            {
+                level.theName.text = StringStore.TranslateText(level.theName.text);
+            }
         }
     }
 }
