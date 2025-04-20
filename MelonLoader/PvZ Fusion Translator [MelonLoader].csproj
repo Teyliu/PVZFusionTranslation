@@ -449,7 +449,6 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssLevelEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\BaseMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\SaveMenuBtn_Patch.cs" />
@@ -495,7 +494,6 @@
 		<Compile Include="Patches\BaseTextObjects\TMP_InputField_Patch.cs" />
 		<Compile Include="Patches\Managers\TravelBuffMgr_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuff_Patch.cs" />
-		<Compile Include="Patches\Managers\TravelMenuMgr_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelRefresh_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelStore_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIDifficulty_Patch.cs" />
