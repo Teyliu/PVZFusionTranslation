@@ -69,7 +69,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 					component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
 					component.overflowMode = TextOverflowModes.Page;
 
-					//fix position for cost text
+					//fix dimensions for cost text
 					component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
 					component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
                     component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
