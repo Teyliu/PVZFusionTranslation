@@ -77,5 +77,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             UpdateAbyss2Text(__instance);
         }
+
+        [HarmonyPatch(nameof(AbyssMenu2.ShowBag))]
+        [HarmonyPostfix]
+        private static void ShowBag(AbyssMenu2 __instance)
+        {
+            UpdateAbyss2Text(__instance);
+        }
     }
 }
