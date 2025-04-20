@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
+using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using static PvZ_Fusion_Translator.FileLoader;
@@ -67,13 +68,17 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				{
 					component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
 					component.overflowMode = TextOverflowModes.Page;
+					component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 58.917f);
+
 					component2.text = plantInfo.name;
 					component2.autoSizeTextContainer = true;
+
 					component3.text = Utils.RemoveColorTags(plantInfo.name);
 					component3.autoSizeTextContainer = true;
+
 					component4.text = plantInfo.cost;
 
-					if (hasAlmanacFont)
+                    if (hasAlmanacFont)
 					{
 						component.font = almanacFontAsset;
 						component4.font = almanacFontAsset;
