@@ -125,6 +125,7 @@ namespace PvZ_Fusion_Translator
 			// third column
 			// Ukrainian,
 			// Slovak,
+			Polish,
 
 			LANG_END
 		}

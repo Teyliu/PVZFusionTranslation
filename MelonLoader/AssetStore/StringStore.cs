@@ -1084,6 +1084,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 					{ "Japanese" , "困難:" },
 					{ "Korean", "난이도:" },
 					{ "Javanese" , "Kesulitan:" },
+					{ "Polish",  "Trudność"},
 					// { "Ukrainian" , "Складність:" },
 					// { "Slovak" , "Náročnosť:" },
 				}
@@ -1103,6 +1104,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 					{ "Japanese" , "ゾンビ:" },
 					{ "Korean", "좀비:" },
 					{ "Javanese" , "Mayit:" },
+					{ "Polish" , "Zombi:" },
 					// { "Ukrainian" , "Зомбі:" },
 					// { "Slovak" , "Zombíci:"}
 				}
