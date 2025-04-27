@@ -448,10 +448,12 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssLevelEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\BaseMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\SaveMenuBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MainMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\AbyssGoods_Patch.cs" />
