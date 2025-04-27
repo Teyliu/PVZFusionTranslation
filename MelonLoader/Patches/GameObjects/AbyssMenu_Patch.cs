@@ -53,7 +53,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     }
 
                     txt.text = string.Format(StringStore.translationStringRegex[regexStr], [.. dynamicParts]);
-                    MelonLogger.Msg(txt.text);
                     txt.font = fontAsset;
                 }
             }
