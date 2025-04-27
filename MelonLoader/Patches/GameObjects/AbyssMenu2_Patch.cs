@@ -4,6 +4,9 @@ using Il2CppTMPro;
 using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
+using static MelonLoader.MelonLogger;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -49,12 +52,45 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
         }
 
+        public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
+        {
+            GameObject newObj = new GameObject(name);
+            newObj.transform.position = originalText.transform.position;
+            newObj.AddComponent<CanvasRenderer>();
+            newObj.AddComponent<RectTransform>();
+            newObj.AddComponent<TextMeshProUGUI>();
+            newObj.transform.SetParent(parent);
+            newObj.transform.localScale = Vector3.one;
+
+            UnityEngine.Object.Destroy(originalText);
+            return newObj;
+        }
+
+        private static void ConvertButtonText(Transform original, string name)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            Transform transform = original.FindChild(name);
+            Transform textTransform = transform.FindChild("text");
+            string text = textTransform.GetComponent<Text>().text;
+            Color color = textTransform.GetComponent<Text>().color;
+
+            TextMeshProUGUI newGoBackText = ConvertToTextMeshProUGUI(textTransform.gameObject, transform, "text2").GetComponent<TextMeshProUGUI>();
+            newGoBackText.autoSizeTextContainer = true;
+            newGoBackText.text = StringStore.TranslateText(text, false);
+            newGoBackText.font = fontAsset;
+            newGoBackText.color = color;
+        }
+
         [HarmonyPatch(nameof(AbyssMenu2.Start))]
         [HarmonyPostfix]
         private static void Start(AbyssMenu2 __instance)
         {
             UpdateAbyss2Text(__instance);
 
+            ConvertButtonText(__instance.transform, "Goback");
+            ConvertButtonText(__instance.transform, "Help");
+            ConvertButtonText(__instance.transform, "Bag");
         }
 
         [HarmonyPatch(nameof(AbyssMenu2.UpdateIcons))]

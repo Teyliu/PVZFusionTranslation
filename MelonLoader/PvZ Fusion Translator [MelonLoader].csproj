@@ -448,6 +448,7 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
