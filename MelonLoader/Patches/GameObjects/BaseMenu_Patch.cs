@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
@@ -103,6 +104,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         StringStore.TranslateTextTransform(pageScaryPotTransform.Find("BackToIndex"));
                         StringStore.TranslateTextTransform(pageScaryPotTransform.Find("Nextpage"));
                         StringStore.TranslateTextTransform(pageScaryPotTransform.Find("LastPage"));
+                    }
+
+                    foreach(TextMeshProUGUI txt in mainTransform.GetComponentsInChildren<TextMeshProUGUI>())
+                    {
+                        txt.text = StringStore.TranslateText(txt.text);
                     }
                 }
             }

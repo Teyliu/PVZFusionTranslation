@@ -1,18 +1,48 @@
 ﻿#if FIX
+using System.Text.RegularExpressions;
 using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
+using MelonLoader;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 {
     [HarmonyPatch(typeof(AbyssBuffButton))]
     public static class AbyssBuffButton_Patch
     {
-        [HarmonyPatch(nameof(AbyssBuffButton.Start))]
+        [HarmonyPatch(nameof(AbyssBuffButton.SetType))]
         [HarmonyPostfix]
-        private static void Start(AbyssBuffButton __instance)
+        private static void SetType(AbyssBuffButton __instance)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            Regex regex = new Regex("([^\\s]+)\n价格：(\\d+)");
+
+            if (regex.IsMatch(__instance.description.text))
+            {
+                Match match = regex.Match(__instance.description.text);
+                int groupCount = match.Groups.Count;
+
+                List<string> dynamicParts = [];
+
+                for (int i = 1; i < groupCount; i++)
+                {
+                    string groupValue = match.Groups[i].Value;
+                    string translatedValue = StringStore.translationString.ContainsKey(groupValue) ? StringStore.translationString[groupValue] : groupValue;
+                    dynamicParts.Add(translatedValue);
+                    MelonLogger.Msg(translatedValue);
+                }
+
+                __instance.description.text = string.Format(StringStore.translationStringRegex["([^\\s]+)\n价格：(\\d+)"], [.. dynamicParts]);
+                __instance.description.font = fontAsset;
+            }
+        }
+
+        [HarmonyPatch(nameof(AbyssBuffButton.SetSold))]
+        [HarmonyPostfix]
+        private static void SetSold(AbyssBuffButton __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
