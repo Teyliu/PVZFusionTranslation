@@ -22,7 +22,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             TextMeshProUGUI upgradeCostText = __instance.transform.FindChild("UpgradeCost").GetComponent<TextMeshProUGUI>();
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            string regexStr = "([^\\s]+)\n当前等级：([^\\s]+)\n\n升级条件：\n([^\\s]+)\n\n升级消耗：([^\\s]+)";
+            string regexStr = "【([^\\s]+)】\n当前等级：([^\\s]+)\n\n升级条件：\n([^\\s]+)\n\n升级消耗：([^\\s]+)";
 
             Regex regex = new Regex(regexStr);
 

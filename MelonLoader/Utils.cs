@@ -126,6 +126,7 @@ namespace PvZ_Fusion_Translator
 			// Ukrainian,
 			// Slovak,
 			Polish,
+			Hungarian,
 
 			LANG_END
 		}

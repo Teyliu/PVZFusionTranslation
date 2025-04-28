@@ -101,6 +101,12 @@ namespace PvZ_Fusion_Translator.AssetStore
 				"Omijaj inne źródła, ponieważ mogą zawierać wirusy.\n" +
 				"Odwiedź naszą społeczność, aby uzyskać przyszłe aktualizacje.</size>",
 				"Okay! Rozumiem.") },
+            { "Hungarian" , ("<size=8>Ennek a fordításnak az egyetlen érvényes forrása ebből a közösségből származik:\n" +
+				"<color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Ha ezt <i>valahol</i> máshol szerezted, például \n" +
+				"<color=#8B0000>Plants Hybrid</color> és <color=#8B0000>superhybrid.online</color> oldalakon, akkor ők lopták.\n" +
+				"Kerüld a többi forrást, mert vírusokat tartalmazhatnak.\n" +
+				"Kérjük, látogass el közösségünkbe a jövőbeli frissítésekért.</size>",
+                "Oké! Értem.") },
 			// { "OTHER" , ("<size=10>A única fonte válida dessa tradução é desta\ncomunidade: <color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Se você obteve \nisso <i>em qualquer lugar</i> como <color=#8B0000>Plants Hybrid</color>\ne <color=#8B0000>superhybrid.online</color>,ou Blue Fly do Youtube,\nelses roubaram. Fique longe de sites falsos. Por favor,\nvisite nossa comunidade para futuras atualizações.</size>", "¡Okei! Entendido.") }
 			// { "OTHER" , ("<size=9.5>Ang translation na ito ay galing dito lamang:\n<color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Pag nakuha niyo ito <i>sa iba pa</i>\nkagaya ng <color=#8B0000>Plants Hybrid</color> o <color=#8B0000>superhybrid.online</color>, anumang\nginawagawa ng <color=#8B0000>Blue Fly mula sa Youtube</color>, o anumang\n<color=#8B0000>Sub2Unlock links</color>, scam sila. MAG INGAT dahil\nkasi baka may virus 'jan. Join kayo sa discord namin!\nFilipino Translation by ColinPogi</size>" , "Tayo magsi-laro!") }
 		};
