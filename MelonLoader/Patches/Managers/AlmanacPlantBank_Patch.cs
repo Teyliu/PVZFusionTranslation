@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using MelonLoader;
+using MelonLoader.TinyJSON;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using static PvZ_Fusion_Translator.FileLoader;
@@ -12,8 +13,8 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 	public static partial class AlmanacPlantBank_Patch
 	{
 		[HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
-		[HarmonyPrefix]
-		private static bool InitNameAndInfoFromJson(Il2Cpp.AlmanacPlantBank __instance)
+		[HarmonyPostfix]
+		private static void InitNameAndInfoFromJson(Il2Cpp.AlmanacPlantBank __instance)
 		{
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
@@ -27,7 +28,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			if (!File.Exists(path))
 			{
 				Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-				return true;
+				return;
 			}
 
 			#if OBFUSCATE
@@ -66,11 +67,12 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			{
 				if (plantInfo.seedType == __instance.theSeedType)
 				{
-					component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
+                    component.autoSizeTextContainer = false;
+                    component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
 					component.overflowMode = TextOverflowModes.Page;
 
-					//fix dimensions for cost text
-					component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
+                    //fix dimensions for cost text
+                    component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
 					component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
                     component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
 					component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
@@ -95,14 +97,13 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 					}
 					component2.font = fontAsset;
 					component3.font = fontAsset;
-					return false;
 				}
 			}
 
-			return true;
+			return;
 		}
 
-		[HarmonyPatch(nameof(AlmanacPlantBank_Patch.OnMouseDown))]
+        [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
 		[HarmonyPrefix]
 		private static bool OnMouseDown(Il2Cpp.AlmanacPlantBank __instance)
 		{
@@ -114,5 +115,16 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			}
 			return true;
 		}
-	}
+
+        [HarmonyPatch(nameof(AlmanacPlantBank.PVPInit))]
+        [HarmonyPostfix]
+        private static void PVPInit(Il2Cpp.AlmanacPlantBank __instance)
+        {
+            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
+            if (component != null)
+            {
+				component.autoSizeTextContainer = false;
+            }
+        }
+    }
 }

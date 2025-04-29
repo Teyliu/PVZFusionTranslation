@@ -13,7 +13,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         {
             if (!string.IsNullOrEmpty(__instance.text))
             {
-                if (__instance.transform.parent.name.StartsWith("AlmanacHelp"))
+                if (__instance.transform.parent.name.StartsWith("AlmanacHelp") || __instance.transform.parent.name.StartsWith("CardBank"))
                 {
                     __instance = StringStore.TranslateText(__instance);
                     __instance.autoSizeTextContainer = false;
