@@ -1,11 +1,13 @@
-﻿using HarmonyLib;
+﻿#if MULTI_LANGUAGE
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HarmonyLib;
+
+using TMPro;
 using PvZ_Fusion_Translator__BepInEx_;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -211,3 +213,4 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 		}
 	}
 }
+#endif

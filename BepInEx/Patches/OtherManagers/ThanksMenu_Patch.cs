@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HarmonyLib;
+
 using TMPro;
-using HarmonyLib;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers

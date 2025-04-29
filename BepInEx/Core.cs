@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
@@ -19,6 +20,8 @@ public class Core : BasePlugin
 	private static DateTime dtStart;
 	private static DateTime? dtStartToast;
 	private static string toast_txt;
+
+	public static ManualLogSource Log;
 	public static Core Instance { get; private set; }
 	public static MonoBehaviour MonoInstance { get; private set; }
 
@@ -30,6 +33,7 @@ public class Core : BasePlugin
 
 	public override void Load()
 	{
+		Log = base.Log;
 		Instance = this;
 		MonoInstance = AddComponent<UnityCoroutineHelper>();
 		Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
@@ -37,7 +41,7 @@ public class Core : BasePlugin
 
 		FileLoader.LoadLanguage();
 
-		// AudioStore.Init();
+		AudioStore.Init();
 		TextureStore.Init();
 		StringStore.Init();
 		FontStore.Init();
@@ -62,7 +66,6 @@ public class Core : BasePlugin
 	}
 	public void InitCoroutine()
 	{
-		if (replaceTextureRoutine != null) return;
 		replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
 		Log.LogDebug("Coroutine Started");
 	}

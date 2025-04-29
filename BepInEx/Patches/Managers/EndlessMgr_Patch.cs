@@ -1,12 +1,12 @@
 ﻿using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using TMPro;
-using UnityEngine;
 
+using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
-	[HarmonyPatch(typeof(EndlessMgr))]
+    [HarmonyPatch(typeof(EndlessMgr))]
 	public static class EndlessMgr_Patch
 	{
 		[HarmonyPatch(nameof(EndlessMgr.Awake))]

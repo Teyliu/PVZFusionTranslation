@@ -1,7 +1,6 @@
-﻿using PvZ_Fusion_Translator;
+﻿using TMPro;
 using System.Collections.Generic;
 using System.IO;
-using TMPro;
 
 namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 {
@@ -13,6 +12,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 		internal static void Init()
 		{
 			string fontsDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Fonts]");
+
+			#if MULTI_LANGUAGE
 			foreach (string file in Directory.GetFiles(fontsDir))
 			{
 				string fileName = Path.GetFileNameWithoutExtension(file);
@@ -32,7 +33,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 					}
 				}
 			}
+				
 			InitFallback();
+			#else
+			string defaultFontDir = Path.Combine("PvZ_Fusion_Translator", "[Custom Fonts]", "English.ttf");
+
+			TMP_FontAsset defaultFont = FontHandler.LoadTMPFont(defaultFontDir, true);
+			fontAssetDict.Add("English", defaultFont);
+			#endif
 		}
 
 		internal static void InitFallback()
@@ -69,6 +77,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 						}
 						else
 							fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
+
+						// Log.LogInfo($"Fallback font for language '{fileNameLanguage}' loaded");
 					}
 				}
 			}
@@ -104,14 +114,29 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 				}
 			}
 		}
+
+		#if MULTI_LANGUAGE
 		public static TMP_FontAsset LoadTMPFont(string language)
 		{
 			if (fontAssetDict.TryGetValue(language, out TMP_FontAsset font))
 			{
-				return font;
+				TMP_FontAsset fontAsset = font;
+				if (fontAsset.fallbackFontAssetTable != null)
+				{
+					// Log.LogInfo("Fallback font for language '" + language + "' loaded. The name of the FB Font is" + fontAsset.fallbackFontAssetTable[0].name);
+				}
+				return fontAsset;
 			}
 			return fontAssetDict.GetValueOrDefault("English");
 		}
+		#else
+		public static TMP_FontAsset LoadTMPFont()
+		{
+			TMP_FontAsset defaultFont = fontAssetDict["English"];
+			return defaultFont;
+		}
+		#endif
+
 		public static TMP_FontAsset LoadTMPFontAlmanac(string language)
 		{
 			if (fontAssetDictSecondary.ContainsKey(language))
@@ -128,9 +153,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 					return almanacAsset;
 				}
 			}
+
 			return fontAssetDict.GetValueOrDefault("English");
 		}
 
+		#if MULTI_LANGUAGE
 		public static void Reload()
 		{
 			// Get the current language
@@ -139,5 +166,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			// Load the font for the current language
 			_ = LoadTMPFont(currentLanguage);
 		}
+		#endif
+
 	}
 }

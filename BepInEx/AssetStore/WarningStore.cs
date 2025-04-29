@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System.Runtime.CompilerServices;
+
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using System.IO;
+using System.Collections.Generic;
 
 namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 {
 	public static class WarningStore
 	{
+		#if MULTI_LANGUAGE
 		private static Dictionary<string, (string, string)> warningMessages = new()
 		{
 			{ "English", ("<size=10>The only valid source of this translation is from this community:\n" +
@@ -90,8 +95,33 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 				"Aja nyedhaki sumber liya amarga bisa ngandhut virus. Mangga\n" +
 				"ngunjungi komunitas kita kanggo nganyari ing mangsa ngarep.</size>", 
 				"Oke! Ngertos.") },
+            { "Polish" , ("<size=8>Jedynym wiarygodnym źródłem tego tłumaczenia jest ta społeczność:\n" +
+				"<color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Jeśli znalazłeś to <i>gdziekolwiek</i> indziej, np. \n" +
+				"<color=#8B0000>Plants Hybrid</color> i <color=#8B0000>superhybrid.online</color>, ukradli to.\n" +
+				"Omijaj inne źródła, ponieważ mogą zawierać wirusy.\n" +
+				"Odwiedź naszą społeczność, aby uzyskać przyszłe aktualizacje.</size>",
+				"Okay! Rozumiem.") },
+            { "Hungarian" , ("<size=8>Ennek a fordításnak az egyetlen érvényes forrása ebből a közösségből származik:\n" +
+				"<color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Ha ezt <i>valahol</i> máshol szerezted, például \n" +
+				"<color=#8B0000>Plants Hybrid</color> és <color=#8B0000>superhybrid.online</color> oldalakon, akkor ők lopták.\n" +
+				"Kerüld a többi forrást, mert vírusokat tartalmazhatnak.\n" +
+				"Kérjük, látogass el közösségünkbe a jövőbeli frissítésekért.</size>",
+                "Oké! Értem.") },
+            { "Arabic" , ("<size=10>The only valid source of this translation is from this community:\n" +
+                "<color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. If you got this <i>anywhere</i> else like \n" +
+                "<color=#8B0000>Plants Hybrid</color> and <color=#8B0000>superhybrid.online</color>, they stole it.\n" +
+                "Stray away from other sources as they may contain viruses.\n" +
+                "Please visit our community for future updates.</size>",
+                "Okay! Got it.") },
+			// { "OTHER" , ("<size=10>A única fonte válida dessa tradução é desta\ncomunidade: <color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Se você obteve \nisso <i>em qualquer lugar</i> como <color=#8B0000>Plants Hybrid</color>\ne <color=#8B0000>superhybrid.online</color>,ou Blue Fly do Youtube,\nelses roubaram. Fique longe de sites falsos. Por favor,\nvisite nossa comunidade para futuras atualizações.</size>", "¡Okei! Entendido.") }
+			// { "OTHER" , ("<size=9.5>Ang translation na ito ay galing dito lamang:\n<color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Pag nakuha niyo ito <i>sa iba pa</i>\nkagaya ng <color=#8B0000>Plants Hybrid</color> o <color=#8B0000>superhybrid.online</color>, anumang\nginawagawa ng <color=#8B0000>Blue Fly mula sa Youtube</color>, o anumang\n<color=#8B0000>Sub2Unlock links</color>, scam sila. MAG INGAT dahil\nkasi baka may virus 'jan. Join kayo sa discord namin!\nFilipino Translation by ColinPogi</size>" , "Tayo magsi-laro!") }
 		};
+		#else
+		public static string warningMessage = "<size=10>La única fuente válida de esta traducción proviene de esta\ncomunidad: <color=#64DD17>discord.gg/DPAC5ZVJ8T</color>. Si la obtuvo <i>en cualquier</i>\notro lugar como <color=#8B0000>Plants Hybrid</color> o <color=#8B0000>superhybrid.online</color>, la robaron.\nManténgase alejado de otras fuentes, ya que podrían contener virus.\nPor favor, visite nuestra comunidad para futuras actualizaciones.";
+		public static string okayButton = "¡Entendido!";
+		#endif
 
+		#if MULTI_LANGUAGE
 		public static (string, string) GetWarningMessage(Utils.LanguageEnum language)
 		{
 			if (warningMessages.TryGetValue(language.ToString(), out var message))
@@ -104,36 +134,57 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 				return warningMessages["English"]; // Default to English if language code is not found
 			}
 		}
+		#endif
 
-		public static void WarningLoad()
+		public static void WarningLoad(NoticeMenu noticeMenu)
 		{
-			GameAPP.theGameStatus = -2;
-			GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("UI/MainMenu/HelpMenu"), GameAPP.canvas.transform);
-			gameObject.name = "WarningMessage";
-			TextMeshProUGUI warning = gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-			TextMeshProUGUI warningShadow = gameObject.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
-			Transform button = gameObject.transform.GetChild(1);
-			warning.transform.position = new Vector3(0.7f, 0.4f, 0f);
-			warningShadow.transform.position = new Vector3(0.7f, 0.4f, 0f);
+			//GameAPP.theGameStatus = GameStatus.OpenOptions;
+			//GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("UI/Prefabs/NoticePauseMenu"), GameAPP.canvas.transform);
+			//gameObject.name = "WarningMessage";
+			//TextMeshProUGUI warning = gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+			//TextMeshProUGUI warningShadow = gameObject.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+			//Transform button = gameObject.transform.GetChild(1);
+			//warning.transform.position = new Vector3(0.7f, 0.4f, 0f);
+			//warningShadow.transform.position = new Vector3(0.7f, 0.4f, 0f);
 
+			#if MULTI_LANGUAGE
 			var (warningMessage, okayButton) = WarningStore.GetWarningMessage(Utils.Language);
 
-			warning.text = warningMessage;
-			warningShadow.text = warningMessage;
-			warning.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-			warningShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+			Transform warningTransform = noticeMenu.transform.FindChild("窗口");
+			Transform warningTextTransform = warningTransform.FindChild("文字");
+			Transform warningTextShadowTransform = warningTransform.FindChild("文字2");
 
-			button.GetComponent<PauseMenu_Btn>().buttonNumber = 10;
-			button.GetChild(0).GetComponent<TextMeshProUGUI>().text = okayButton;
-			button.GetChild(0).GetComponent<TextMeshProUGUI>().font = FontStore.LoadTMPFont(Utils.Language.ToString());
-			button.GetChild(1).GetComponent<TextMeshProUGUI>().text = okayButton;
-			gameObject.SetActive(false);
-			gameObject.SetActive(true);
+			Transform[] array = [warningTextTransform, warningTextShadowTransform];
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (array[i] != null)
+				{
+					array[i].GetComponent<TextMeshProUGUI>().text = warningMessage;
+					array[i].GetComponent<TextMeshProUGUI>().font = fontAsset;
+				}
+			}
+			#endif
+
+			//warning.text = warningMessage;
+			//warningShadow.text = warningMessage;
+			//warning.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+			//warningShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+			//button.GetComponent<PauseMenu_Btn>().buttonNumber = 10;
+			//button.GetChild(0).GetComponent<TextMeshProUGUI>().text = okayButton;
+			//button.GetChild(0).GetComponent<TextMeshProUGUI>().font = FontStore.LoadTMPFont(Utils.Language.ToString());
+			//button.GetChild(1).GetComponent<TextMeshProUGUI>().text = okayButton;
+			//gameObject.SetActive(false);
+			//gameObject.SetActive(true);
 		}
 
+		#if MULTI_LANGUAGE
+		
 		public static bool isWarningMessageLoaded = false;
 
-		public static void WarningReload(Utils.LanguageEnum language)
+		public static void WarningReload(Utils.LanguageEnum language, NoticeMenu noticeMenu)
 		{
 			// Log.LogInfo("Current Language is " + Utils.OldLanguage);
 			// Log.LogInfo("Changed Language to " + language);
@@ -144,11 +195,24 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			}
 			if (!isWarningMessageLoaded)
 			{
-				WarningLoad();
+				WarningLoad(noticeMenu);
 				isWarningMessageLoaded = true;
 			}
 
 			return;
 		}
+		#else
+
+		public static bool isWarningMessageLoaded = false;
+
+		public static void WarningReload()
+		{
+			if (!WarningStore.isWarningMessageLoaded)
+			{
+				WarningStore.WarningLoad();
+				WarningStore.isWarningMessageLoaded = true;
+			}
+		}
+		#endif
 	}
 }

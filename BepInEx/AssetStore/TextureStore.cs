@@ -1,6 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
+using System.IO;
 
 namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 {
@@ -13,7 +14,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 		internal static void Reload()
 		{
 			textureDict.Clear();
+			#if MULTI_LANGUAGE
 			RestoreTextures();
+			#endif
 			FileLoader.LoadDefaultTextures();
 			FileLoader.LoadTextures();
 		}
@@ -39,6 +42,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			}
 		}
 
+		#if MULTI_LANGUAGE
 		public static void RestoreTextures()
 		{
 			Texture2D[] textures = Resources.FindObjectsOfTypeAll<Texture2D>();
@@ -50,6 +54,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 				}
 			}
 		}
+		#endif
 
 		public static void LogAll()
 		{

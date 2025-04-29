@@ -1,10 +1,11 @@
 ﻿using HarmonyLib;
+
 using TMPro;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 {
-	[HarmonyPatch(typeof(InGameBtn))]
+    [HarmonyPatch(typeof(InGameBtn))]
 	public static class InGameBtn_Patch
 	{
 		[HarmonyPatch(nameof(InGameBtn.Update))]

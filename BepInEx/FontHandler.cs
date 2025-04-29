@@ -4,7 +4,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator
+namespace PvZ_Fusion_Translator__BepInEx_
 {
 	public static class FontHandler
 	{

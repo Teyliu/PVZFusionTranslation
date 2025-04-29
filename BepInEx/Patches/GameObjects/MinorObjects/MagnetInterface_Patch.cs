@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
+
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
 {
-    [HarmonyPatch(typeof(MagnetInterface))]
+	[HarmonyPatch(typeof(MagnetInterface))]
 	public class MagnetInterface_Patch
 	{
 		[HarmonyPostfix]

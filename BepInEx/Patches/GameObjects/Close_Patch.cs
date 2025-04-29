@@ -1,17 +1,19 @@
 ﻿using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+
 using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
-	[HarmonyPatch(typeof(Close))]
+    [HarmonyPatch(typeof(Close))]
 	public static class Close_Patch
 	{
 		[HarmonyPatch(nameof(Close.Start))]
 		[HarmonyPostfix]
 		private static void Close_Start(Close __instance)
 		{
+
 			TextMeshPro closeText = __instance.transform.GetChild(0).GetComponent<TextMeshPro>();
 			closeText.text = "合上";
 			closeText = StringStore.TranslateText(closeText);
@@ -40,9 +42,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 					}
 				}
 			}
+
 			StringStore.TranslateTextTransform(AlmanacTransform.Find("Back"), true);
 			StringStore.TranslateTextTransform(AlmanacTransform.Find("NextPage"));
 			StringStore.TranslateTextTransform(AlmanacTransform.Find("LastPage"));
+
 		}
 	}
 }
