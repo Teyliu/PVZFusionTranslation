@@ -134,85 +134,101 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return warningMessages["English"]; // Default to English if language code is not found
 			}
 		}
-		#endif
+#endif
 
-		public static void WarningLoad(NoticeMenu noticeMenu)
-		{
-			//GameAPP.theGameStatus = GameStatus.OpenOptions;
-			//GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("UI/Prefabs/NoticePauseMenu"), GameAPP.canvas.transform);
-			//gameObject.name = "WarningMessage";
-			//TextMeshProUGUI warning = gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-			//TextMeshProUGUI warningShadow = gameObject.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
-			//Transform button = gameObject.transform.GetChild(1);
-			//warning.transform.position = new Vector3(0.7f, 0.4f, 0f);
-			//warningShadow.transform.position = new Vector3(0.7f, 0.4f, 0f);
+        public static void WarningLoad(NoticeMenu noticeMenu)
+        {
+            if (noticeMenu == null || noticeMenu.transform == null)
+            {
+                MelonLogger.Warning("[WarningStore] NoticeMenu or transform is null - ABORTING");
+                return;
+            }
 
-			#if MULTI_LANGUAGE
-			var (warningMessage, okayButton) = WarningStore.GetWarningMessage(Utils.Language);
+#if MULTI_LANGUAGE
+            try
+            {
+                var (warningMessage, okayButton) = GetWarningMessage(Utils.Language);
+                TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-			Transform warningTransform = noticeMenu.transform.FindChild("窗口");
-			Transform warningTextTransform = warningTransform.FindChild("文字");
-			Transform warningTextShadowTransform = warningTransform.FindChild("文字2");
+                Transform warningTransform = noticeMenu.transform.Find("窗口");
+                if (warningTransform == null)
+                {
+                    MelonLogger.Warning("[WarningStore] '窗口' transform not found - ABORTING");
+                    return;
+                }
 
-			Transform[] array = [warningTextTransform, warningTextShadowTransform];
+                Transform warningTextTransform = warningTransform.Find("文字");
+                Transform warningTextShadowTransform = warningTransform.Find("文字2");
 
-			for (int i = 0; i < array.Length; i++)
-			{
-				if (array[i] != null)
-				{
-					array[i].GetComponent<TextMeshProUGUI>().text = warningMessage;
-					array[i].GetComponent<TextMeshProUGUI>().font = fontAsset;
-				}
-			}
-			#endif
+                if (warningTextTransform == null || warningTextShadowTransform == null)
+                {
+                    MelonLogger.Warning("[WarningStore] Could not find text components (文字/文字2)");
+                    return;
+                }
 
-			//warning.text = warningMessage;
-			//warningShadow.text = warningMessage;
-			//warning.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-			//warningShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                TextMeshProUGUI warningText = warningTextTransform.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI shadowText = warningTextShadowTransform.GetComponent<TextMeshProUGUI>();
 
-			//button.GetComponent<PauseMenu_Btn>().buttonNumber = 10;
-			//button.GetChild(0).GetComponent<TextMeshProUGUI>().text = okayButton;
-			//button.GetChild(0).GetComponent<TextMeshProUGUI>().font = FontStore.LoadTMPFont(Utils.Language.ToString());
-			//button.GetChild(1).GetComponent<TextMeshProUGUI>().text = okayButton;
-			//gameObject.SetActive(false);
-			//gameObject.SetActive(true);
-		}
+                if (warningText == null || shadowText == null)
+                {
+                    MelonLogger.Warning("[WarningStore] TextMeshProUGUI components missing");
+                    return;
+                }
 
-		#if MULTI_LANGUAGE
-		
-		public static bool isWarningMessageLoaded = false;
+                warningText.text = warningMessage;
+                shadowText.text = warningMessage;
 
-		public static void WarningReload(Utils.LanguageEnum language, NoticeMenu noticeMenu)
-		{
-			// Log.LogInfo("Current Language is " + Utils.OldLanguage);
-			// Log.LogInfo("Changed Language to " + language);
+                if (fontAsset != null)
+                {
+                    warningText.font = fontAsset;
+                    shadowText.font = fontAsset;
+                }
+                else
+                {
+                    MelonLogger.Warning("[WarningStore] Font asset is null");
+                }
 
-			if (Utils.OldLanguage.ToString() == language.ToString() && Utils.OldLanguage.ToString() != "English")
-			{
-				return;
-			}
-			if (!isWarningMessageLoaded)
-			{
-				WarningLoad(noticeMenu);
-				isWarningMessageLoaded = true;
-			}
+                MelonLogger.Msg("Warning message loaded successfully!");
+            }
+            catch (Exception e)
+            {
+                MelonLogger.Error($"Critical error in WarningLoad: {e}");
+            }
+#endif
+        }
+#if MULTI_LANGUAGE
+        public static bool isWarningMessageLoaded = false;
 
-			return;
-		}
-		#else
+        public static void WarningReload(Utils.LanguageEnum language, NoticeMenu noticeMenu)
+        {
+            if (noticeMenu == null)
+            {
+                MelonLogger.Warning("[WarningStore] NoticeMenu is null in WarningReload");
+                return;
+            }
 
-		public static bool isWarningMessageLoaded = false;
+            if (Utils.OldLanguage.ToString() == language.ToString() && Utils.OldLanguage.ToString() != "English")
+            {
+                return;
+            }
 
-		public static void WarningReload()
-		{
-			if (!WarningStore.isWarningMessageLoaded)
-			{
-				WarningStore.WarningLoad();
-				WarningStore.isWarningMessageLoaded = true;
-			}
-		}
-		#endif
-	}
+            if (!isWarningMessageLoaded)
+            {
+                WarningLoad(noticeMenu);
+                isWarningMessageLoaded = true;
+            }
+        }
+#else
+        public static bool isWarningMessageLoaded = false;
+
+        public static void WarningReload()
+        {
+            if (!WarningStore.isWarningMessageLoaded)
+            {
+                WarningStore.WarningLoad();
+                WarningStore.isWarningMessageLoaded = true;
+            }
+        }
+#endif
+    }
 }
