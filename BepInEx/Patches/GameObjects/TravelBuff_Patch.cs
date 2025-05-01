@@ -1,8 +1,9 @@
 ﻿using HarmonyLib;
 
+
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
-	[HarmonyPatch(typeof(TravelBuff))]
+    [HarmonyPatch(typeof(TravelBuff))]
 	public static class TravelBuff_Patch
 	{
 		[HarmonyPatch(nameof(TravelBuff.OnMouseUpAsButton))]

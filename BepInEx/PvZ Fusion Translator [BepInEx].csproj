@@ -13,15 +13,103 @@
 		https://nuget.samboy.dev/v3/index.json
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
-	<GamePath>C:\Users\Estudio\Documents\LHC G\PVZF-Translation\PC_PVZ-Fusion_2.3</GamePath>
+	<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.5-BepInEx</GamePath>
+	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
-	<Configurations>Debug;Release;DebugObfuscate;ReleaseObfuscate</Configurations>
 </PropertyGroup>
 	
 <ItemGroup>
 	<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
 	<PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
 </ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugObfuscate|AnyCPU'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;DEBUG;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugObfuscate|x64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;DEBUG;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugObfuscate|ARM64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;DEBUG;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|AnyCPU'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;TESTING;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|x64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;TESTING;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|ARM64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;CHEAT;TESTING;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEnglish|AnyCPU'">
+		<DefineConstants>$(DefineConstants);CHEAT;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEnglish|x64'">
+		<DefineConstants>$(DefineConstants);CHEAT;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEnglish|ARM64'">
+		<DefineConstants>$(DefineConstants);CHEAT;DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMulti|AnyCPU'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugMulti|AnyCPU'">
+	  <DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMulti|x64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugMulti|x64'">
+	  <DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMulti|ARM64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugMulti|ARM64'">
+	  <DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOther|AnyCPU'">
+		<DefineConstants>$(DefineConstants);OTHER;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOther|x64'">
+		<DefineConstants>$(DefineConstants);OTHER;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOther|ARM64'">
+		<DefineConstants>$(DefineConstants);OTHER;OBFUSCATE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseObfuscate|x64'">
+		<DefineConstants>$(DefineConstants);MULTI_LANGUAGE;OBFUSCATE;RELEASE</DefineConstants>
+	</PropertyGroup>
 	
 <ItemGroup>
 	<Reference Include="0Harmony">
@@ -371,6 +459,15 @@
 	</Reference>
 	<Reference Include="__Generated">
 	  <HintPath>$(GamePath)\BepInEx\interop\__Generated.dll</HintPath>
+	</Reference>
+	<Reference Include="Assembly-CSharp">
+		<HintPath>$(GamePath)\BepInEx\interop\Assembly-CSharp.dll</HintPath>
+	</Reference>
+	<Reference Include="AudioImportLib.BepInEx">
+		<HintPath>$(GamePath)\BepInEx\plugins\AudioImportLib.BepInEx.dll</HintPath>
+	</Reference>
+	<Reference Include="Newtonsoft.Json">
+		<HintPath>$(GamePath)\BepInEx\core\Newtonsoft.Json.dll</HintPath>
 	</Reference>
 </ItemGroup>
 

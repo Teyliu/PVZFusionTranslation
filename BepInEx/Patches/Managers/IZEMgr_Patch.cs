@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+
 using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
-	[HarmonyPatch(typeof(IZEMgr))]
+    [HarmonyPatch(typeof(IZEMgr))]
 	public static class IZEMgr_Patch
 	{
 		[HarmonyPatch(nameof(IZEMgr.Start))]
@@ -12,8 +14,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		public static void Start(IZEMgr __instance)
 		{
 			TextMeshProUGUI[] array =
-			[
-					__instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>(),
+            [
+                    __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>(),
 					__instance.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>(),
 			];
 			for (int i = 0; i < array.Length; i++)

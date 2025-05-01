@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
+
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
-	[HarmonyPatch(typeof(DifficultyMgr))]
+    [HarmonyPatch(typeof(DifficultyMgr))]
 	public static class DifficultyMgr_Patch
 	{
 		[HarmonyPatch(nameof(DifficultyMgr.Update))]

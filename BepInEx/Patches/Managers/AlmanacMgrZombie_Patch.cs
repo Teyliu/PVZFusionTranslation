@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
+
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
@@ -19,8 +15,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		[HarmonyPrefix]
 		private static bool InitNameAndInfoFromJson(AlmanacMgrZombie __instance)
 		{
+			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+			#else
+			string almanacDir = almanacDir = GetAssetDir(AssetType.Almanac);
+			string currentLanguage = "English";
+			#endif
 			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
 
 			if (!File.Exists(path))
@@ -48,7 +49,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 				hasAlmanacFont = true;
 			}
 
+			#if MULTI_LANGUAGE
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
+			#else
+			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
+			#endif
 
 			TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
 			TextMeshPro component2 = __instance.zombieName.GetComponent<TextMeshPro>();

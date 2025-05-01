@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine.UI;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
@@ -21,7 +21,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
 				}
-				if ((__instance.transform.parent != null) && (__instance.transform.parent.name.StartsWith("Window")))
+				if (__instance.transform.parent != null && __instance.transform.parent.name.StartsWith("Window"))
 				{
 					__instance.fontSizeMin = 10;
 					__instance.fontSize = 12;
@@ -44,7 +44,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
 				}
-				if ((__instance.transform.parent != null) && (__instance.transform.parent.name.StartsWith("Window")))
+				if (__instance.transform.parent != null && __instance.transform.parent.name.StartsWith("Window"))
 				{
 					__instance.fontSizeMin = 10;
 					__instance.fontSize = 12;

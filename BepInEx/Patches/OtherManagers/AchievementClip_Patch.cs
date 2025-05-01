@@ -1,10 +1,12 @@
-﻿using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+using HarmonyLib;
+
 using TMPro;
+using Newtonsoft.Json;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
+using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.AlmanacPlantBank_Patch;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers
 {
@@ -15,9 +17,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers
 		[HarmonyPostfix]
 		private static void Start(AchievementClip __instance)
 		{
+			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			string achievementDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
+			#else
+			string achievementDir = GetAssetDir(AssetType.Almanac);
+			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
+			#endif
 			string path = Path.Combine(achievementDir, "AchievementsTextTranslate.json");
 
 			#if OBFUSCATE
@@ -32,11 +39,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers
 
 			string json;
 			json = File.ReadAllText(path);
-			Dictionary<Achievement, AchievementObject> achievementsTexts = JsonSerializer.Deserialize<Dictionary<Achievement, AchievementObject>>(json);
+			Dictionary<Achievement, AchievementObject> achievementsTexts = new Dictionary<Achievement, AchievementObject>();
+			achievementsTexts = JsonConvert.DeserializeObject<Dictionary<Achievement, AchievementObject>>(json);
 
 			TextMeshProUGUI text1 = __instance.introduce.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
 			TextMeshProUGUI text2 = __instance.introduce.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
 			TextMeshProUGUI name1 = __instance.image.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+
 
 			text1.text = achievementsTexts[__instance._index].Name;
 			text1.font = fontAsset;

@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+
+using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects

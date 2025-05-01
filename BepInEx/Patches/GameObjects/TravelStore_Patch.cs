@@ -1,15 +1,16 @@
 ﻿using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System;
+
 using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
+using System;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
 	[HarmonyPatch(typeof(TravelStore))]
-	internal class TravelStore_Patch
-	{
-		[HarmonyPatch(nameof(TravelStore.Update))]
+    internal class TravelStore_Patch
+    {
+        [HarmonyPatch(nameof(TravelStore.Update))]
 		[HarmonyPostfix]
 		private static void Update(TravelStore __instance)
 		{
@@ -21,7 +22,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 			Transform moneyTransform = __instance.transform.Find("Money");
 			if (moneyTransform != null)
 			{
-				StringStore.TranslateTextTransform(moneyTransform);
+                StringStore.TranslateTextTransform(moneyTransform);
 			}
 		}
 
@@ -34,5 +35,5 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 				text.text = StringStore.TranslateText(text.text);
 			}
 		}
-	}
+    }
 }

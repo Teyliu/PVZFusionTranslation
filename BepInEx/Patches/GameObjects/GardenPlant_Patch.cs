@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
+
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
-	[HarmonyPatch(typeof(GardenPlant))]
+    [HarmonyPatch(typeof(GardenPlant))]
 	public static class GardenPlant_Patch
 	{
 		[HarmonyPatch(nameof(GardenPlant.Update))]
