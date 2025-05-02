@@ -94,6 +94,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 					StringStore.TranslateTextTransform(pageScaryPotTransform.Find("Nextpage"));
 					StringStore.TranslateTextTransform(pageScaryPotTransform.Find("LastPage"));
 				}
+
+				Transform pageNewAdvantureLevelTransform = levelTransform.transform.Find("PageNewAdvantureLevel");
+                if (pageNewAdvantureLevelTransform != null)
+                {
+                    StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("BackToIndex"));
+                    StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("Nextpage"));
+                    StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("LastPage"));
+                }
 			}
 
 			StringStore.TranslateTextTransform(parentTransform.Find("CameraSize"));
