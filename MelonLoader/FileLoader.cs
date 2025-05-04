@@ -1,6 +1,5 @@
 ﻿using Il2Cpp;
 using MelonLoader;
-using Newtonsoft.Json.Linq;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.OtherManagers;
 using System.Text.Encodings.Web;
@@ -301,12 +300,17 @@ namespace PvZ_Fusion_Translator
 			}
 
 			string json = File.ReadAllText(jsonFile);
-			JObject untranslatedStrings = JObject.Parse(json);
+			var untranslatedStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 
 			if (!untranslatedStrings.ContainsKey(text))
 			{
 				untranslatedStrings[text] = text;
-				File.WriteAllText(jsonFile, untranslatedStrings.ToString());
+				var options = new JsonSerializerOptions 
+				{
+					Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+				};
+				File.WriteAllText(jsonFile, JsonSerializer.Serialize(untranslatedStrings, options));
 			}
 		}
 		#endif
