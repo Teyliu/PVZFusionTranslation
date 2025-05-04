@@ -2,8 +2,8 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using static PvZ_Fusion_Translator.FileLoader;
 using UnityEngine;
+using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Managers
 {
@@ -11,8 +11,8 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 	public static partial class AlmanacMgrZombie_Patch
 	{
 		[HarmonyPatch(nameof(AlmanacMgrZombie.InitNameAndInfoFromJson))]
-		[HarmonyPrefix]
-		private static bool InitNameAndInfoFromJson(AlmanacMgrZombie __instance)
+		[HarmonyPostfix]
+		private static void InitNameAndInfoFromJson(AlmanacMgrZombie __instance)
 		{
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
@@ -22,11 +22,12 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			string currentLanguage = "English";
 			#endif
 			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+			string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
 
 			if (!File.Exists(path))
 			{
 				Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
-				return true;
+				return;
 			}
 
 			#if OBFUSCATE
@@ -77,12 +78,38 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 						component.font = fontAsset;
 					component2.font = fontAsset;
 					component3.font = fontAsset;
-
-					return false;
 				}
 			}
 
-			return true;
+			if (File.Exists(moddedPath))
+			{
+				string moddedJson;
+				moddedJson = File.ReadAllText(moddedPath);
+
+				AlmanacMgrZombie.ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(moddedJson);
+
+				foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in moddedZombieData.zombies)
+				{
+					if (zombieInfo.theZombieType == __instance.theZombieType)
+					{
+						component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
+						component.overflowMode = TextOverflowModes.Page;
+						component2.text = zombieInfo.name;
+						component2.autoSizeTextContainer = true;
+						component3.text = Utils.RemoveColorTags(zombieInfo.name);
+						component3.autoSizeTextContainer = true;
+
+						if (hasAlmanacFont)
+							component.font = almanacFontAsset;
+						else
+							component.font = fontAsset;
+						component2.font = fontAsset;
+						component3.font = fontAsset;
+					}
+				}
+			}
+
+			return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]
