@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
+using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
@@ -30,6 +31,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 					}
 				}
 			}
-		}
+
+            foreach(TextMeshProUGUI text in __instance.transform.GetComponentsInChildren<TextMeshProUGUI>())
+			{
+				text.text = StringStore.TranslateText(text.text);
+			}
+        }
 	}
 }
