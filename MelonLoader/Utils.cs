@@ -1,4 +1,5 @@
-﻿using PvZ_Fusion_Translator.AssetStore;
+﻿using MelonLoader;
+using PvZ_Fusion_Translator.AssetStore;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -104,7 +105,10 @@ namespace PvZ_Fusion_Translator
 
 		public static Utils.LanguageEnum Language;
 
-		public enum LanguageEnum
+		public static bool customTextures = !MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultTextures");
+		public static bool customAudio = !MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultAudio");
+
+        public enum LanguageEnum
 		{
 			// first column
 			English,
@@ -130,6 +134,13 @@ namespace PvZ_Fusion_Translator
 			Arabic,
 
 			LANG_END
+		}
+
+		public enum ToggleEnum
+		{
+			Textures,
+			Audio,
+			TOGGLE_END
 		}
 	}
 }

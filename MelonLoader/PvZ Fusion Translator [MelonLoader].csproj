@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.4.2</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.5.1</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 
@@ -452,6 +452,7 @@
 		<Compile Include="Patches\GameObjects\AbyssCheckInBag_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\OtherMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssLevelEnter_Patch.cs" />
