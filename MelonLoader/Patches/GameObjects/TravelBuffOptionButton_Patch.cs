@@ -14,6 +14,27 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
         }
+
+        [HarmonyPatch(nameof(TravelBuffOptionButton.Awake))]
+        [HarmonyPostfix]
+        private static void Awake(TravelBuffOptionButton __instance)
+        {
+            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+        }
+
+        [HarmonyPatch(nameof(TravelBuffOptionButton.OnAnimOver))]
+        [HarmonyPostfix]
+        private static void OnAnimOver(TravelBuffOptionButton __instance)
+        {
+            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+        }
+
+        [HarmonyPatch(nameof(TravelBuffOptionButton.SetBackground))]
+        [HarmonyPostfix]
+        private static void SetBackground(TravelBuffOptionButton __instance)
+        {
+            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+        }
         //[HarmonyPatch(nameof(TravelMenuMgr.SetText))]
         //[HarmonyPostfix]
         //private static void SetText(TravelMenuMgr __instance)
