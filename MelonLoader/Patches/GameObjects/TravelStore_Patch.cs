@@ -23,7 +23,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 			{
                 StringStore.TranslateTextTransform(moneyTransform);
 			}
-		}
+
+            foreach (TextMeshProUGUI text in __instance.points)
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
+        }
 
 		[HarmonyPatch(nameof(TravelStore.SetText), new Type[] { typeof(string)})]
 		[HarmonyPostfix]
@@ -33,6 +38,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 			{
 				text.text = StringStore.TranslateText(text.text);
 			}
-		}
+
+            foreach (TextMeshProUGUI text in __instance.points)
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            string regexStr1 = "第(\\d+)关\n通关用时：(\\d+)分(\\d+)秒\n杀敌数量：(\\d+)\n关卡叶绿素产出：(\\d+)\n极限模式产出：(\\d+)\n非首胜无额外产出\n产出叶绿素总计：(\\d+)\n";
+            string regexStr1 = "第(\\d+)关\n通关用时：(\\d+)分(\\d+)秒\n杀敌数量：(\\d+)\n关卡叶绿素产出：(\\d+)\n极限模式产出：(\\d+)\n非首胜无额外产出\n产出叶绿素总计：(\\d+)";
             string regexStr2 = "第(\\d+)关\n通关用时：(\\d+)分(\\d+)秒\n杀敌数量：(\\d+)\n关卡叶绿素产出：(\\d+)\n极限模式产出：(\\d+)\n首胜产出：(\\d+)\n剩余小推车数量：(\\d+)，获得叶绿素：(\\d+)\n产出叶绿素总计：(\\d+)";
 
             Regex regex1 = new Regex(regexStr1);
