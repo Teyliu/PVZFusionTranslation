@@ -167,34 +167,37 @@ namespace PvZ_Fusion_Translator
 
 		internal static void LoadDefaultTextures()
 		{
-			string textureDefaultDir = Path.Combine(Core.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
-			if (!Directory.Exists(textureDefaultDir))
+			if(Utils.customTextures)
 			{
-				Directory.CreateDirectory(textureDefaultDir);
-			}
-			try
-			{
-				foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
-				{
+                string textureDefaultDir = Path.Combine(Core.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
+                if (!Directory.Exists(textureDefaultDir))
+                {
+                    Directory.CreateDirectory(textureDefaultDir);
+                }
+                try
+                {
+                    foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
+                    {
 
-					#if OBFUSCATE
-					if (CheckSumStore.IsModified(filepath))
-					{
-						Log.LogError("File {0} was modified!" , filepath);
-						continue;
-					}
-					#endif
+						#if OBFUSCATE
+						if (CheckSumStore.IsModified(filepath))
+						{
+							Log.LogError("File {0} was modified!" , filepath);
+							continue;
+						}
+						#endif
 
-					Texture2D texture2D = Utils.LoadImage(filepath);
-					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-				}
-			}
+                        Texture2D texture2D = Utils.LoadImage(filepath);
+                        TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+                    }
+                }
 
-			catch (Exception e)
-			{
-				Log.LogError("Error loading Texture.");
-				Log.LogError(e.GetType() + " " + e.Message);
-			}
+                catch (Exception e)
+                {
+                    Log.LogError("Error loading Texture.");
+                    Log.LogError(e.GetType() + " " + e.Message);
+                }
+            }
 		}
 
 		internal static void LoadCustomTextures()
