@@ -15,8 +15,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
 			#if MULTI_LANGUAGE
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-			string difficultyText = StringStore.patchesStore["Difficulty"][Utils.Language.ToString()];
-			__instance.t.text = string.Format(difficultyText + " {0}", GameAPP.difficulty);
+            __instance.t.text = StringStore.TranslateText(__instance.t.text);
 			#else
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
 			string difficultyText = StringStore.patchesStore["Difficulty"]["Spanish"];
