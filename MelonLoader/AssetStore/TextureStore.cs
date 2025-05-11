@@ -16,7 +16,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 			#if MULTI_LANGUAGE
 			RestoreTextures();
 			#endif
-			FileLoader.LoadDefaultTextures();
 			FileLoader.LoadTextures();
 		}
 

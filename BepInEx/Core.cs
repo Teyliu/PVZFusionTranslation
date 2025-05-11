@@ -46,7 +46,7 @@ public class Core : BasePlugin
 		StringStore.Init();
 		FontStore.Init();
 
-		InitCoroutine();
+        InitCoroutine();
 	}
 
 	public override bool Unload()
@@ -67,7 +67,6 @@ public class Core : BasePlugin
 	public void InitCoroutine()
 	{
 		replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
-		Log.LogDebug("Coroutine Started");
 	}
 	public static void ShowToast(string message)
 	{
@@ -111,10 +110,25 @@ public class Core : BasePlugin
 	private void LoadConfig()
 	{
 		string mainCategory = "PvZ_Fusion_Translator";
-		configDefaultTextures = Config.Bind(new ConfigDefinition(mainCategory, "DefaultTextures"), false, new ConfigDescription("Use Default Textures + Translation Textures", new AcceptableValueList<bool>(true, false)));
-		configDefaultAudio = Config.Bind(new ConfigDefinition(mainCategory, "DefaultAudio"), false, new ConfigDescription("Use Default Audio", new AcceptableValueList<bool>(true, false)));
-		configLanguage = Config.Bind(new ConfigDefinition(mainCategory, "Language"), "English", new ConfigDescription("Load the Game in this Language", new AcceptableValueList<string>("English", "French", "Italian", "German", "Spanish", "Portuguese", "Indonesian", "Vietnamese", "Javanese", "Russian", "Japanese", "Korean")));
-	}
+
+		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "DefaultTextures"), out configDefaultTextures) == false)
+		{
+            configDefaultTextures = Config.Bind(new ConfigDefinition(mainCategory, "DefaultTextures"), false, new ConfigDescription("Use Default Textures + Translation Textures", new AcceptableValueList<bool>(true, false)));
+        }
+        bool defaultTextures = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out configDefaultTextures);
+
+        if (Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "DefaultAudio"), out configDefaultAudio) == false)
+        {
+            configDefaultAudio = Config.Bind(new ConfigDefinition(mainCategory, "DefaultAudio"), false, new ConfigDescription("Use Default Audio", new AcceptableValueList<bool>(true, false)));
+        }
+        bool defaultAudio = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out configDefaultAudio);
+
+        if (Config.TryGetEntry<string>(new ConfigDefinition(mainCategory, "Language"), out configLanguage) == false)
+        {
+            configLanguage = Config.Bind(new ConfigDefinition(mainCategory, "Language"), "English", new ConfigDescription("Load the Game in this Language", new AcceptableValueList<string>("English", "French", "Italian", "German", "Spanish", "Portuguese", "Indonesian", "Vietnamese", "Javanese", "Russian", "Japanese", "Korean")));
+        }
+		bool language = Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out configLanguage);
+    }
 }
 
 public class UnityCoroutineHelper : MonoBehaviour

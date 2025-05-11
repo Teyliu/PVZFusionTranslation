@@ -15,8 +15,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 			
 			#if MULTI_LANGUAGE
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-			string zombieText = StringStore.patchesStore["Zombies"][Utils.Language.ToString()];
-			__instance.t.text = string.Format(zombieText + " {0}", Board.Instance.enermyCount);
+			string zombieText = StringStore.TranslateText(__instance.t.text);
+			__instance.t.text = zombieText;
 			#else
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
 			string zombieText = StringStore.patchesStore["Zombies"]["Spanish"];

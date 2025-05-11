@@ -1,7 +1,6 @@
-﻿using System.IO;
+﻿using HarmonyLib;
+using System.IO;
 using System.Collections.Generic;
-using HarmonyLib;
-
 using TMPro;
 using Newtonsoft.Json;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;

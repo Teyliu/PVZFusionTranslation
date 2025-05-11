@@ -1,128 +1,152 @@
-﻿using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+﻿using BepInEx;
+using BepInEx.Configuration;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {
-	public class Utils
-	{
-		internal static bool TryReplaceTexture2D(Texture2D ogTexture)
-		{
-			if (ogTexture != null)
-			{
-				if (TextureStore.textureDict.TryGetValue(ogTexture.name, out string texturePath))
-				{
-					try
-					{
-						ImageConversion.LoadImage(ogTexture, File.ReadAllBytes(texturePath));
+    public class Utils
+    {
+        internal static bool TryReplaceTexture2D(Texture2D ogTexture)
+        {
+            if (ogTexture != null)
+            {
+                if (TextureStore.textureDict.TryGetValue(ogTexture.name, out string texturePath))
+                {
+                    try
+                    {
+                        ImageConversion.LoadImage(ogTexture, File.ReadAllBytes(texturePath));
 
-						Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
+                        Core.Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
 
-						ogTexture.name = "replaced_" + ogTexture.name;
-						return true;
-					}
-					catch (Exception ex)
-					{
-						Log.LogError("Failed to replace texture: " + ogTexture.name + " at path: " + texturePath);
-						Log.LogError(ex.ToString());
-					}
-				}
-			}
-			return false;
-		}
+                        ogTexture.name = "replaced_" + ogTexture.name;
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.LogError("Failed to replace texture: " + ogTexture.name + " at path: " + texturePath);
+                        Log.LogError(ex.ToString());
+                    }
+                }
+            }
+            return false;
+        }
 
-		internal static Texture2D LoadImage(string path)
-		{
-			if (!File.Exists(path))
-			{
-				throw new FileNotFoundException($"The image file at path '{path}' does not exist.");
-			}
+        internal static Texture2D LoadImage(string path)
+        {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException($"The image file at path '{path}' does not exist.");
+            }
 
-			byte[] array = File.ReadAllBytes(path);
-			Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None, 1, IntPtr.Zero, null);
-			ImageConversion.LoadImage(texture2D, array);
-			return texture2D;
-		}
+            byte[] array = File.ReadAllBytes(path);
+            Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None, 1, IntPtr.Zero, null);
+            ImageConversion.LoadImage(texture2D, array);
+            return texture2D;
+        }
 
-		public static Color HexToColor(string hex)
-		{
+        public static Color HexToColor(string hex)
+        {
 
-			hex = hex.Replace("#", "");
+            hex = hex.Replace("#", "");
 
-			float r = int.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
-			float g = int.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
-			float b = int.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
+            float r = int.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
+            float g = int.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
+            float b = int.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
 
-			return new Color(r, g, b);
-		}
+            return new Color(r, g, b);
+        }
 
-		public static void OpenSaveDirectory()
-		{
-			string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "LanPiaoPiao", "PlantsVsZombiesRH");
-			Process.Start("explorer.exe", saveDirectory);
-		}
+        public static void OpenSaveDirectory()
+        {
+            string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "LanPiaoPiao", "PlantsVsZombiesRH");
+            Process.Start("explorer.exe", saveDirectory);
+        }
 
-		public static void OpenTrello()
-		{
-			string website = "https://trello.com/b/DcdT1kUp";
-			Process.Start(new ProcessStartInfo(website) { UseShellExecute = true });
-		}
+        public static void OpenTrello()
+        {
+            string website = "https://trello.com/b/DcdT1kUp";
+            Process.Start(new ProcessStartInfo(website) { UseShellExecute = true });
+        }
 
-		public static string RemoveColorTags(string text)
-		{
-			return Regex.Replace(text, @"<color=[^>]+>", "");
-		}
+        public static string RemoveColorTags(string text)
+        {
+            return Regex.Replace(text, @"<color=[^>]+>", "");
+        }
 
-		internal static void ChangeLanguage(string language)
-		{
-			OldLanguage = Language;
+        #if MULTI_LANGUAGE
+        internal static void ChangeLanguage(string language)
+        {
+            OldLanguage = Language;
 
-			if (Enum.TryParse(language, out Utils.LanguageEnum lang))
-			{
-				Utils.Language = lang;
-			}
-			else
-			{
-				// Handle invalid language string
-				Log.LogError($"Invalid language string: {language}");
-			}
-			
-			WarningStore.isWarningMessageLoaded = false;
-			FontStore.Reload();
-			StringStore.Reload();
-			TextureStore.Reload();
-			FileLoader.SaveLanguage();
-		}
+            if (Enum.TryParse(language, out Utils.LanguageEnum lang))
+            {
+                Utils.Language = lang;
+            }
+            else
+            {
+                // Handle invalid language string
+                Log.LogError($"Invalid language string: {language}");
+            }
 
-		public static Utils.LanguageEnum OldLanguage;
-		public static Utils.LanguageEnum Language;
-		public enum LanguageEnum
-		{
-			// first column
-			English,
-			French,
-			Italian,
-			German,
-			Spanish,
-			Portuguese,
+            WarningStore.isWarningMessageLoaded = false;
+            FontStore.Reload();
+            StringStore.Reload();
+            TextureStore.Reload();
+            FileLoader.SaveLanguage();
+        }
+        #endif
 
-			// second column
-			Javanese, //Filipino,
-			Vietnamese,
-			Indonesian,
-			Russian,
-			Japanese,
-			Korean,
+        #if MULTI_LANGUAGE
+        public static Utils.LanguageEnum OldLanguage;
+        #endif
 
-			// third column
-			// Ukrainian,
-			// Slovak,
+        public static Utils.LanguageEnum Language;
 
-			LANG_END
-		}
-	}
+        public static string mainCategory = "PvZ_Fusion_Translator";
+
+        public static bool customTextures = !Core.Instance.configDefaultTextures.Value;
+        public static bool customAudio = !Core.Instance.configDefaultAudio.Value;
+
+        public enum LanguageEnum
+        {
+            // first column
+            English,
+            French,
+            Italian,
+            German,
+            Spanish,
+            Portuguese,
+
+            // second column
+            Javanese, //Filipino,
+            Vietnamese,
+            Indonesian,
+            Russian,
+            Japanese,
+            Korean,
+
+            // third column
+            // Ukrainian,
+            // Slovak,
+            Polish,
+            Hungarian,
+            Arabic,
+
+            LANG_END
+        }
+
+        public enum ToggleEnum
+        {
+            Textures,
+            Audio,
+            TOGGLE_END
+        }
+    }
 }

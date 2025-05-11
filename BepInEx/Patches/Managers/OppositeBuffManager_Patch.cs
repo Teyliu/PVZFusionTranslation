@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
-
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {

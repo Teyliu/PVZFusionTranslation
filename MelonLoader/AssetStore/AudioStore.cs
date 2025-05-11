@@ -24,15 +24,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 		
 		public static void Init()
 		{
-			bool loadCustomAudio = MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultAudio");
-			if (loadCustomAudio)
-			{
-				return;
-			}
-			else
-			{
-				LoadAudios();
-			}
+			LoadAudios();
 		}
 		public static void LoadAudios()
 		{
@@ -158,24 +150,27 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static void AudioPlayPatch(AudioSource __instance)
 		{
-			if (__instance.clip == null)
-				return;
-
-			if (LogSounds)
-				MelonLogger.Msg($"Playing \"{__instance.clip.name}\" from object \"{__instance.gameObject.name}\"");
-
-			string audioClipName = overrideEnabled ? "REPLACE_ALL" : __instance.clip.name;
-			if (AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
+			if(Utils.customAudio)
 			{
-				__instance.pitch = 1;
-				__instance.clip = replaceClip;
-			}
+				if (__instance.clip == null)
+					return;
 
-			#if AUDIO_TESTING
-			// Update the displayed audio source
-			var (name, source) = GetAudioSource(__instance.clip.name);
-			UpdateAudioSourceText(name, source);
-			#endif
+				if (LogSounds)
+					MelonLogger.Msg($"Playing \"{__instance.clip.name}\" from object \"{__instance.gameObject.name}\"");
+
+				string audioClipName = overrideEnabled ? "REPLACE_ALL" : __instance.clip.name;
+				if (AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
+				{
+					__instance.pitch = 1;
+					__instance.clip = replaceClip;
+				}
+
+				#if AUDIO_TESTING
+				// Update the displayed audio source
+				var (name, source) = GetAudioSource(__instance.clip.name);
+				UpdateAudioSourceText(name, source);
+				#endif
+			}
 		}
 	}
 }

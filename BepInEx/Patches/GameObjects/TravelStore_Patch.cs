@@ -1,9 +1,8 @@
 ﻿using HarmonyLib;
-
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
-using System;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -24,7 +23,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 			{
                 StringStore.TranslateTextTransform(moneyTransform);
 			}
-		}
+
+            foreach (TextMeshProUGUI text in __instance.points)
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
+        }
 
 		[HarmonyPatch(nameof(TravelStore.SetText), new Type[] { typeof(string)})]
 		[HarmonyPostfix]
@@ -34,6 +38,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 			{
 				text.text = StringStore.TranslateText(text.text);
 			}
-		}
+
+            foreach (TextMeshProUGUI text in __instance.points)
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
+        }
     }
 }

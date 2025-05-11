@@ -148,16 +148,19 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             public static void Prefix(UnityEngine.AudioSource __instance)
             {
-                if (__instance.clip == null)
+                if(Utils.customAudio)
+				{
+					if (__instance.clip == null)
                     return;
 
-                string audioClipName = __instance.clip.name;
+					string audioClipName = __instance.clip.name;
 
-                if (AudioStore.AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
-                {
-                    __instance.pitch = 1;
-                    __instance.clip = replaceClip;
-                }
+					if (AudioStore.AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
+					{
+						__instance.pitch = 1;
+						__instance.clip = replaceClip;
+					}
+				}
             }
         }
     }

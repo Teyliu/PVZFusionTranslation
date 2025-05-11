@@ -240,9 +240,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
 			if(type == "Textures")
 			{
-				Utils.customTextures = (Utils.customTextures) ? false : true;
+				Utils.customTextures = !Utils.customTextures;
                 MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultTextures", !Utils.customTextures);
-			} 
+				TextureStore.Reload();
+                object replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
+            } 
 			
 			if (type == "Audio")
 			{
@@ -304,11 +306,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 					ToggleCustomAssets(toggleType);
                     if (toggleType == "Textures")
                     {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures! (Restart game to apply changes.)", 0.1f);
+                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!", 0.1f);
                     }
                     else if (toggleType == "Audio")
                     {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom audio! (Restart game to apply changes.)", 0.1f);
+                        FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
                     }
 				}
             }

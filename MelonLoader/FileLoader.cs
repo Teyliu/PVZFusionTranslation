@@ -96,14 +96,10 @@ namespace PvZ_Fusion_Translator
 			try
 			{
 				
-				if (loadDefaultTextures == true)
+				if (Utils.customTextures)
 				{
-					LoadDefaultTextures();
-				}
-				else
-				{
-					LoadCustomTextures();
-				}
+                    LoadCustomTextures();
+                }
 			}
 			catch (Exception e)
 			{
@@ -167,7 +163,7 @@ namespace PvZ_Fusion_Translator
 
 		internal static void LoadDefaultTextures()
 		{
-			if(Utils.customTextures)
+			if(Utils.customTextures == false)
 			{
                 string textureDefaultDir = Path.Combine(Core.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
                 if (!Directory.Exists(textureDefaultDir))

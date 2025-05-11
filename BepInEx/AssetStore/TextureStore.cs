@@ -17,7 +17,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			#if MULTI_LANGUAGE
 			RestoreTextures();
 			#endif
-			FileLoader.LoadDefaultTextures();
 			FileLoader.LoadTextures();
 		}
 
