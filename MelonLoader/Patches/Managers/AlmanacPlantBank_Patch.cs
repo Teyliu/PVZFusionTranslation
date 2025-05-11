@@ -34,7 +34,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			if (CheckSumStore.IsModified(path))
 			{
 				Log.LogError("File {0} was modified!", path);
-				return true;
+				return;
 			}
 			#endif
 

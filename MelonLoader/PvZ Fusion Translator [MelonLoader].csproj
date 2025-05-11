@@ -16,54 +16,6 @@
 		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.5.1</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEnglish|AnyCPU'">
-		<GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEnglish|x64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugEnglish|ARM64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-		
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEnglish|AnyCPU'">
-		<GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-		
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEnglish|x64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-		
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEnglish|ARM64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOther|AnyCPU'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOther|x64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOther|ARM64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Solo)\Game Files</GamePath>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMulti|AnyCPU'">
-		<GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Multi)\Game Files</GamePath>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMulti|x64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Multi)\Game Files</GamePath>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMulti|ARM64'">
-	  <GamePath>D:\Games\[Series] PvZ Mods\(Fangame) Fusion\(Latest - Multi)\Game Files</GamePath>
-	</PropertyGroup>
 	
 	<ItemGroup>
 	  <EmbeddedResource Remove="Instantiation\**" />
