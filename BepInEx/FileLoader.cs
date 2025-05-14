@@ -94,15 +94,16 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 
         internal static void LoadTextures()
         {
-            ConfigEntry<bool> defaultTextureEntry;
-            Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
 
             // Default or Custom Texturse -> English Textures -> Localized Textures
             try
             {
-                if (!defaultTextureEntry.Value)
+                if (Utils.customTextures)
                 {
                     LoadCustomTextures();
+                } else
+                {
+                    LoadDefaultTextures();
                 }
             }
             catch (Exception e)

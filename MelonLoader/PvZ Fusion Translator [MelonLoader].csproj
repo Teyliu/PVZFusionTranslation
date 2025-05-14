@@ -404,6 +404,7 @@
 		<Compile Include="Patches\GameObjects\AbyssCheckInBag_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\OtherMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />

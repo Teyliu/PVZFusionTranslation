@@ -318,7 +318,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					ToggleCustomAssets(toggleType);
                     if (toggleType == "Textures")
                     {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!", 0.1f);
+                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\nRestart your game for everything to apply.", 0.1f);
                     }
                     else if (toggleType == "Audio")
                     {

@@ -17,12 +17,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			#if MULTI_LANGUAGE
 			RestoreTextures();
 			#endif
+			if(!Utils.customTextures)
+			{
+				FileLoader.LoadDefaultTextures();
+			}
 			FileLoader.LoadTextures();
 		}
 
 		public static IEnumerator ReplaceTexturesCoroutine()
 		{
-			while (true)
+            if (!Utils.customTextures)
+            {
+                FileLoader.LoadDefaultTextures();
+            }
+            while (true)
 			{
 				ReplaceTextures();
 				yield return new WaitForSeconds(0.5f);  // Adjust this interval as needed

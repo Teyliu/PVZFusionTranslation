@@ -15,36 +15,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     [HarmonyPatch(typeof(AbyssMenu))]
     public static class AbyssMenu_Patch
     {
-        public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
-        {
-            GameObject newObj = new GameObject(name);
-            newObj.transform.position = originalText.transform.position;
-            newObj.AddComponent<CanvasRenderer>();
-            newObj.AddComponent<RectTransform>();
-            newObj.AddComponent<TextMeshProUGUI>();
-            newObj.transform.SetParent(parent);
-            newObj.transform.localScale = Vector3.one;
-
-            UnityEngine.Object.Destroy(originalText);
-            return newObj;
-        }
-
-        private static void ConvertButtonText(Transform original, string name)
-        {
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-            Transform transform = original.FindChild(name);
-            Transform textTransform = transform.FindChild("text");
-            string text = textTransform.GetComponent<Text>().text;
-            Color color = textTransform.GetComponent<Text>().color;
-
-            TextMeshProUGUI newGoBackText = ConvertToTextMeshProUGUI(textTransform.gameObject, transform, "text2").GetComponent<TextMeshProUGUI>();
-            newGoBackText.autoSizeTextContainer = true;
-            newGoBackText.text = StringStore.TranslateText(text, false);
-            newGoBackText.font = fontAsset;
-            newGoBackText.color = color;
-        }
-
         [HarmonyPatch(nameof(AbyssMenu.Awake))]
         [HarmonyPostfix]
         private static void Awake(AbyssMenu __instance)
@@ -57,7 +27,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 txt.font = fontAsset;
             }
 
-            ConvertButtonText(__instance.transform, "Goback");
+            Utils.ConvertButtonText(__instance.transform, "Goback");
         }
 
         [HarmonyPatch(nameof(AbyssMenu.UpdateLevelInfo))]

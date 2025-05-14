@@ -146,7 +146,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 				}
 			}
 
-			return;
+            foreach (TextMeshPro textMeshPro in __instance.GetComponentsInChildren<TextMeshPro>())
+            {
+                textMeshPro.text = StringStore.TranslateText(textMeshPro.text);
+            }
+
+            return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]

@@ -1,9 +1,11 @@
-﻿using MelonLoader;
+﻿using Il2CppTMPro;
+using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.UI;
 
 namespace PvZ_Fusion_Translator
 {
@@ -76,8 +78,38 @@ namespace PvZ_Fusion_Translator
 			return Regex.Replace(text, @"<color=[^>]+>", "");
 		}
 
-		#if MULTI_LANGUAGE
-		internal static void ChangeLanguage(string language)
+        public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
+        {
+            GameObject newObj = new GameObject(name);
+            newObj.transform.position = originalText.transform.position;
+            newObj.AddComponent<CanvasRenderer>();
+            newObj.AddComponent<RectTransform>();
+            newObj.AddComponent<TextMeshProUGUI>();
+            newObj.transform.SetParent(parent);
+            newObj.transform.localScale = Vector3.one;
+
+            UnityEngine.Object.Destroy(originalText);
+            return newObj;
+        }
+
+        public static void ConvertButtonText(Transform original, string name)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            Transform transform = original.FindChild(name);
+            Transform textTransform = transform.FindChild("text");
+            string text = textTransform.GetComponent<Text>().text;
+            Color color = textTransform.GetComponent<Text>().color;
+
+            TextMeshProUGUI newGoBackText = Utils.ConvertToTextMeshProUGUI(textTransform.gameObject, transform, "text2").GetComponent<TextMeshProUGUI>();
+            newGoBackText.autoSizeTextContainer = true;
+            newGoBackText.text = StringStore.TranslateText(text, false);
+            newGoBackText.font = fontAsset;
+            newGoBackText.color = color;
+        }
+
+#if MULTI_LANGUAGE
+        internal static void ChangeLanguage(string language)
 		{
 			OldLanguage = Language;
 

@@ -146,6 +146,11 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				}
 			}
 
+			foreach(TextMeshPro textMeshPro in __instance.GetComponentsInChildren<TextMeshPro>())
+			{
+				textMeshPro.text = StringStore.TranslateText(textMeshPro.text);
+			}
+
 			return;
 		}
 
