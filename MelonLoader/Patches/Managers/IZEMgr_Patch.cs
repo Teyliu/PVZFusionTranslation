@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.Managers
 {
-    [HarmonyPatch(typeof(IZEMgr))]
-	public static class IZEMgr_Patch
-	{
-		[HarmonyPatch(nameof(IZEMgr.Start))]
+    [HarmonyPatch(typeof(IZBottomMenu))]
+	public static class IZBottomMenu_Patch
+    {
+		[HarmonyPatch(nameof(IZBottomMenu.ChangeString))]
 		[HarmonyPostfix]
-		public static void Start(IZEMgr __instance)
+		public static void Start(IZBottomMenu __instance)
 		{
 			TextMeshProUGUI[] array =
             [

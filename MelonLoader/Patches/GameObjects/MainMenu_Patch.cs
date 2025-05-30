@@ -11,8 +11,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         private static bool _warningShown = false;
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(MainMenu.FixedUpdate))]
-        private static void FixedUpdate(MainMenu __instance)
+        [HarmonyPatch(nameof(MainMenu.AnimOver))]
+        private static void AnimOver(MainMenu __instance)
         {
             if (_warningShown || NoticeMenu.Instance == null)
                 return;
