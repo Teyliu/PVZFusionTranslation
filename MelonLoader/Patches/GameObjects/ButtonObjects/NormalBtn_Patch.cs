@@ -13,10 +13,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 		[HarmonyPatch(nameof(NormalBtn.OnMouseUpAsButton))]
 		public static void OnMouseUpAsButton(NormalBtn __instance)
 		{
-            foreach (TextMeshPro textMeshPro in __instance.GetComponentsInChildren<TextMeshPro>())
-            {
-                textMeshPro.text = StringStore.TranslateText(textMeshPro.text);
-            }
+            Transform banTransform = __instance.transform.GetChild(0);
+			if (banTransform != null)
+			{
+				banTransform.GetComponent<TextMeshPro>().text = StringStore.TranslateText(banTransform.GetComponent<TextMeshPro>().text);
+			}
         }
 	}
 }

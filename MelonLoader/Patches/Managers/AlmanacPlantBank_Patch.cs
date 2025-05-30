@@ -146,12 +146,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				}
 			}
 
-			foreach(TextMeshPro textMeshPro in __instance.GetComponentsInChildren<TextMeshPro>())
-			{
-				textMeshPro.text = StringStore.TranslateText(textMeshPro.text);
-			}
-
-			return;
+            return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
@@ -176,6 +171,12 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			{
 				component.autoSizeTextContainer = false;
 			}
-		}
+
+            Transform banTransform = __instance.transform.FindChild("Ban").GetChild(0);
+            if (banTransform != null)
+            {
+                banTransform.GetComponent<TextMeshPro>().text = StringStore.TranslateText(banTransform.GetComponent<TextMeshPro>().text);
+            }
+        }
 	}
 }
