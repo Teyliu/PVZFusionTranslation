@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 {
-    [HarmonyPatch(typeof(EveManager))]
-	public static class EveManager_Patch
+    [HarmonyPatch(typeof(UIButton))]
+	public static class EveManager_UIButton_Patch
     {
 		[HarmonyPostfix]
-		[HarmonyPatch(nameof(EveManager.Balanced))]
-		private static void Balanced(EveManager __instance)
+		[HarmonyPatch(nameof(UIButton.Start))]
+		private static void Start(UIButton __instance)
 		{
 			Transform sceneText = __instance.transform.FindChild("text");
 			if(sceneText != null)
