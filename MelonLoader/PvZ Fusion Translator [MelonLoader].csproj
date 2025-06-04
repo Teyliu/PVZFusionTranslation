@@ -405,6 +405,7 @@
 		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton.cs" />
 		<Compile Include="Patches\GameObjects\OtherMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
@@ -423,6 +424,7 @@
 		<Compile Include="Patches\GameObjects\AbyssMenu2_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />
@@ -468,7 +470,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
