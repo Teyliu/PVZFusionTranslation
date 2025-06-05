@@ -423,6 +423,7 @@
 		<Compile Include="Patches\GameObjects\AbyssDevelopMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu2_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
