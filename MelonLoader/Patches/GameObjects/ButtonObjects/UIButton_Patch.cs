@@ -31,8 +31,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         if (newTMP != null)
                         {
                             newTMP.text = translatedText;
-
-                            // Optional: Log successful conversion and translation
                             //Debug.Log($"Converted and translated text: {textComponent.text} -> {translatedText}");
                         }
                     }
