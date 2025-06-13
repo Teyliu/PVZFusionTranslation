@@ -406,6 +406,8 @@
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\TrainingDummy_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\UltimateChomper_Patch.cs" />
 		<Compile Include="Patches\GameObjects\OtherMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
