@@ -1,6 +1,7 @@
 ﻿using Il2Cpp;
 using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using PvZ_Fusion_Translator.Patches.OtherManagers;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -76,6 +77,7 @@ namespace PvZ_Fusion_Translator
 						{
 							StringStore.translationStringRegex[key] = value;
 						}
+						Zombie_Patch.LoadHPStrings();
 					}
 				}
 				SaveStrings();
