@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>D:\PvZ Fusion\Game Files</GamePath>
+		<GamePath>G:\ML-Fusion 2.6.1\Game Files</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -406,6 +406,8 @@
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\TrainingDummy_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\UltimateChomper_Patch.cs" />
 		<Compile Include="Patches\GameObjects\OtherMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
@@ -437,7 +439,6 @@
 		<Compile Include="Patches\Managers\AlmanacPlantBank_Patch.cs" />
 		<Compile Include="Patches\Managers\DifficultyMgr_Patch.cs" />
 		<Compile Include="Patches\Managers\EndlessMgr_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ButtonObjects\EveBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GardenPlant_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Close_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CustomSettings_Patch.cs" />
