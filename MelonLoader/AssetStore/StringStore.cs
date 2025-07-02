@@ -29,7 +29,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 			// UI - Playing
 			{ @"-------UI - Playing" , "UI - Playing-------" },
 			{ @"快捷键：(\d+)" , "<size=20>Hotkey: {0}" },
-			{ @"场上敌人数量：(\d+)" , "Zombies: {0}" },
+			{ @"场上敌人数量：(\d+)$" , "Zombies: {0}" },
 			{ @"难度：(\d+)" , "Difficulty: {0}" },
 
 			// UI - Adventure Mode
@@ -117,8 +117,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 			{ @"-------Strings - Others" , "Strings - Others-------" },
 			// { @"HP：(\d+)/(\d+)\s+一类：(\d+)/(\d+)" , "HP: {0}/{1}\nArmor: {2}/{3}" },
 			// { @"HP：(\d+)/(\d+)\s+二类：(\d+)/(\d+)" , "HP: {0}/{1}\nArmor: {2}/{3}" },
-			{ @"^HP：(\d+)/(\d+)\s+([^\s+])类：(\d+)/(\d+)" , "HP: {0}/{1}\nArmor: {3}/{4}" },
-			{ @"^HP：(\d+)/(\d+)" , "HP: {0}/{1}" },
+			// { @"^HP：(\d+)/(\d+)\s+([^\s+])类：(\d+)/(\d+)" , "HP: {0}/{1}\nArmor: {3}/{4}" },
+			// { @"^HP：(\d+)/(\d+)" , "HP: {0}/{1}" },
 			// { @"平衡性调整（([^\s]+)）" , "Balance Adjustment ({0})" },
 			{ @"旅行：守护 (\d+)轮已经完成" , "Odyssey: Last Stand | {0} Rounds Completed"},
 
