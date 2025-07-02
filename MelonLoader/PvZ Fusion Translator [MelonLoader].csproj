@@ -439,7 +439,6 @@
 		<Compile Include="Patches\Managers\AlmanacPlantBank_Patch.cs" />
 		<Compile Include="Patches\Managers\DifficultyMgr_Patch.cs" />
 		<Compile Include="Patches\Managers\EndlessMgr_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ButtonObjects\EveBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GardenPlant_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Close_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CustomSettings_Patch.cs" />
