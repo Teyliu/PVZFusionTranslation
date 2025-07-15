@@ -1,0 +1,37 @@
+﻿using HarmonyLib;
+using Il2Cpp;
+using Il2CppTMPro;
+using PvZ_Fusion_Translator.AssetStore;
+using UnityEngine;
+using System.Text.RegularExpressions;
+
+namespace PvZ_Fusion_Translator.Patches.GameObjects
+{
+    [HarmonyPatch(typeof(ShootingSelectWindow))]
+    public static class ShootingSelectWindow_Patch
+    {
+        [HarmonyPatch(nameof(ShootingSelectWindow.SetUpgradePlantTypes))]
+        [HarmonyPostfix]
+        private static void InitCard(ShootingSelectWindow __instance)
+        {
+            Transform introduceTransform = __instance.transform.FindChild("Images").FindChild("Introduce");
+            TextMeshProUGUI introduceText = introduceTransform.GetComponent<TextMeshProUGUI>();
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            introduceText.text = StringStore.TranslateText(introduceText.text);
+            introduceText.font = fontAsset;
+        }
+
+        [HarmonyPatch(nameof(ShootingSelectWindow.OnAnimOver))]
+        [HarmonyPostfix]
+        private static void OnAnimOver(ShootingSelectWindow __instance)
+        {
+            Transform introduceTransform = __instance.transform.FindChild("Images").FindChild("Introduce");
+            TextMeshProUGUI introduceText = introduceTransform.GetComponent<TextMeshProUGUI>();
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            introduceText.text = StringStore.TranslateText(introduceText.text);
+            introduceText.font = fontAsset;
+        }
+    }
+}
