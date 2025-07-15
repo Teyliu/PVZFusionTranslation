@@ -18,6 +18,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 // Convert and translate legacy Text components
                 Text[] textComponents = __instance.GetComponentsInChildren<Text>(true);
+                TextMeshProUGUI[] textMeshComponents = __instance.GetComponentsInChildren<TextMeshProUGUI>(true);
                 foreach (Text textComponent in textComponents)
                 {
                     if (textComponent != null && !string.IsNullOrEmpty(textComponent.text))

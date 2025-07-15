@@ -1,17 +1,18 @@
 ﻿using MelonLoader;
+using MelonLoader.Logging;
 using System.Drawing;
 
 namespace PvZ_Fusion_Translator
 {
 	internal static class Log
 	{
-		public static void LogDebug(object txt) => Melon<Core>.Logger.Msg(Color.Gray, txt);
-		public static void LogDebug(string txt) => Melon<Core>.Logger.Msg(Color.Gray, txt);
-		public static void LogDebug(string txt, params object[] args) => Melon<Core>.Logger.Msg(Color.Gray, txt, args);
+		public static void LogDebug(object txt) => Melon<Core>.Logger.Msg(ColorARGB.Gray, txt);
+		public static void LogDebug(string txt) => Melon<Core>.Logger.Msg(ColorARGB.Gray, txt);
+		public static void LogDebug(string txt, params object[] args) => Melon<Core>.Logger.Msg(ColorARGB.Gray, txt, args);
 
-		public static void LogInfo(object txt) => Melon<Core>.Logger.Msg(Color.Blue, txt);
-		public static void LogInfo(string txt) => Melon<Core>.Logger.Msg(Color.Blue, txt);
-		public static void LogInfo(string txt, params object[] args) => Melon<Core>.Logger.Msg(Color.Blue, txt, args);
+		public static void LogInfo(object txt) => Melon<Core>.Logger.Msg(ColorARGB.Blue, txt);
+		public static void LogInfo(string txt) => Melon<Core>.Logger.Msg(ColorARGB.Blue, txt);
+		public static void LogInfo(string txt, params object[] args) => Melon<Core>.Logger.Msg(ColorARGB.Blue, txt, args);
 
 		public static void LogWarning(object txt) => Melon<Core>.Logger.Warning(txt);
 		public static void LogWarning(string txt) => Melon<Core>.Logger.Warning(txt);

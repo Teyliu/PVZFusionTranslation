@@ -108,6 +108,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                     foreach(TextMeshProUGUI txt in mainTransform.GetComponentsInChildren<TextMeshProUGUI>())
                     {
+                        FileLoader.DumpUntranslatedStrings(txt.text);
                         txt.text = StringStore.TranslateText(txt.text);
                     }
                 }

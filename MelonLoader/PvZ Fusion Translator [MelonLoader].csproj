@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>G:\ML-Fusion 2.6.1\Game Files</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion-2.7</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -400,6 +400,11 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\FruitNinjaSelectWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\RogueCardWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\CrisisZombieWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\RogueStartMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssBagMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssCheckInBag_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
@@ -427,6 +432,7 @@
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
