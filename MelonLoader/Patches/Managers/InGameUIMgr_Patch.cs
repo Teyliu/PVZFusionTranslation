@@ -24,7 +24,6 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			TextMeshProUGUI[] array2 = array;
 			for (int i = 0; i < array2.Length; i++)
 			{
-
 				array2[i] = StringStore.TranslateText(array2[i]);
 				array2[i].text = array2[i].text.Replace("\n", " ");
 			}
