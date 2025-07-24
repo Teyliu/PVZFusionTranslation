@@ -400,6 +400,7 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\Jigsaw_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\FruitNinjaSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\RogueCardWindow_Patch.cs" />
