@@ -17,6 +17,7 @@ namespace PvZ_Fusion_Translator
 			Strings,
 			Dumps,
 			Almanac,
+			Sprites
 		}
 
 		public static string GetAssetDir(AssetType assetType, Utils.LanguageEnum? language = null)
@@ -115,11 +116,12 @@ namespace PvZ_Fusion_Translator
 				LoadLocalizedTextures(Utils.LanguageEnum.English);
 			}
 			LoadLocalizedTextures(Utils.Language);
-			#else
+			LoadLocalizedSprites(Utils.Language);
+            #else
 			LoadLocalizedTextures();
-			#endif
+#endif
 
-			Log.LogInfo("Textures loaded successfully.");
+            Log.LogInfo("Textures loaded successfully.");
 		}
 
 		internal static void LoadLocalizedTextures(Utils.LanguageEnum? language = null)
@@ -163,7 +165,48 @@ namespace PvZ_Fusion_Translator
 			}
 		}
 
-		internal static void LoadDefaultTextures()
+        internal static void LoadLocalizedSprites(Utils.LanguageEnum? language = null)
+        {
+            string textureDir = GetAssetDir(AssetType.Sprites, language);
+
+            if (!Directory.Exists(textureDir))
+            {
+                Directory.CreateDirectory(textureDir);
+            }
+            try
+            {
+                foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
+                {
+                    if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
+                    {
+                        continue;
+                    }
+
+					#if OBFUSCATE
+					if (CheckSumStore.IsModified(filepath))
+					{
+						Log.LogError("File {0} was modified!" , filepath);
+						continue;
+					}
+					#endif
+
+					#if DEBUG
+                    Log.LogDebug("Loading File (Sprite): " + filepath);
+					#endif
+
+                    Texture2D texture2D = Utils.LoadImage(filepath);
+                    TextureStore.spriteDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+                }
+            }
+
+            catch (Exception e)
+            {
+                Log.LogError("Error loading Texture.");
+                Log.LogError(e.GetType() + " " + e.Message);
+            }
+        }
+
+        internal static void LoadDefaultTextures()
 		{
 			if(Utils.customTextures == false)
 			{

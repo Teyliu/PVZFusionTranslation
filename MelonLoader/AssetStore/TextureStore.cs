@@ -7,8 +7,9 @@ namespace PvZ_Fusion_Translator.AssetStore
 	public static class TextureStore
 	{
 		internal static Dictionary<string, string> textureDict = [];
+		internal static Dictionary<string, string> spriteDict = [];
 
-		internal static void Init() => FileLoader.LoadTextures();
+        internal static void Init() => FileLoader.LoadTextures();
 
 		internal static void Reload()
 		{

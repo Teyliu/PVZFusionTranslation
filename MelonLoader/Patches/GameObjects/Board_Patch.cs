@@ -17,9 +17,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 if (spriteRenderer.sprite != null)
                 {
-                    if (TextureStore.spriteDict.ContainsKey(spriteRenderer.sprite.name) && spriteRenderer.drawMode != SpriteDrawMode.Sliced)
+                    if (TextureStore.spriteDict.ContainsKey(spriteRenderer.sprite.name))
                     {
                         spriteRenderer.drawMode = SpriteDrawMode.Sliced;
+                        spriteRenderer.sprite.name = "replaced_" + spriteRenderer.sprite.name;
                     }
                 }
             }
