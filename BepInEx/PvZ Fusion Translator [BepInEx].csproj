@@ -13,7 +13,7 @@
 		https://nuget.samboy.dev/v3/index.json
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
-	<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.5.1-BepInEx</GamePath>
+	<GamePath>D:\PvZ Fusion\BepInEx Game Files</GamePath>
 	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
 </PropertyGroup>
@@ -21,6 +21,7 @@
 <ItemGroup>
 	<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
 	<PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 </ItemGroup>
 
 

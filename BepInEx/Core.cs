@@ -21,7 +21,7 @@ public class Core : BasePlugin
 	private static DateTime? dtStartToast;
 	private static string toast_txt;
 
-	public static ManualLogSource Log;
+	public new static ManualLogSource Log;
 	public static Core Instance { get; private set; }
 	public static MonoBehaviour MonoInstance { get; private set; }
 

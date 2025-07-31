@@ -40,29 +40,36 @@ namespace PvZ_Fusion_Translator__BepInEx_
         }
         public static void LoadAudios()
         {
-            if (!Directory.Exists(customAudioPath))
-                Directory.CreateDirectory(customAudioPath);
-
-            string[] audioFiles = Directory.GetFiles(customAudioPath, "*", SearchOption.AllDirectories);
-            var ovrClip = audioFiles.SingleOrDefault(f => Path.GetFileNameWithoutExtension(f) == "REPLACE_ALL");
-            if (ovrClip == null)
+            try
             {
-                foreach (string file in audioFiles)
-                {
-                    if (!allowedExts.Contains(Path.GetExtension(file)))
-                        continue;
+                if (!Directory.Exists(customAudioPath))
+                    Directory.CreateDirectory(customAudioPath);
 
-                    AudioClip clip = AudioImportLib.BepInEx.API.LoadAudioClip(file);
+                string[] audioFiles = Directory.GetFiles(customAudioPath, "*", SearchOption.AllDirectories);
+                var ovrClip = audioFiles.SingleOrDefault(f => Path.GetFileNameWithoutExtension(f) == "REPLACE_ALL");
+                if (ovrClip == null)
+                {
+                    foreach (string file in audioFiles)
+                    {
+                        if (!allowedExts.Contains(Path.GetExtension(file)))
+                            continue;
+
+                        AudioClip clip = AudioImportLib.BepInEx.API.LoadAudioClip(file);
+                        AudioClips.Add(clip.name, clip);
+                        Log.LogInfo("Added Override: " + clip.name);
+                    }
+                }
+                else
+                {
+                    AudioClip clip = AudioImportLib.BepInEx.API.LoadAudioClip(ovrClip);
                     AudioClips.Add(clip.name, clip);
+                    overrideEnabled = true;
                     Log.LogInfo("Added Override: " + clip.name);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                AudioClip clip = AudioImportLib.BepInEx.API.LoadAudioClip(ovrClip);
-                AudioClips.Add(clip.name, clip);
-                overrideEnabled = true;
-                Log.LogInfo("Added Override: " + clip.name);
+                Log.LogError($"Error loading audio clips: {ex.Message}");
             }
         }
 

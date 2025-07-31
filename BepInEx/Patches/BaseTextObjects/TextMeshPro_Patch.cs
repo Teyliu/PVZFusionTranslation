@@ -18,9 +18,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
                     __instance = StringStore.TranslateText(__instance);
                     __instance.autoSizeTextContainer = false;
                     return;
+                } else if (!(__instance.transform.name.Contains("AlmanacZombie") || __instance.transform.name.Contains("AlmanacPlant")))
+                {
+                    __instance = StringStore.TranslateText(__instance);
+                    __instance.autoSizeTextContainer = true;
                 }
-                __instance = StringStore.TranslateText(__instance);
-                __instance.autoSizeTextContainer = true;
             }
         }  
     }
