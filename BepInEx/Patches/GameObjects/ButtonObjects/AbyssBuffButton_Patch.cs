@@ -1,4 +1,4 @@
-#if FIX
+﻿#if FIX
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using System;
@@ -17,7 +17,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            Regex regex = new Regex("([^\\s]+)\n??:(\\d+)");
+            Regex regex = new Regex("([^\\s]+)\n价格：(\\d+)");
 
             if (regex.IsMatch(__instance.description.text))
             {
@@ -34,7 +34,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
                     MelonLogger.Msg(translatedValue);
                 }
 
-                __instance.description.text = string.Format(StringStore.translationStringRegex["([^\\s]+)\n??:(\\d+)"], [.. dynamicParts]);
+                __instance.description.text = string.Format(StringStore.translationStringRegex["([^\\s]+)\n价格：(\\d+)"], [.. dynamicParts]);
                 __instance.description.font = fontAsset;
             }
         }

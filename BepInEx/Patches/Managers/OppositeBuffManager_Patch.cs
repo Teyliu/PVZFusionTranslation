@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -8,16 +8,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 	[HarmonyPatch(typeof(OppositeBuffManager))]
 	public static class OppositeBuffManager_Patch
 	{
-		#if TESTING
+#if TESTING
 		[HarmonyPatch(nameof(OppositeBuffManager.InitBuffPool))]
 		[HarmonyPostfix]
 		private static void InitBuffPool(OppositeBuffManager __instance)
 		{
 			foreach(TextMeshProUGUI text in __instance.textA_bad)
 			{
-				string stripText = text.text.Replace("?", "");
+				string stripText = text.text.Replace("但", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["?"] + translatedText;
+				string replacementText = StringStore.translationString["但"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textA_good)
@@ -27,9 +27,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 			foreach(TextMeshProUGUI text in __instance.textB_bad)
 			{
-				string stripText = text.text.Replace("?", "");
+				string stripText = text.text.Replace("但", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["?"] + translatedText;
+				string replacementText = StringStore.translationString["但"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textB_good)
@@ -46,7 +46,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			{
 				string stripText = text.text.Replace("?", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["?"] + translatedText;
+				string replacementText = StringStore.translationString["但"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textA_good)
@@ -56,9 +56,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 			foreach(TextMeshProUGUI text in __instance.textB_bad)
 			{
-				string stripText = text.text.Replace("?", "");
+				string stripText = text.text.Replace("但", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["?"] + translatedText;
+				string replacementText = StringStore.translationString["但"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textB_good)
@@ -66,9 +66,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 				text.text = StringStore.TranslateText(text.text);
 			}
 		}
-		#endif
+#endif
 
-		[HarmonyPatch(nameof(OppositeBuffManager.SetText), new Type[] { typeof(TextMeshProUGUI), typeof(BuffType), typeof(int)})]
+        [HarmonyPatch(nameof(OppositeBuffManager.SetText), new Type[] { typeof(TextMeshProUGUI), typeof(BuffType), typeof(int)})]
 		[HarmonyPostfix]
 		private static void SetText(OppositeBuffManager __instance, ref TextMeshProUGUI text)
 		{
