@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine.TextCore.Text;
@@ -21,7 +23,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             TextMeshProUGUI upgradeCostText = __instance.transform.FindChild("UpgradeCost").GetComponent<TextMeshProUGUI>();
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            string regexStr = "([^\\s]+)\n当前等级：([^\\s]+)\n\n升级条件：\n([^\\s]+)\n\n升级消耗：([^\\s]+)";
+            string regexStr = "([^\\s]+)\n????:([^\\s]+)\n\n????:\n([^\\s]+)\n\n????:([^\\s]+)";
 
             Regex regex = new Regex(regexStr);
 

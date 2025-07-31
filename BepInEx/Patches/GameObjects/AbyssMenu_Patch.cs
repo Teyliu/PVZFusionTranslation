@@ -1,14 +1,13 @@
-﻿using HarmonyLib;
-
-using TMPro;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using Unity.VisualScripting;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using UnityEngine.UI;
-
+using PvZ_Fusion_Translator__BepInEx_;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -38,7 +37,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.levelInfo)
             {
-                string regexStr = "第(\\d+)关\n场景：([^\\s]+)\n总波数：(\\d+)波\n特殊环境：([^\\s：]+)\n减伤强度：(\\d+)";
+                string regexStr = "?(\\d+)?\n??:([^\\s]+)\n???:(\\d+)?\n????:([^\\s:]+)\n????:(\\d+)";
 
                 Regex regex = new Regex(regexStr);
 

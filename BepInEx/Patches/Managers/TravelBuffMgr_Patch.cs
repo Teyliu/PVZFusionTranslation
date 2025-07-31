@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers

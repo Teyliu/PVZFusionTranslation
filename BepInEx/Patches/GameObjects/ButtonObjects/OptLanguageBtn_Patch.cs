@@ -1,4 +1,4 @@
-﻿#if MULTI_LANGUAGE
+#if MULTI_LANGUAGE
 using HarmonyLib;
 using System.Collections.Generic;
 using System;
@@ -242,31 +242,31 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			}
 		}
 
-		private static void ToggleCustomAssets(string type)
-		{
-			if (type != "Textures" && type != "Audio") return;
+        private static void ToggleCustomAssets(string type)
+        {
+            if (type != "Textures" && type != "Audio") return;
 
-			if(type == "Textures")
-			{
-				Utils.customTextures = !Utils.customTextures;
-				ConfigEntry<bool> customTexturesEntry;
-				Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out customTexturesEntry);
-				customTexturesEntry.BoxedValue = !Utils.customTextures;
+            if (type == "Textures")
+            {
+                Utils.customTextures = !Utils.customTextures;
+                ConfigEntry<bool> customTexturesEntry;
+                Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out customTexturesEntry);
+                customTexturesEntry.BoxedValue = !Utils.customTextures;
                 TextureStore.Reload();
                 Coroutine replaceTextureRoutine = Core.MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
-            } 
-			
-			if (type == "Audio")
-			{
+            }
+
+            if (type == "Audio")
+            {
                 Utils.customAudio = !Utils.customAudio;
                 ConfigEntry<bool> customAudioEntry;
                 Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out customAudioEntry);
                 customAudioEntry.BoxedValue = !Utils.customAudio;
             }
-			Core.Instance.Config.Save();
+            Core.Instance.Config.Save();
         }
 
-		[HarmonyPatch(typeof(OptionBtn))]
+        [HarmonyPatch(typeof(OptionBtn))]
 		public static class OptLangBtn_Patch
 		{
 			[HarmonyPatch(nameof(OptionBtn.Awake))]
@@ -318,7 +318,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					ToggleCustomAssets(toggleType);
                     if (toggleType == "Textures")
                     {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\nRestart your game for everything to apply.", 0.1f);
+                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!", 0.1f);
                     }
                     else if (toggleType == "Audio")
                     {

@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-
+using HarmonyLib;
+using System;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 
@@ -11,15 +11,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         private static bool _warningShown = false;
 
         [HarmonyPostfix]
-        [HarmonyPatch("AnimOver")]
+        [HarmonyPatch(nameof(MainMenu.AnimOver))]
         private static void AnimOver(MainMenu __instance)
-		{
-			bool flag = _warningShown || NoticeMenu.Instance == null;
-			if (!flag)
-			{
-				WarningStore.WarningReload(Utils.Language, NoticeMenu.Instance);
-				_warningShown = true;
-			}
-		}
+        {
+            if (_warningShown || NoticeMenu.Instance == null)
+                return;
+
+            WarningStore.WarningReload(Utils.Language, NoticeMenu.Instance);
+            _warningShown = true;
+        }
     }
 }

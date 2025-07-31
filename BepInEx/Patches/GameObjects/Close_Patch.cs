@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-
+using HarmonyLib;
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
@@ -15,7 +15,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 		{
 
 			TextMeshPro closeText = __instance.transform.GetChild(0).GetComponent<TextMeshPro>();
-			closeText.text = "合上";
+			closeText.text = "??";
 			closeText = StringStore.TranslateText(closeText);
 			closeText.autoSizeTextContainer = true;
 

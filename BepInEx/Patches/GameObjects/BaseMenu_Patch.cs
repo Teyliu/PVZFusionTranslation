@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-
+using HarmonyLib;
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
@@ -108,12 +108,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                     foreach(TextMeshProUGUI txt in mainTransform.GetComponentsInChildren<TextMeshProUGUI>())
                     {
-#if DEBUG
                         FileLoader.DumpUntranslatedStrings(txt.text);
                         txt.text = StringStore.TranslateText(txt.text);
-#else
-                        txt.text = StringStore.TranslateText(txt.text, true);
-#endif
                     }
                 }
             }

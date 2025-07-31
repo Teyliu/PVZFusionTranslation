@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -15,9 +15,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		{
 			foreach(TextMeshProUGUI text in __instance.textA_bad)
 			{
-				string stripText = text.text.Replace("但", "");
+				string stripText = text.text.Replace("?", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
+				string replacementText = StringStore.translationString["?"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textA_good)
@@ -27,9 +27,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 			foreach(TextMeshProUGUI text in __instance.textB_bad)
 			{
-				string stripText = text.text.Replace("但", "");
+				string stripText = text.text.Replace("?", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
+				string replacementText = StringStore.translationString["?"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textB_good)
@@ -44,9 +44,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		{
 			foreach(TextMeshProUGUI text in __instance.textA_bad)
 			{
-				string stripText = text.text.Replace("但", "");
+				string stripText = text.text.Replace("?", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
+				string replacementText = StringStore.translationString["?"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textA_good)
@@ -56,9 +56,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 			foreach(TextMeshProUGUI text in __instance.textB_bad)
 			{
-				string stripText = text.text.Replace("但", "");
+				string stripText = text.text.Replace("?", "");
 				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
+				string replacementText = StringStore.translationString["?"] + translatedText;
 				text.text = replacementText;
 			}
 			foreach(TextMeshProUGUI text in __instance.textB_good)

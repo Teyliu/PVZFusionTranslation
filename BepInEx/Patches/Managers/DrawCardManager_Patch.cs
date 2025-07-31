@@ -1,45 +1,61 @@
 using HarmonyLib;
+using System;
 using TMPro;
-using System.Collections.Generic;
+using Il2CppSystem.Collections.Generic;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
-namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
+namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
     [HarmonyPatch(typeof(DrawCardManager))]
     public static class DrawCardManager_Patch
     {
-        // Dùng chung xử lý cập nhật text
-        private static void TranslateAndApplyFont(Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> texts)
+        [HarmonyPatch(nameof(DrawCardManager.UpdateText))]
+        [HarmonyPostfix]
+        private static void Postfix_UpdateText(DrawCardManager __instance)
+        {
+            Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> texts = __instance.texts;
+            __instance.upName = StringStore.TranslateText(__instance.upName);
+            if (texts != null && texts.Count > 0)
             {
-                if (texts == null || texts.Count == 0) return;
-
-                TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-                foreach (var textComponent in texts)
+                foreach (TextMeshProUGUI textComponent in texts)
                 {
-                    if (textComponent == null) continue;
+                    if (textComponent != null)
+                    {
+                        string translatedText = StringStore.TranslateText(textComponent.text);
+                        TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+                        textComponent.text = translatedText;
+                        textComponent.font = fontAsset;
+                    }
+                }
+            }
+        }
 
-                    string translatedText = StringStore.TranslateText(textComponent.text);
-                    textComponent.text = translatedText;
-                    textComponent.font = fontAsset;
+
+
+        [HarmonyPatch(nameof(DrawCardManager.Update))]
+        [HarmonyPostfix]
+        private static void Postfix_Update(DrawCardManager __instance)
+        {
+            Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> texts = __instance.texts;
+            __instance.upName = StringStore.TranslateText(__instance.upName);
+
+            if (texts != null && texts.Count > 0)
+            {
+                foreach (TextMeshProUGUI textComponent in texts)
+                {
+                    if (textComponent != null)
+                    {
+                        string translatedText = StringStore.TranslateText(textComponent.text);
+                        TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+                        textComponent.text = translatedText;
+                        textComponent.font = fontAsset;
+                    }
                 }
             }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(DrawCardManager.UpdateText))]
-        private static void Postfix_UpdateText(DrawCardManager __instance)
-        {
-            __instance.upName = StringStore.TranslateText(__instance.upName);
-            TranslateAndApplyFont(__instance.texts);
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(DrawCardManager.Update))]
-        private static void Postfix_Update(DrawCardManager __instance)
-        {
-            __instance.upName = StringStore.TranslateText(__instance.upName);
-            TranslateAndApplyFont(__instance.texts);
         }
     }
 }
+

@@ -1,6 +1,6 @@
-﻿#if FIX
+#if FIX
 using HarmonyLib;
-
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 

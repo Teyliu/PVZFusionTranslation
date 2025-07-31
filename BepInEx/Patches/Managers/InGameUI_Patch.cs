@@ -1,7 +1,8 @@
-﻿using HarmonyLib;
-
+using HarmonyLib;
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
@@ -14,20 +15,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		{
 			TextMeshProUGUI[] array = new TextMeshProUGUI[]
 			{
-					__instance.transform.GetChild(4).GetComponent<TextMeshProUGUI>(),
-					__instance.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>(),
-					__instance.transform.GetChild(5).GetComponent<TextMeshProUGUI>(),
-					__instance.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>(),
-					__instance.transform.GetChild(6).GetComponent<TextMeshProUGUI>(),
-					__instance.transform.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>()
-			};
+				__instance.transform.GetChild(4).GetComponent<TextMeshProUGUI>(),
+				__instance.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>(),
+				__instance.transform.GetChild(5).GetComponent<TextMeshProUGUI>(),
+				__instance.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>(),
+				__instance.transform.GetChild(6).GetComponent<TextMeshProUGUI>(),
+				__instance.transform.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>()};
 			TextMeshProUGUI[] array2 = array;
 			for (int i = 0; i < array2.Length; i++)
 			{
-
 				array2[i] = StringStore.TranslateText(array2[i]);
 				array2[i].text = array2[i].text.Replace("\n", " ");
 			}
 		}
-	}
+    }
 }

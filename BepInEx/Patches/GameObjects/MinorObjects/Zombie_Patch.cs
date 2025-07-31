@@ -1,10 +1,11 @@
-﻿using HarmonyLib;
-
+using HarmonyLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using TMPro;
-using System.Collections.Generic;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
 {
@@ -13,10 +14,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
     {
         private static Dictionary<string, string> HPStrings = new Dictionary<string, string>()
         {
-            { "最后一击：(\\d+)\nDPS：(.+)$", "Last damage: {0}\nDPS: {1}" },
-            { "^HP：(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}\nType 2 armor: {4}/{5}" },
-            { "^HP：(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}" },
-            { "^HP：(\\d+)/(\\d+)$", "HP: {0}/{1}" },
+            { "????:(\\d+)\nDPS:(.+)$", "Last damage: {0}\nDPS: {1}" },
+            { "^HP:(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}\nType 2 armor: {4}/{5}" },
+            { "^HP:(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}" },
+            { "^HP:(\\d+)/(\\d+)$", "HP: {0}/{1}" },
         };
 
         public static void LoadHPStrings()

@@ -1,10 +1,8 @@
 using HarmonyLib;
-// using Il2Cpp;
-using TMPro;
+using System;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 
-
-namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
+namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
     [HarmonyPatch(typeof(JigsawClip))]
     public static class JigsawClip_Patch
