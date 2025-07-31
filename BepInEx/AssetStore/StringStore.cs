@@ -1252,7 +1252,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			};
 		}
 
-		static TextMeshProUGUI ConvertToTextMeshPro(UnityEngine.UI.Text oldText, TMP_FontAsset fontAsset, bool isLog = false)
+		public static TextMeshProUGUI ConvertToTextMeshPro(UnityEngine.UI.Text oldText, TMP_FontAsset fontAsset, bool isLog = false)
 		{
 			if (oldText == null)
 			{

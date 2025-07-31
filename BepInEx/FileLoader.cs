@@ -18,6 +18,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Strings,
             Dumps,
             Almanac,
+            Sprites
         }
 
         public static string GetAssetDir(AssetType assetType, Utils.LanguageEnum? language = null)
@@ -91,7 +92,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Log.LogInfo("Strings loaded successfully.");
         }
 
-                
+
         internal static void LoadTextures()
         {
 
@@ -101,7 +102,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 if (Utils.customTextures)
                 {
                     LoadCustomTextures();
-                } else
+                }
+                else
                 {
                     LoadDefaultTextures();
                 }
@@ -183,13 +185,13 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
                     {
 
-                        #if OBFUSCATE
+#if OBFUSCATE
 						if (CheckSumStore.IsModified(filepath))
 						{
 							Log.LogError("File {0} was modified!" , filepath);
 							continue;
 						}
-                        #endif
+#endif
 
                         Texture2D texture2D = Utils.LoadImage(filepath);
                         TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
@@ -279,9 +281,11 @@ namespace PvZ_Fusion_Translator__BepInEx_
             File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
 
             Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
-            foreach (Il2CppSystem.Collections.Generic.KeyValuePair<Achievement, Il2CppSystem.Tuple<string, string>> entry in AchievementClip.achievementsText)
+            foreach (var entry in AchievementClip.achievementsText)
             {
-                achievementsList.Add(entry.Key, new AchievementObject(entry.Key, entry.Value.Item1, entry.Value.Item2));
+                var key = entry.Key;
+                var value = entry.Value;
+                achievementsList.Add(key, new AchievementObject(key, value.Item1, value.Item2));
             }
             File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
             {
@@ -290,7 +294,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }));
         }
 
-#if DEBUG
+//#if DEBUG
         public static void DumpUntranslatedStrings(string text)
         {
             string dumpDir = GetAssetDir(AssetType.Dumps);
@@ -320,7 +324,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 File.WriteAllText(jsonFile, JsonSerializer.Serialize(untranslatedStrings, options));
             }
         }
-#endif
+//#endif
 
 #if MULTI_LANGUAGE
         internal static void LoadLanguage()

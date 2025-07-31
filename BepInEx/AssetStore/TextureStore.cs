@@ -9,6 +9,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 	{
 		internal static Dictionary<string, string> textureDict = [];
 
+		internal static Dictionary<string, string> spriteDict = [];
+
 		internal static void Init() => FileLoader.LoadTextures();
 
 		internal static void Reload()
