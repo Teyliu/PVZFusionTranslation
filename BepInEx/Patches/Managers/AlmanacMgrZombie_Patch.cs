@@ -1,5 +1,8 @@
-﻿using HarmonyLib;
+using HarmonyLib;
+using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;

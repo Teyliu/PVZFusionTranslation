@@ -5,7 +5,7 @@ using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
+namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
     [HarmonyPatch(typeof(UIButton))]
     public static class UIButton_Patch
@@ -32,7 +32,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
                             if (newTMP != null)
                             {
                                 newTMP.text = translatedText;
-                            } 
+                            }
                         }
                     }
                 }

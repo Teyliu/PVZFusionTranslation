@@ -1,12 +1,11 @@
 using HarmonyLib;
-
-using TMPro;
+using System;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
-namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
+namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
     [HarmonyPatch(typeof(ChessManager))]
     public static class ChessManager_Patch

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine.UI;
@@ -50,7 +51,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 					__instance.fontSize = 12;
 				}
 
-				if (__instance.text == "Полный Хаос" && __instance.transform.parent.parent.Find("Image").GetComponent<Image>().activeSprite.name == "Present")
+				if (__instance.text == "Полный Хаосs" && __instance.transform.parent.parent.Find("Image").GetComponent<Image>().activeSprite.name == "Present")
 				{
 					__instance.text += "\nБесконечно";
 				}

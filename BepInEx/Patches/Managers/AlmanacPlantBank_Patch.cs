@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using PvZ_Fusion_Translator__BepInEx_;

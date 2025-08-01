@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-
+using HarmonyLib;
+using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
@@ -7,8 +7,8 @@ using UnityEngine;
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
     [HarmonyPatch(typeof(IZBottomMenu))]
-	public static class IZEMgr_Patch
-	{
+	public static class IZBottomMenu_Patch
+    {
 		[HarmonyPatch(nameof(IZBottomMenu.ChangeString))]
 		[HarmonyPostfix]
 		public static void Start(IZBottomMenu __instance)

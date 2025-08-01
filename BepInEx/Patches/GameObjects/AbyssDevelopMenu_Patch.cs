@@ -1,6 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine.TextCore.Text;

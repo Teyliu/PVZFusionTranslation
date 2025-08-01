@@ -1,13 +1,10 @@
 using HarmonyLib;
-// using Il2Cpp;
+using System;
 using TMPro;
-// using MelonLoader;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
-// using static MelonLoader.MelonLogger;
-// using static BepInEx.BepInEx;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects

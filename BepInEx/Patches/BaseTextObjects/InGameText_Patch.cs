@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -17,13 +17,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		private static void ShowText(InGameText __instance)
 		{
 
-#if MULTI_LANGUAGE
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-#else
+			#if MULTI_LANGUAGE
+			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+			#else
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
-#endif
-
-            foreach (TextMeshProUGUI txt in __instance.textMeshes)
+			#endif
+			
+			foreach (TextMeshProUGUI txt in __instance.textMeshes)
 			{
 				txt.text = StringStore.TranslateText(txt.text, true);
                 txt.font = fontAsset;

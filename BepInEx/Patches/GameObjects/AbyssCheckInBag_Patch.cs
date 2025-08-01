@@ -1,7 +1,5 @@
-﻿using HarmonyLib;
-
-using TMPro;
-
+using HarmonyLib;
+using System;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
