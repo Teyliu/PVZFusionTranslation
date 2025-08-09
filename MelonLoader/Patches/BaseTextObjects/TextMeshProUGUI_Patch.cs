@@ -1,6 +1,9 @@
 ﻿using HarmonyLib;
+using Il2Cpp;
 using Il2CppTMPro;
+using PvZ_Fusion_Translator.Patches.Managers;
 using PvZ_Fusion_Translator.AssetStore;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
@@ -20,7 +23,11 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 				if (__instance.name.StartsWith("LevelName"))
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
-				}
+                    if (__instance.name == "LevelName2" || __instance.name == "LevelName3")
+                    {
+                        TowerManager_Patch.updatedText.Add(__instance.transform);
+                    }
+                }
 				if (__instance.transform.parent != null && __instance.transform.parent.name.StartsWith("Window"))
 				{
 					__instance.fontSizeMin = 10;
