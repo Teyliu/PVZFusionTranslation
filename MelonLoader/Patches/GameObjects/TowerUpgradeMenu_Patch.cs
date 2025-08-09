@@ -9,11 +9,28 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(TowerUpgradeMenu))]
     public static class TowerUpgradeMenu_Patch
     {
-        [HarmonyPatch(nameof(TowerUpgradeMenu.Update))]
+        [HarmonyPatch(nameof(TowerUpgradeMenu.Awake))]
         [HarmonyPostfix]
-        private static void Update(TowerUpgradeMenu __instance)
+        private static void Awake(TowerUpgradeMenu __instance)
         {
-            foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            __instance.des.text = StringStore.TranslateText(__instance.des.text);
+            __instance.des2.text = StringStore.TranslateText(__instance.des2.text);
+
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+                text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+            }
+        }
+
+        [HarmonyPatch(nameof(TowerUpgradeMenu.SetText))]
+        [HarmonyPostfix]
+        private static void SetText(TowerUpgradeMenu __instance)
+        {
+            __instance.des.text = StringStore.TranslateText(__instance.des.text);
+            __instance.des2.text = StringStore.TranslateText(__instance.des2.text);
+
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 text.text = StringStore.TranslateText(text.text);
                 text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
