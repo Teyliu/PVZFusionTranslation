@@ -1,6 +1,8 @@
-﻿using MelonLoader;
+﻿using Il2CppTMPro;
+using MelonLoader;
 using MelonLoader.Utils;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.Managers;
 using UnityEngine;
 
 [assembly: MelonInfo(typeof(PvZ_Fusion_Translator.Core), "PvZ Fusion Translator", "231.0.0", "dynaslash / arifrios1st / lancerx0 / JustNull / Dakosha / Mamoru-kun / cassidy / Teyliu", null)]
@@ -71,6 +73,8 @@ namespace PvZ_Fusion_Translator
 			{
 				Utils.OpenTrello();
 			}
+
+			TowerManager_Patch.UpdateText();
 		}
 
 		public override void OnGUI()
