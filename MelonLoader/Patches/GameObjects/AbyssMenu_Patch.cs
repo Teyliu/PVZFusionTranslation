@@ -26,7 +26,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 txt.font = fontAsset;
             }
 
-            Utils.ConvertButtonText(__instance.transform, "Goback");
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+                text.font = fontAsset;
+            }
         }
 
         [HarmonyPatch(nameof(AbyssMenu.UpdateLevelInfo))]

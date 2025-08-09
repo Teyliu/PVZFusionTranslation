@@ -50,6 +50,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     textMesh.text = StringStore.TranslateText(textMesh.text);
                 }
             }
+
+            foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+                text.font = fontAsset;
+            }
         }
 
         [HarmonyPatch(nameof(AbyssMenu2.Start))]
@@ -58,7 +64,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             UpdateAbyss2Text(__instance);
 
-            Utils.ConvertButtonText(__instance.transform, "Goback");
             Utils.ConvertButtonText(__instance.transform, "Help");
             Utils.ConvertButtonText(__instance.transform, "Bag");
         }

@@ -10,7 +10,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     {
         [HarmonyPatch(nameof(TravelBuffOptionButton.SetBuff))]
         [HarmonyPostfix]
-        private static void Start(TravelBuffOptionButton __instance)
+        private static void SetBuff(TravelBuffOptionButton __instance)
         {
             __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
         }
