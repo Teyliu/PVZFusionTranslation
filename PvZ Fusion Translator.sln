@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PvZ Fusion Translator [BepInEx]", "BepInEx\PvZ Fusion Translator [BepInEx].csproj", "{395E60A0-A884-61F2-EF18-BC94BB7D9C69}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,54 +86,6 @@ Global
 		{90AA30F8-EFE7-6E1A-3859-0EE79252222A}.ReleaseOther|ARM64.Build.0 = ReleaseOther|ARM64
 		{90AA30F8-EFE7-6E1A-3859-0EE79252222A}.ReleaseOther|x64.ActiveCfg = ReleaseOther|x64
 		{90AA30F8-EFE7-6E1A-3859-0EE79252222A}.ReleaseOther|x64.Build.0 = ReleaseOther|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.Debug|x64.ActiveCfg = Debug|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.Debug|x64.Build.0 = Debug|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugEnglish|Any CPU.ActiveCfg = DebugEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugEnglish|Any CPU.Build.0 = DebugEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugEnglish|ARM64.ActiveCfg = DebugEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugEnglish|ARM64.Build.0 = DebugEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugEnglish|x64.ActiveCfg = DebugEnglish|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugEnglish|x64.Build.0 = DebugEnglish|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugObfuscate|Any CPU.ActiveCfg = DebugObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugObfuscate|Any CPU.Build.0 = DebugObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugObfuscate|ARM64.ActiveCfg = DebugObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugObfuscate|ARM64.Build.0 = DebugObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugObfuscate|x64.ActiveCfg = DebugObfuscate|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugObfuscate|x64.Build.0 = DebugObfuscate|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugTesting|Any CPU.ActiveCfg = DebugTesting|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugTesting|Any CPU.Build.0 = DebugTesting|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugTesting|ARM64.ActiveCfg = DebugTesting|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugTesting|ARM64.Build.0 = DebugTesting|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugTesting|x64.ActiveCfg = DebugTesting|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.DebugTesting|x64.Build.0 = DebugTesting|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseEnglish|Any CPU.ActiveCfg = ReleaseEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseEnglish|Any CPU.Build.0 = ReleaseEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseEnglish|ARM64.ActiveCfg = ReleaseEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseEnglish|ARM64.Build.0 = ReleaseEnglish|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseEnglish|x64.ActiveCfg = ReleaseEnglish|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseEnglish|x64.Build.0 = ReleaseEnglish|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseMulti|Any CPU.ActiveCfg = ReleaseMulti|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseMulti|Any CPU.Build.0 = ReleaseMulti|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseMulti|ARM64.ActiveCfg = ReleaseMulti|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseMulti|ARM64.Build.0 = ReleaseMulti|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseMulti|x64.ActiveCfg = ReleaseMulti|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseMulti|x64.Build.0 = ReleaseMulti|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseObfuscate|Any CPU.ActiveCfg = ReleaseObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseObfuscate|Any CPU.Build.0 = ReleaseObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseObfuscate|ARM64.ActiveCfg = ReleaseObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseObfuscate|ARM64.Build.0 = ReleaseObfuscate|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseObfuscate|x64.ActiveCfg = ReleaseObfuscate|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseObfuscate|x64.Build.0 = ReleaseObfuscate|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseOther|Any CPU.ActiveCfg = ReleaseOther|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseOther|Any CPU.Build.0 = ReleaseOther|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseOther|ARM64.ActiveCfg = ReleaseOther|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseOther|ARM64.Build.0 = ReleaseOther|Any CPU
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseOther|x64.ActiveCfg = ReleaseOther|x64
-		{395E60A0-A884-61F2-EF18-BC94BB7D9C69}.ReleaseOther|x64.Build.0 = ReleaseOther|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
