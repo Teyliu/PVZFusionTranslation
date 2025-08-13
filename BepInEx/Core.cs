@@ -3,15 +3,17 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils;
+using TMPro;
 using HarmonyLib;
 using PvZ_Fusion_Translator__BepInEx_;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using System;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "2.8.1")]
 [BepInProcess("PlantsVsZombiesRH.exe")]
 public class Core : BasePlugin
 {
@@ -89,6 +91,7 @@ public class Core : BasePlugin
 		{
 			Utils.OpenTrello();
 		}
+		TowerManager_Patch.UpdateText();
 	}
 
 	public void OnGUI()

@@ -120,6 +120,9 @@
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\Jigsaw_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\UIProgress2_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlayerShootingMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlayerShootingWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\FruitNinjaSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\RogueCardWindow_Patch.cs" />
@@ -151,6 +154,8 @@
 		<Compile Include="Patches\GameObjects\AbyssMenu2_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
@@ -159,6 +164,7 @@
 		<Compile Include="Patches\Managers\DrawCardManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />
+		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />

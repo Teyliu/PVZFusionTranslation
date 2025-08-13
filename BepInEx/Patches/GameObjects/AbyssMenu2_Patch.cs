@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -48,6 +48,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     textMesh.text = StringStore.TranslateText(textMesh.text);
                 }
             }
+
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+                text.font = fontAsset;
+            }
         }
 
         [HarmonyPatch(nameof(AbyssMenu2.Start))]
@@ -56,7 +62,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             UpdateAbyss2Text(__instance);
 
-            Utils.ConvertButtonText(__instance.transform, "Goback");
             Utils.ConvertButtonText(__instance.transform, "Help");
             Utils.ConvertButtonText(__instance.transform, "Bag");
         }

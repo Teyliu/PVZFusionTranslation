@@ -2,7 +2,9 @@
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using UnityEngine.UI;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 {
@@ -21,7 +23,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 				if (__instance.name.StartsWith("LevelName"))
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
-				}
+                    if (__instance.name == "LevelName2" || __instance.name == "LevelName3")
+                    {
+                        TowerManager_Patch.updatedText.Add(__instance.transform);
+                    }
+                }
 				if (__instance.transform.parent != null && __instance.transform.parent.name.StartsWith("Window"))
 				{
 					__instance.fontSizeMin = 10;
