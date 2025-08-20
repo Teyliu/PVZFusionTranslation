@@ -111,8 +111,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 					}
 				}
 			}
-
-			return;
+			DumpAlmanacModdedZombies(__instance);
+            return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]
@@ -129,6 +129,25 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		}
 	}
 
+
+	[HarmonyPatch(typeof(AlmanacMgrZombie))]
+	public static partial class AlmanacMgrZombie_Patch
+	{
+		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]
+		[HarmonyPostfix]
+		public static void DumpAlmanacModdedZombies(AlmanacMgrZombie __instance)
+		{
+			// Dump the texts if needed using Ctrl key
+			if (Input.GetKey(KeyCode.LeftControl))
+			{
+				FileLoader.DumpUntranslatedStrings(__instance.info.GetComponent<TextMeshPro>().text);
+				Log.LogInfo($"Info: {__instance.info.GetComponent<TextMeshPro>().text}");
+				FileLoader.DumpUntranslatedStrings(__instance.zombieName.GetComponent<TextMeshPro>().text);
+				Log.LogInfo($"Zombie Name: {__instance.zombieName.GetComponent<TextMeshPro>().text}");
+			}
+		}
+	}
+
     // Patch to translate the modded almanac zombie names and info
     [HarmonyPatch(typeof(AlmanacMgrZombie))]
     public static partial class AlmanacMgrZombie_Patch
@@ -141,13 +160,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
 			__instance.introduce.font = FontStore.LoadTMPFont(currentLanguage);
 
-            // Dump the texts if needed
-            if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl))
-			{
-                FileLoader.DumpUntranslatedStrings(__instance.info.GetComponent<TextMeshPro>().text);
-                FileLoader.DumpUntranslatedStrings(__instance.zombieName.GetComponent<TextMeshPro>().text);
-            }
-
+			DumpAlmanacModdedZombies(__instance);
             // translate all TMP components in info
             foreach (TextMeshPro text in __instance.info.GetComponentsInChildren<TextMeshPro>())
             {
