@@ -21,5 +21,20 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 txt.font = fontAsset;
             }
         }
+
+        [HarmonyPatch(nameof(PlayerShootingMenu.Refresh))]
+        [HarmonyPostfix]
+        private static void Refresh(PlayerShootingMenu __instance)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            Transform refreshTransform = __instance.transform.FindChild("Button");
+            foreach (TextMeshProUGUI text in refreshTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+                text.font = fontAsset;
+                text.autoSizeTextContainer = false;
+            }
+        }
     }
 }
