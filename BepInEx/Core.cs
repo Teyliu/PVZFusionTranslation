@@ -91,8 +91,11 @@ public class Core : BasePlugin
 		{
 			Utils.OpenTrello();
 		}
-		TowerManager_Patch.UpdateText();
-	}
+        if (TowerManager.Instance != null)
+        {
+            TowerManager_Patch.UpdateText();
+        }
+    }
 
 	public void OnGUI()
 	{
