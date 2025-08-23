@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using PvZ_Fusion_Translator__BepInEx_;
@@ -159,6 +159,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     text.text = StringStore.TranslateText(text.text);
                 }
             }
+            
+
             TranslateTextAlmanac(__instance);
             return;
         }
@@ -182,7 +184,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPostfix]
         public static void TranslateTextAlmanac(AlmanacPlantBank __instance)
         {
-
+            
+            // Dump the texts if needed
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                FileLoader.DumpUntranslatedStrings(__instance.introduce.GetComponent<TextMeshPro>().text);
+                Log.LogInfo($"Info: {__instance.introduce.GetComponent<TextMeshPro>().text}");
+                FileLoader.DumpUntranslatedStrings(__instance.plantName.GetComponent<TextMeshPro>().text);
+                Log.LogInfo($"PlantName Name: {__instance.plantName.GetComponent<TextMeshPro>().text}");
+                Log.LogInfo($"PlantShadow Name: {__instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text}");
+            }
             string currentLanguage = Utils.Language.ToString();
             __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
             __instance.introduce.font = FontStore.LoadTMPFont(currentLanguage);

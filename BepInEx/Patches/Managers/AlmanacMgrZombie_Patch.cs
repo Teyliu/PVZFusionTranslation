@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.IO;
 using System.Linq;
@@ -111,15 +111,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 					}
 				}
 			}
-
-			return;
+			DumpAlmanacModdedZombies(__instance);
+            return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]
 		[HarmonyPrefix]
 		private static bool OnMouseDown(AlmanacMgrZombie __instance)
 		{
-			TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
+            TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
 			if (component != null)
 			{
 				component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ? 1 : component.pageToDisplay + 1;
@@ -128,4 +128,67 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			return true;
 		}
 	}
+
+
+	[HarmonyPatch(typeof(AlmanacMgrZombie))]
+	public static partial class AlmanacMgrZombie_Patch
+	{
+		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]
+		[HarmonyPostfix]
+		public static void DumpAlmanacModdedZombies(AlmanacMgrZombie __instance)
+		{
+			// Dump the texts if needed using Ctrl key
+			if (Input.GetKey(KeyCode.LeftControl))
+			{
+				FileLoader.DumpUntranslatedStrings(__instance.info.GetComponent<TextMeshPro>().text);
+				Log.LogInfo($"Info: {__instance.info.GetComponent<TextMeshPro>().text}");
+				FileLoader.DumpUntranslatedStrings(__instance.zombieName.GetComponent<TextMeshPro>().text);
+				Log.LogInfo($"Zombie Name: {__instance.zombieName.GetComponent<TextMeshPro>().text}");
+			}
+		}
+	}
+
+    // Patch to translate the modded almanac zombie names and info
+    [HarmonyPatch(typeof(AlmanacMgrZombie))]
+    public static partial class AlmanacMgrZombie_Patch
+    {
+        [HarmonyPatch(nameof(AlmanacMgrZombie.Start))]
+        [HarmonyPostfix]
+        public static void TranslateTextAlmanac(AlmanacMgrZombie __instance)
+        {
+            string currentLanguage = Utils.Language.ToString();
+            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+			__instance.introduce.font = FontStore.LoadTMPFont(currentLanguage);
+
+			DumpAlmanacModdedZombies(__instance);
+            // translate all TMP components in info
+            foreach (TextMeshPro text in __instance.info.GetComponentsInChildren<TextMeshPro>())
+            {
+                if (text != null)
+                {
+                    text.text = StringStore.TranslateText(text.text);
+					text.name = StringStore.TranslateText(text.name);
+                    text.font = FontStore.LoadTMPFont(currentLanguage);
+                }
+            }
+			foreach (TextMeshPro text in __instance.zombieName.GetComponentsInChildren<TextMeshPro>())
+			{
+				if (text != null)
+				{
+					text.text = StringStore.TranslateText(text.text);
+					text.name = StringStore.TranslateText(text.name);
+					text.font = FontStore.LoadTMPFont(currentLanguage);
+                }
+			}
+
+            // Translate zombieName and its child
+            __instance.zombieName.name = StringStore.TranslateText(__instance.zombieName.name);
+            __instance.zombieName.GetComponent<TextMeshPro>().font = FontStore.LoadTMPFont(currentLanguage);
+			__instance.zombieName.transform.GetChild(0).name = StringStore.TranslateText(__instance.zombieName.transform.GetChild(0).name);
+            // Get both for less testing
+            __instance.zombieName.GetComponent<TextMeshPro>().text = StringStore.TranslateText(__instance.zombieName.GetComponent<TextMeshPro>().text);
+            __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>().text = StringStore.TranslateText(__instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>().text);
+            __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>().font = FontStore.LoadTMPFont(currentLanguage);
+        }
+    }
 }
