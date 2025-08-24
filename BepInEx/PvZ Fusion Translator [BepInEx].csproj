@@ -13,7 +13,7 @@
 		https://nuget.samboy.dev/v3/index.json
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
-	<GamePath>D:\PvZ Fusion\BepInEx Game Files</GamePath>
+	<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.8.2-BepInEx</GamePath>
 	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
 </PropertyGroup>
@@ -165,6 +165,7 @@
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
+		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />
