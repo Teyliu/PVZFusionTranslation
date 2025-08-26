@@ -1,4 +1,4 @@
-﻿#if DEBUG
+﻿//#if DEBUG
 using System;
 using System.Collections.Generic;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -77,4 +77,4 @@ namespace PvZ_Fusion_Translator__BepInEx_
 		}
 	}
 }
-#endif
+//#endif

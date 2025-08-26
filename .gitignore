@@ -131,3 +131,4 @@ MelonLoader/bin/x64/Debug/net6.0/UnityEngine.WindModule.dll
 MelonLoader/bin/x64/Debug/net6.0/UnityEngine.XRModule.dll
 MelonLoader/bin/x64/Debug/net6.0/WebSocketDotNet.dll
 /BepInEx/bin/Debug/net6.0
+.HOWTO-sync-MelonLoader-from-origin-main.txt
