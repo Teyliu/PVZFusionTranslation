@@ -1,4 +1,4 @@
-﻿#if DEBUG
+﻿//#if DEBUG
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
@@ -75,4 +75,4 @@ namespace PvZ_Fusion_Translator
 		}
 	}
 }
-#endif
+//#endif
