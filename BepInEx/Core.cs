@@ -40,8 +40,9 @@ public class Core : BasePlugin
 		MonoInstance = AddComponent<UnityCoroutineHelper>();
 		Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 		LoadConfig();
+        dtStart = DateTime.Now;
 
-		FileLoader.LoadLanguage();
+        FileLoader.LoadLanguage();
 
 		AudioStore.Init();
 		TextureStore.Init();
@@ -76,34 +77,42 @@ public class Core : BasePlugin
 		dtStartToast = DateTime.Now;
 	}
 
-	public void Update()
+	public void OnUpdate()
 	{
-		#if DEBUG
 		ModFeatures.OnLateUpdate();
-		#endif
 
 		if (Input.GetKeyDown(KeyCode.Insert))
 		{
+			Log.LogInfo("Insert press");
 			Utils.OpenSaveDirectory();
 		}
 
 		if (Input.GetKeyDown(KeyCode.Delete))
 		{
+			Log.LogInfo("del del");
 			Utils.OpenTrello();
-		}
+        }
         if (TowerManager.Instance != null)
         {
             TowerManager_Patch.UpdateText();
         }
     }
 
-	public void OnGUI()
+    public void OnGUI()
 	{
 		#if DEBUG
 		if (dtStartToast != null)
 		{
-			GUI.Button(new Rect(10f, 10f, 200f, 20f), "\n" + toast_txt + "\n");
-			TimeSpan? timeSpan = DateTime.Now - dtStartToast;
+			try
+			{
+                GUI.Button(new Rect(10f, 10f, 200f, 20f), "\n" + toast_txt + "\n");
+            }
+			catch(Exception e)
+			{
+				Log.LogError(e);
+			}
+
+            TimeSpan? timeSpan = DateTime.Now - dtStartToast;
 			TimeSpan t = new TimeSpan(0, 0, 2);
 			if (timeSpan > t)
 			{

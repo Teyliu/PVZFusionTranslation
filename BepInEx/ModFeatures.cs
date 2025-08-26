@@ -69,6 +69,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 				{
 					if (Input.GetKeyDown(feature.KeyCode))
 					{
+						Log.LogDebug(feature.KeyCode);
 						feature.ToggleFeature();
 					}
 				}
