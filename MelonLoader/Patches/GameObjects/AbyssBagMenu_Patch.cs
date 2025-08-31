@@ -19,7 +19,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         private static void MoveFromBag(AbyssCheckInBag __instance)
         {
             AbyssMenu2.Instance.UpdateIcons();
-            Utils.ConvertButtonText(__instance.transform, "Goback");
         }
     }
 }
