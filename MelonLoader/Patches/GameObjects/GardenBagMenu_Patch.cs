@@ -17,8 +17,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                FileLoader.DumpUntranslatedStrings(txt.text);
-                txt.text = StringStore.TranslateText(txt.text);
+                if(txt.transform.parent.name.Contains("Close"))
+                {
+                    txt.text = StringStore.TranslateText("合上");
+                }
+                else
+                {
+                    txt.text = StringStore.TranslateText(txt.text);
+                }
                 txt.font = fontAsset;
             }
         }
@@ -31,8 +37,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                FileLoader.DumpUntranslatedStrings(txt.text);
-                txt.text = StringStore.TranslateText(txt.text);
+                if (txt.transform.parent.name.Contains("Close"))
+                {
+                    txt.text = StringStore.TranslateText("合上");
+                }
+                else
+                {
+                    txt.text = StringStore.TranslateText(txt.text);
+                }
                 txt.font = fontAsset;
             }
         }

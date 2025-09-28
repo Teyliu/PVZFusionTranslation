@@ -1,4 +1,5 @@
-﻿using Il2CppTMPro;
+﻿using Il2Cpp;
+using Il2CppTMPro;
 using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Diagnostics;
@@ -6,6 +7,8 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
+using static MelonLoader.MelonLogger;
+using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator
 {
@@ -106,6 +109,39 @@ namespace PvZ_Fusion_Translator
             newGoBackText.text = StringStore.TranslateText(text, false);
             newGoBackText.font = fontAsset;
             newGoBackText.color = color;
+        }
+
+		public static string GetPlantNameFromAlmanac(PlantType thePlantType)
+		{
+            string json;
+            string thePlantName = "";
+
+            string currentLanguage = Utils.Language.ToString();
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+            string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
+
+            if (!File.Exists(path))
+            {
+                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+                Log.LogError("Plant name could not be found! (Big Garden)");
+                thePlantName = "";
+            }
+            else
+            {
+                json = File.ReadAllText(path);
+                AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+
+                foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+                {
+                    if (plantInfo.seedType == (int)thePlantType)
+                    {
+                        thePlantName = plantInfo.name;
+                    }
+                }
+            }
+
+			return thePlantName;
         }
 
 #if MULTI_LANGUAGE
