@@ -18,10 +18,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 txt.text = StringStore.TranslateText(txt.text);
-                if(txt.name.Contains("Text (TMP)"))
+            }
+
+            Transform randomLevelTextTransform = __instance.transform.FindChild("RandomLevel");
+            foreach(TextMeshProUGUI txt in randomLevelTextTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                if (txt.name.Contains("Text (TMP)"))
                 {
                     txt.autoSizeTextContainer = true;
-                    if(txt.name == "Text (TMP)")
+                    if (txt.name == "Text (TMP)")
                     {
                         txt.transform.localPosition = new Vector3(94.4225f, -45.1565f, 0f);
                     }
