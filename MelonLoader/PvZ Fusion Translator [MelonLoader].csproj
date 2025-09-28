@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.8.2</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.0</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -401,10 +401,12 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GardenCard_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\UIProgress2_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\Jigsaw_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlayerShootingWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlayerShootingMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GardenBagMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\FruitNinjaSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\RogueCardWindow_Patch.cs" />
@@ -443,6 +445,7 @@
 		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
+		<Compile Include="Patches\Managers\Garden_Patch.cs" />
 		<Compile Include="Patches\Managers\DrawCardManager_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />

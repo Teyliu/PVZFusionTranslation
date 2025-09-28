@@ -224,7 +224,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 				}
 				child.gameObject.SetActive(true);
 
-				Task.Delay(1000).ContinueWith(_ =>
+				System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
 				{
 					if (button != null && child != null && child.gameObject.activeSelf)
 					{
