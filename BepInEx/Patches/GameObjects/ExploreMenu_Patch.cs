@@ -1,11 +1,9 @@
-﻿using System.Numerics;
-using HarmonyLib;
-using Il2Cpp;
-using Il2CppTMPro;
-using PvZ_Fusion_Translator.AssetStore;
+﻿using HarmonyLib;
+using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
     [HarmonyPatch(typeof(ExploreMenu))]
     public static class ExploreMenu_Patch
@@ -29,7 +27,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     txt.autoSizeTextContainer = true;
                     if (txt.name == "Text (TMP)")
                     {
-                        txt.transform.localPosition = new UnityEngine.Vector3(94.4225f, -45.1565f, 0f);
+                        txt.transform.localPosition = new Vector3(94.4225f, -45.1565f, 0f);
                     }
                 }
             }

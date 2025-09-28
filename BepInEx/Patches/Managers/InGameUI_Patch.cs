@@ -90,40 +90,40 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			}
 		}
 
-		[HarmonyPatch(nameof(InGameUI_IZ.Update))]
-        [HarmonyPostfix]
-        private static void Update(InGameUI_IZ __instance)
-        {
-            ApplyShovelBankTranslations(__instance.transform);
-        }
+		// [HarmonyPatch(nameof(InGameUI_IZ.Update))]
+        // [HarmonyPostfix]
+        // private static void Update(InGameUI_IZ __instance)
+        // {
+        //     ApplyShovelBankTranslations(__instance.transform);
+        // }
 
-        private static void ApplyShovelBankTranslations(Transform root)
-        {
-            var shovelBank = root.Find("ShovelBank");
-            if (!shovelBank) return;
+        // private static void ApplyShovelBankTranslations(Transform root)
+        // {
+        //     var shovelBank = root.Find("ShovelBank");
+        //     if (!shovelBank) return;
 
-            string currentLanguage = Utils.Language.ToString();
-            var fontAsset = FontStore.LoadTMPFont(currentLanguage);
+        //     string currentLanguage = Utils.Language.ToString();
+        //     var fontAsset = FontStore.LoadTMPFont(currentLanguage);
 
 
-            for (int i = 0; i < shovelBank.childCount; i++)
-            {
-                var child = shovelBank.GetChild(i);
-                var tmp = child.GetComponent<TextMeshProUGUI>();
-                if (tmp == null) continue;
+        //     for (int i = 0; i < shovelBank.childCount; i++)
+        //     {
+        //         var child = shovelBank.GetChild(i);
+        //         var tmp = child.GetComponent<TextMeshProUGUI>();
+        //         if (tmp == null) continue;
 
-                string orig = tmp.text;
-                string translated = StringStore.TranslateText(orig, false);
-                if (translated != orig)
-                {
-                    tmp.text = translated;
-                    if (fontAsset != null) tmp.font = fontAsset;
-                }
-                else
-                {
-                    if (fontAsset != null) tmp.font = fontAsset;
-                }
-            }
-        }
+        //         string orig = tmp.text;
+        //         string translated = StringStore.TranslateText(orig, false);
+        //         if (translated != orig)
+        //         {
+        //             tmp.text = translated;
+        //             if (fontAsset != null) tmp.font = fontAsset;
+        //         }
+        //         else
+        //         {
+        //             if (fontAsset != null) tmp.font = fontAsset;
+        //         }
+        //     }
+        // }
     }
 }

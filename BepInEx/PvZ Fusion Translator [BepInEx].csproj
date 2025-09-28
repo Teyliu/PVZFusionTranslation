@@ -13,7 +13,7 @@
 		https://nuget.samboy.dev/v3/index.json
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
-	<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_2.8.2-BepInEx</GamePath>
+	<GamePath>D:\PvZ Fusion\BepInEx Game Files</GamePath>
 	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
 </PropertyGroup>
@@ -203,6 +203,19 @@
 		<Compile Include="Patches\OtherManagers\ThanksMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\UIMgr_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\Zombie_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\TreasureMoney_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ExploreEnterWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ExploreMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GardenBagMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GardenCard_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlantInfoWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureConfirmMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureEquipmentMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureMainMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureStoreMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureUpgradeMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureWarehouseMenu_Patch.cs" />
+		<Compile Include="Patches\Managers\Garden_Patch.cs" />
 		<Compile Include="Utils.cs" />
 	</ItemGroup>
 	

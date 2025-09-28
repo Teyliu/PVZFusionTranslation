@@ -112,6 +112,51 @@ namespace PvZ_Fusion_Translator__BepInEx_
             newGoBackText.color = color;
         }
 
+        public static string GetPlantNameFromAlmanac(PlantType thePlantType)
+        {
+            string json;
+            string thePlantName = "";
+
+            string currentLanguage = Utils.Language.ToString();
+            string almanacDir = FileLoader.GetAssetDir(FileLoader.AssetType.Almanac, Utils.Language);
+            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+            string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
+
+            if (!File.Exists(path))
+            {
+                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+                Log.LogError("Plant name could not be found! (Big Garden)");
+                thePlantName = "";
+            }
+            else
+            {
+                try
+                {
+                    json = File.ReadAllText(path);
+                    AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+                    if (plantData != null && plantData.plants != null)
+                    {
+                        foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+                        {
+                            if (plantInfo.seedType == (int)thePlantType)
+                            {
+                                // Remove any ID numbers from the name (e.g., "Peashooter (0)" -> "Peashooter", "Peashooter26" -> "Peashooter")
+                                thePlantName = System.Text.RegularExpressions.Regex.Replace(plantInfo.name, @"\s*\(\d+\)$|\d+$", "");
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.LogError($"Error parsing JSON in GetPlantNameFromAlmanac: {ex.Message}");
+                    thePlantName = "";
+                }
+            }
+
+            return thePlantName;
+        }
+
 #if MULTI_LANGUAGE
         internal static void ChangeLanguage(string language)
         {
@@ -181,4 +226,5 @@ namespace PvZ_Fusion_Translator__BepInEx_
             TOGGLE_END
         }
     }
+
 }
