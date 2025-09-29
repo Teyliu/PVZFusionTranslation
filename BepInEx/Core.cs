@@ -48,9 +48,8 @@ public class Core : BasePlugin
 		TextureStore.Init();
 		StringStore.Init();
 		FontStore.Init();
-		// Register plant indices for fast lookups and load HP regexes
 		Utils.RegisterPlantIndices();
-		PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
+		//PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
 
         InitCoroutine();
 	}
