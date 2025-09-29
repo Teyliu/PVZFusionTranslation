@@ -17,12 +17,14 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
+				string originalText = __instance.text;
 				__instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 
-				if (__instance.name.StartsWith("LevelName"))
+                if (__instance.name.StartsWith("LevelName"))
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
+
                     if (__instance.name == "LevelName2" || __instance.name == "LevelName3")
                     {
                         TowerManager_Patch.updatedText.Add(__instance.transform);
@@ -44,13 +46,9 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
-				__instance = StringStore.TranslateText(__instance);
+                __instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 
-				if (__instance.name.StartsWith("LevelName"))
-				{
-					__instance.text = __instance.text.Replace("\n", " ");
-				}
 				if (__instance.transform.parent != null && __instance.transform.parent.name.StartsWith("Window"))
 				{
 					__instance.fontSizeMin = 10;

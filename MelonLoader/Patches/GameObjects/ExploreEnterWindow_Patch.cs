@@ -16,12 +16,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             PlantType thePlantType = (PlantType)__instance.selfType;
 
-            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
+
+            if(__instance.nameText.text == "")
             {
-                StringStore.TranslateText(txt);
+                StringStore.TranslateText(__instance.nameText.text);
             }
 
-            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
+            __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
         }
 
         [HarmonyPatch(nameof(ExploreEnterWindow.SetInfo))]
@@ -30,12 +32,42 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             PlantType thePlantType = (PlantType)__instance.selfType;
 
-            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
+
+            if (__instance.nameText.text == "")
             {
-                StringStore.TranslateText(txt);
+                StringStore.TranslateText(__instance.nameText.text);
             }
 
+            __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+        }
+
+        [HarmonyPatch(nameof(ExploreEnterWindow.SetIcon))]
+        [HarmonyPostfix]
+        private static void SetIcon(ExploreEnterWindow __instance)
+        {
+            PlantType thePlantType = (PlantType)__instance.selfType;
+
             __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
+
+            if (__instance.nameText.text == "")
+            {
+                StringStore.TranslateText(__instance.nameText.text);
+            }
+
+            __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+        }
+
+        [HarmonyPatch(nameof(ExploreEnterWindow.SetDisable))]
+        [HarmonyPostfix]
+        private static void SetDisable(ExploreEnterWindow __instance)
+        {
+            if (__instance.disabled)
+            {
+                __instance.nameText.text = StringStore.TranslateText("敬请期待");
+            }
+
+            __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
         }
     }
 }

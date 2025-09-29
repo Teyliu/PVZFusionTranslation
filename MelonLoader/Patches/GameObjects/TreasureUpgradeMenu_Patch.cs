@@ -1,9 +1,11 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppSystem;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -46,6 +48,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 txt.text = StringStore.TranslateText(txt.text);
                 txt.font = fontAsset;
+            }
+
+            foreach (Text txt in __instance.GetComponentsInChildren<Text>())
+            {
+                GameObject newTxtObj = Utils.ConvertToTextMeshProUGUI(txt.gameObject, txt.transform.parent, "text");
+                TextMeshProUGUI newTxt = newTxtObj.GetComponent<TextMeshProUGUI>();
+                newTxt.text = StringStore.TranslateText("植物商店");
+                newTxt.autoSizeTextContainer = true;
+                newTxt.color = new Color(0, 0, 0.3922f, 1);
             }
         }
     }

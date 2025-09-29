@@ -401,6 +401,7 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\MainMenu_Btn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\TreasureMoney_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlantInfoWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GardenCard_Patch.cs" />
@@ -411,8 +412,10 @@
 		<Compile Include="Patches\GameObjects\PlayerShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GardenBagMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ExploreMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\SeedLibrary_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureEquipmentMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureConfirmMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TreasureEvacuateMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureWarehouseMenu_Patch.cs" />
@@ -457,6 +460,7 @@
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
 		<Compile Include="Patches\Managers\Garden_Patch.cs" />
 		<Compile Include="Patches\Managers\DrawCardManager_Patch.cs" />
+		<Compile Include="Patches\Managers\TreasureManager_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />

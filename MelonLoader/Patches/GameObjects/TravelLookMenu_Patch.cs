@@ -9,25 +9,37 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(TravelLookMenu))]
     public static class TravelLookMenu_Patch
     {
+        public static string savedAssetString = "";
+
         [HarmonyPatch(nameof(TravelLookMenu.Start))]
         [HarmonyPostfix]
         private static void Postfix_Start(TravelLookMenu __instance)
         {
-            Transform quitButtonTransform = __instance.transform.Find("Quit");
-            if (quitButtonTransform != null)
+            foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                TextMeshProUGUI[] allTexts = quitButtonTransform.GetComponentsInChildren<TextMeshProUGUI>(true);
+                txt.text = StringStore.TranslateText(txt.text);
+                txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+            }
 
-                foreach (var textComp in allTexts)
-                {
-                    if (textComp != null && textComp.text == StringStore.TranslateText("关闭"))
-                    {
-                        textComp.text = StringStore.TranslateText("关闭_close");
+            Transform quitButtonTransform = __instance.transform.Find("Quit");
+            foreach (TextMeshProUGUI txt in quitButtonTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                txt.text = StringStore.TranslateText("合上");
+                txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+            }
 
-                        TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-                        textComp.font = fontAsset;
-                    }
-                }
+            __instance.treasureText.text = StringStore.TranslateText(__instance.treasureText.text);
+            savedAssetString = __instance.treasureText.text;
+        }
+
+        [HarmonyPatch(nameof(TravelLookMenu.Update))]
+        [HarmonyPostfix]
+        private static void Update(TravelLookMenu __instance)
+        {
+            if(savedAssetString != __instance.treasureText.text)
+            {
+                __instance.treasureText.text = StringStore.TranslateText(__instance.treasureText.text);
+                savedAssetString = __instance.treasureText.text;
             }
         }
     }
