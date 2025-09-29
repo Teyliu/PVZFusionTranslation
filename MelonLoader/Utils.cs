@@ -76,10 +76,17 @@ namespace PvZ_Fusion_Translator
 			Process.Start(new ProcessStartInfo(website) { UseShellExecute = true });
 		}
 
-		public static string RemoveColorTags(string text)
-		{
-			return Regex.Replace(text, @"<color=[^>]+>", "");
-		}
+		 public static string RemoveColorTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            // Remove opening color tags like <color=#FF0000>
+            string withoutOpenTags = Regex.Replace(text, @"<color=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
+            // Remove closing color tags like </color>
+            string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</color>", string.Empty, RegexOptions.IgnoreCase);
+            return withoutCloseTags;
+        }
 
         public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
         {

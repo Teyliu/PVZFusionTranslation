@@ -62,9 +62,9 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 
 			AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
 
-			foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+            foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
 			{
-				if (plantInfo.seedType == __instance.theSeedType)
+                if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
 				{
 					component.autoSizeTextContainer = false;
 					component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
@@ -80,7 +80,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 					component2.text = plantInfo.name;
 					component2.autoSizeTextContainer = true;
 
-					component3.text = Utils.RemoveColorTags(plantInfo.name);
+                    component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
 					component3.autoSizeTextContainer = true;
 
 					component4.text = plantInfo.cost;
@@ -107,9 +107,9 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 
 				AlmanacPlantBank.PlantData moddedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(moddedJson);
 
-				foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
+                foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
 				{
-					if (plantInfo.seedType == __instance.theSeedType)
+                    if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
 					{
 						component.autoSizeTextContainer = false;
 						component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
@@ -125,7 +125,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 						component2.text = plantInfo.name;
 						component2.autoSizeTextContainer = true;
 
-						component3.text = Utils.RemoveColorTags(plantInfo.name);
+                        component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
 						component3.autoSizeTextContainer = true;
 
 						component4.text = plantInfo.cost;

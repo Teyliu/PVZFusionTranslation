@@ -1,15 +1,16 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using BepInEx;
+using BepInEx.Configuration;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using TMPro;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
+using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {
@@ -79,7 +80,14 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static string RemoveColorTags(string text)
         {
-            return Regex.Replace(text, @"<color=[^>]+>", "");
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            // Remove opening color tags like <color=#FF0000>
+            string withoutOpenTags = Regex.Replace(text, @"<color=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
+            // Remove closing color tags like </color>
+            string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</color>", string.Empty, RegexOptions.IgnoreCase);
+            return withoutCloseTags;
         }
 
         public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
@@ -112,13 +120,58 @@ namespace PvZ_Fusion_Translator__BepInEx_
             newGoBackText.color = color;
         }
 
+        //public static string GetPlantNameFromAlmanac(PlantType thePlantType)
+        //{
+        //    string json;
+        //    string thePlantName = "";
+
+        //    string currentLanguage = Utils.Language.ToString();
+        //    string almanacDir = FileLoader.GetAssetDir(FileLoader.AssetType.Almanac, Utils.Language);
+        //    string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+        //    string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
+
+        //    if (!File.Exists(path))
+        //    {
+        //        Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+        //        Log.LogError("Plant name could not be found! (Big Garden)");
+        //        thePlantName = "";
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            json = File.ReadAllText(path);
+        //            AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+        //            if (plantData != null && plantData.plants != null)
+        //            {
+        //                foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+        //                {
+        //                    if (plantInfo.seedType == (int)thePlantType)
+        //                    {
+        //                        // Remove any ID numbers from the name (e.g., "Peashooter (0)" -> "Peashooter", "Peashooter26" -> "Peashooter")
+        //                        // thePlantName = System.Text.RegularExpressions.Regex.Replace(plantInfo.name, @"\s*\(\d+\)$|\d+$", "");
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch (System.Exception ex)
+        //        {
+        //            Log.LogError($"Error parsing JSON in GetPlantNameFromAlmanac: {ex.Message}");
+        //            thePlantName = "";
+        //        }
+        //    }
+
+        //    return thePlantName;
+        //}
+
         public static string GetPlantNameFromAlmanac(PlantType thePlantType)
         {
             string json;
             string thePlantName = "";
 
             string currentLanguage = Utils.Language.ToString();
-            string almanacDir = FileLoader.GetAssetDir(FileLoader.AssetType.Almanac, Utils.Language);
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
             string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
 
@@ -130,27 +183,15 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
             else
             {
-                try
+                json = File.ReadAllText(path);
+                AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+
+                foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
                 {
-                    json = File.ReadAllText(path);
-                    AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
-                    if (plantData != null && plantData.plants != null)
+                    if (plantInfo.seedType == (int)thePlantType)
                     {
-                        foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
-                        {
-                            if (plantInfo.seedType == (int)thePlantType)
-                            {
-                                // Remove any ID numbers from the name (e.g., "Peashooter (0)" -> "Peashooter", "Peashooter26" -> "Peashooter")
-                                thePlantName = System.Text.RegularExpressions.Regex.Replace(plantInfo.name, @"\s*\(\d+\)$|\d+$", "");
-                                break;
-                            }
-                        }
+                        thePlantName = plantInfo.name;
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.LogError($"Error parsing JSON in GetPlantNameFromAlmanac: {ex.Message}");
-                    thePlantName = "";
                 }
             }
 
