@@ -11,11 +11,57 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
+using System.Collections.Generic;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {
     public class Utils
     {
+        public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+
+        public static void RegisterPlantIndices()
+        {
+            plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+            string originalJson;
+            string translatedJson;
+
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+            string dumpDir = GetAssetDir(AssetType.Dumps);
+            string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
+            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+
+            if ((!File.Exists(path)) || (!File.Exists(originalPath)))
+            {
+                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+            }
+            else
+            {
+                originalJson = File.ReadAllText(originalPath);
+                translatedJson = File.ReadAllText(path);
+                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
+                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
+
+                for (int i = 0; i < originalPlantData.plants.Count; i++)
+                {
+                    var originalPlantInfo = originalPlantData.plants[i];
+                    AlmanacPlantBank.PlantInfo translatedPlantInfo = null;
+
+                    foreach (var info in translatedPlantData.plants)
+                    {
+                        if (info.seedType == originalPlantInfo.seedType)
+                        {
+                            translatedPlantInfo = info;
+                        }
+                    }
+
+                    if (translatedPlantInfo != null)
+                    {
+                        var temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
+                        plantIndices.Add(originalPlantInfo.seedType, temp);
+                    }
+                }
+            }
+        }
         internal static bool TryReplaceTexture2D(Texture2D ogTexture)
         {
             if (ogTexture != null)
@@ -192,6 +238,53 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     {
                         thePlantName = plantInfo.name;
                     }
+                }
+            }
+
+            return thePlantName;
+        }
+
+        public static string GetPlantNameFromAlmanac(string theOriginalPlantName)
+        {
+            string originalJson;
+            string translatedJson;
+            string thePlantName = "";
+
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+            string dumpDir = GetAssetDir(AssetType.Dumps);
+            string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
+            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+
+            if ((!File.Exists(path)) || (!File.Exists(originalPath)))
+            {
+                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+                thePlantName = "";
+            }
+            else
+            {
+                bool foundPlantName = false;
+
+                originalJson = File.ReadAllText(originalPath);
+                translatedJson = File.ReadAllText(path);
+                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
+                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
+
+                for (int i = 0; i < originalPlantData.plants.Count; i++)
+                {
+                    var originalPlantInfo = originalPlantData.plants[i];
+                    KeyValuePair<int, string> translatedPlantInfo = plantIndices[originalPlantInfo.seedType];
+
+                    if (originalPlantInfo.name == theOriginalPlantName)
+                    {
+                        thePlantName = translatedPlantInfo.Value;
+                        foundPlantName = true;
+                    }
+                }
+
+                if (!foundPlantName)
+                {
+                    Log.LogInfo("Couldn't find plant name!");
+                    thePlantName = "";
                 }
             }
 

@@ -48,6 +48,9 @@ public class Core : BasePlugin
 		TextureStore.Init();
 		StringStore.Init();
 		FontStore.Init();
+		// Register plant indices for fast lookups and load HP regexes
+		Utils.RegisterPlantIndices();
+		PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
 
         InitCoroutine();
 	}
@@ -92,6 +95,10 @@ public class Core : BasePlugin
 			Log.LogInfo("del del");
 			Utils.OpenTrello();
         }
+		if (Input.GetKeyDown(KeyCode.P))
+		{
+			Time.timeScale = 0;
+		}
         if (TowerManager.Instance != null)
         {
             TowerManager_Patch.UpdateText();

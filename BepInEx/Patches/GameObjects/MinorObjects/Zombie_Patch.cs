@@ -14,9 +14,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
     {
         private static Dictionary<string, string> HPStrings = new Dictionary<string, string>()
         {
-            { "最后一击：(\\d+)\nDPS：(.+)$", "Last damage: {0}\nDPS: {1}" },
-            { "^HP：(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}\nType 2 armor: {4}/{5}" },
-            { "^HP：(\\d+)/(\\d+)\n\\D+(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}" },
+            { "最后一击：(\\d+)\nDPS：([^\\s]+)\n总伤害：(\\d+)", "Last Damage: {0}\nDPS: {1}\nTotal: {2}" },
+            { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}\nType 2 armor: {4}/{5}" },
+            { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}" },
             { "^HP：(\\d+)/(\\d+)$", "HP: {0}/{1}" },
         };
 
@@ -59,12 +59,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
                 __instance.healthText.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         }
 
-        public static void TranslateHpUI(TextMeshPro textTMP)
+        public static void TranslateHpUI(TextMeshPro textTMP, Zombie __instance = null)
         {
             if (textTMP)
             {
                 string origText = textTMP.text;
-                string translatedText = TranslateHPText(origText);
+                string translatedText = __instance == null ? TranslateHPText(origText) : TranslateHPText(origText, __instance);
                 textTMP.text = translatedText == origText ? origText : translatedText;
                 textTMP.autoSizeTextContainer = false;
                 if (translatedText != origText)
@@ -96,6 +96,46 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
                 }
             }
             return originalText;
+        }
+
+        public static string TranslateHPText(string originalText, Zombie __instance)
+        {
+            string finalText = __instance.healthText.text;
+            int fIndex = -1;
+            bool found = false;
+
+            for (int i = 0; i < HPStrings.Count; i++)
+            {
+                var hp = HPStrings.ElementAt(i);
+                Regex regex = new Regex(hp.Key);
+                if (regex.IsMatch(originalText))
+                {
+                    fIndex = i;
+                    found = true;
+                }
+            }
+
+            if (fIndex > -1 && found)
+            {
+                string fStr = HPStrings.ElementAt(fIndex).Value;
+
+                switch (fIndex)
+                {
+                    case 1:
+                        finalText = string.Format(fStr, __instance.theHealth, __instance.theMaxHealth, __instance.theFirstArmorHealth, __instance.theFirstArmorMaxHealth, __instance.theSecondArmorHealth, __instance.theSecondArmorMaxHealth);
+                        break;
+                    case 2:
+                        finalText = string.Format(fStr, __instance.theHealth, __instance.theMaxHealth, __instance.theFirstArmorHealth, __instance.theFirstArmorMaxHealth);
+                        break;
+                    case 3:
+                        finalText = string.Format(fStr, __instance.theHealth, __instance.theMaxHealth);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return finalText;
         }
     }
 }

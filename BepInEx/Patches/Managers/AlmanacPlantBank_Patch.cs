@@ -64,7 +64,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             Log.LogWarning($"Introduce text: {component?.text}");
             Log.LogWarning($"Plant name: {component2?.text}");
             #endif
-            component.text = component.text ?? string.Empty;
+            //component.text = component.text ?? string.Empty;
 
             AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
 
