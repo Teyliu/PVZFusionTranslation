@@ -25,13 +25,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 if(txt.name.Contains("Introduce"))
                 {
+                    txt.text = StringStore.TranslateText(txt.text);
+
                     string text = txt.text;
                     string[] lines = text.Split("\n");
 
                     lines[0] = Utils.GetPlantNameFromAlmanac(thePlantType);
                     string updatedText = String.Join("\n", lines);
 
-                    txt.text = StringStore.TranslateText(updatedText);
+                    txt.text = updatedText;
                 }
                 else
                 {

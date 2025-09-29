@@ -27,7 +27,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                     text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
                     textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                    text.autoSizeTextContainer = textShadow.autoSizeTextContainer = true;
+
+                    if(!text.name.Contains("_EVACUATE"))
+                    {
+                        text.autoSizeTextContainer = textShadow.autoSizeTextContainer = true;
+                    }
                 }
                 else
                 {

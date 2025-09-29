@@ -34,7 +34,9 @@ namespace PvZ_Fusion_Translator
 			StringStore.Init();
 			AudioStore.Init();
 			FontStore.Init();
-		}
+			Utils.RegisterPlantIndices();
+
+        }
 
 		public override void OnLateInitializeMelon()
 		{
@@ -78,6 +80,11 @@ namespace PvZ_Fusion_Translator
 			if(TowerManager.Instance != null)
 			{
                 TowerManager_Patch.UpdateText();
+            }
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                Time.timeScale = 0;
             }
         }
 
