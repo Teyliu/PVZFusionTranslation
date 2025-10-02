@@ -154,24 +154,25 @@ namespace PvZ_Fusion_Translator__BepInEx_
 		}
 #endif
 
-        [HarmonyPatch(typeof(UnityEngine.AudioSource), "Play", [])]
+        [HarmonyPatch(typeof(AudioSource), "Play", [])]
         public class AudioSource_Patch
         {
-            public static void Prefix(UnityEngine.AudioSource __instance)
+            public static void Prefix(AudioSource __instance)
             {
-                if(Utils.customAudio)
-				{
-					if (__instance.clip == null)
-                    return;
+                if (Utils.customAudio)
+                {
+                    if (__instance.clip == null)
+                        return;
 
-					string audioClipName = __instance.clip.name;
+                    string audioClipName = overrideEnabled ? "REPLACE_ALL" : __instance.clip.name;
 
-					if (AudioStore.AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
-					{
-						__instance.pitch = 1;
-						__instance.clip = replaceClip;
-					}
-				}
+                    if (AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
+                    {
+                        __instance.pitch = 1;
+
+                        __instance.clip = replaceClip;
+                    }
+                }
             }
         }
     }
