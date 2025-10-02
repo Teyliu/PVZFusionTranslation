@@ -65,6 +65,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             UpdateAbyss2Text(__instance);
 
             Utils.ConvertButtonText(__instance.transform, "Help");
+
+            // custom bag text :D
+
+            __instance.transform.FindChild("Bag").FindChild("text").GetComponent<Text>().text += "_深渊";
+
             Utils.ConvertButtonText(__instance.transform, "Bag");
         }
 

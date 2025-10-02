@@ -142,8 +142,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
                 string fStr = HPStrings.ElementAt(fIndex).Value;
                 string DPS = originalText.Split("\n")[1].Replace("DPS：", "");
 
-                Log.LogInfo(DPS);
-
                 switch (fIndex)
                 {
                     case 0:

@@ -18,8 +18,21 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
             foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
 			{
-				txt.text = StringStore.TranslateText(txt.text);
-				txt.font = fontAsset;
+                string text = txt.text;
+                Transform menuTransform = __instance.transform.parent.parent.parent.parent.parent.parent; // guys i'm really sorry please forgive me
+                string customIZStringKey = StringStore.translationString.FirstOrDefault(x => x.Value == text).Key + "_IZ"; // dawg what the fuck
+                bool hasCustomIZString = StringStore.translationString.ContainsKey(customIZStringKey);
+
+                if (hasCustomIZString && menuTransform.name.Contains("IZMenu"))
+                {
+                    txt.text = StringStore.TranslateText(customIZStringKey);
+                }
+                else
+                {
+                    txt.text = StringStore.TranslateText(text);
+                }
+
+                txt.font = fontAsset;
             }
 		}
 	}

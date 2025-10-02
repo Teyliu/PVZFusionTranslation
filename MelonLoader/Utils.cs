@@ -210,37 +210,42 @@ namespace PvZ_Fusion_Translator
             string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 
-            if ((!File.Exists(path)) || (!File.Exists(originalPath)))
+            if ((!File.Exists(path)))
             {
                 Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+            } 
+			else if ((!File.Exists(originalPath)))
+			{
+                Log.LogError($"LawnStrings.json file not found at path: {originalPath}");
             }
-            else
-            {
-                originalJson = File.ReadAllText(originalPath);
-                translatedJson = File.ReadAllText(path);
-                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
-                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
 
-                for(int i = 0; i < originalPlantData.plants.Count; i++)
+            else
+			{
+				originalJson = File.ReadAllText(originalPath);
+				translatedJson = File.ReadAllText(path);
+				AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
+				AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
+
+				for (int i = 0; i < originalPlantData.plants.Count; i++)
 				{
 					PlantInfo originalPlantInfo = originalPlantData.plants[i];
 					PlantInfo translatedPlantInfo = null;
 
-                    foreach (PlantInfo info in translatedPlantData.plants)
+					foreach (PlantInfo info in translatedPlantData.plants)
 					{
-						if(info.seedType == originalPlantInfo.seedType)
+						if (info.seedType == originalPlantInfo.seedType)
 						{
 							translatedPlantInfo = info;
 						}
 					}
 
-					if(translatedPlantInfo != null)
+					if (translatedPlantInfo != null)
 					{
-                        KeyValuePair<int, string> temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
+						KeyValuePair<int, string> temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
 						plantIndices.Add(originalPlantInfo.seedType, temp);
-                    }
-                }
-            }
+					}
+				}
+			}
 		}
 
 #if MULTI_LANGUAGE

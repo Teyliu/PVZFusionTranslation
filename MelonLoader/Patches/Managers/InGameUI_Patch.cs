@@ -27,14 +27,15 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			for (int i = 0; i < array2.Length; i++)
 			{
                 array2[i].text = array2[i].text.Replace("\n", " ");
+				Regex checkFusionChallenge = new Regex("^超级([^\\s：]+)(：?挑战1?)");
 
-                if (array2[i].text.Contains("配方："))
+				if (array2[i].text.Contains("配方：") && !checkFusionChallenge.IsMatch(array2[i].text))
                 {
                     string[] lines = array2[i].text.Split("：");
                     lines[1] = Utils.GetPlantNameFromAlmanac(lines[1]);
                     if (lines[1] == "")
                     {
-						Log.LogInfo("Couldn't find plant! (Fusion Showcase)");
+						Log.LogError("Couldn't find plant! (Fusion Showcase)");
                         lines[1] = StringStore.TranslateText(lines[1]);
                     }
                     array2[i].text = StringStore.TranslateText("配方：") + lines[1];

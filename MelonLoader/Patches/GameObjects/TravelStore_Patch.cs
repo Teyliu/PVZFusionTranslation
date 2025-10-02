@@ -14,9 +14,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		private static void Update(TravelStore __instance)
         {
             foreach (TextMeshProUGUI intr in __instance.introduces)
-                StringStore.TranslateTextUI(intr);
+                intr.text = StringStore.TranslateText(intr.text);
             foreach (var textMesh in __instance.points)
-                StringStore.TranslateTextUI(textMesh);
+                textMesh.text = StringStore.TranslateText(textMesh.text);
         }
 
         [HarmonyPatch(nameof(TravelStore.RefreshBuff))]
@@ -26,14 +26,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             foreach (TravelBuff buff in __instance.travelBuffs)
             {
                 TextMeshProUGUI cost = buff.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-                if (!cost.text.Contains('0'))
-                    StringStore.TranslateTextUI(cost);
-                cost.font = Resources.Load<TMP_FontAsset>("fonts/Dynamic");
+                cost.text = StringStore.TranslateText(cost.text);
+                cost.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                FileLoader.DumpUntranslatedStrings(cost.text);
             }
             foreach (TextMeshProUGUI intr in __instance.introduces)
-                StringStore.TranslateTextUI(intr);
+                intr.text = StringStore.TranslateText(intr.text);
             foreach (var textMesh in __instance.points)
-                StringStore.TranslateTextUI(textMesh);
+                textMesh.text = StringStore.TranslateText(textMesh.text);
         }
     }
 }
