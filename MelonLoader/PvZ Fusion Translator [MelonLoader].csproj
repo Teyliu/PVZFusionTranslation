@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -479,7 +479,7 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\InGameBtn_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\InGameText_Patch.cs" />
 		<Compile Include="Patches\Managers\InGameUI_Patch.cs" />
-		<Compile Include="Patches\Managers\IZEMgr_Patch.cs" />
+		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\MenuText_Patch.cs" />
 		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptionBtn_Patch.cs" />
