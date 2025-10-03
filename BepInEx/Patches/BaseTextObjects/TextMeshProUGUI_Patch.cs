@@ -17,6 +17,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
+				if (__instance.transform.parent != null && __instance.transform.parent.parent != null && __instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
+				{
+					return;
+				}
 				__instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 
@@ -44,6 +48,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
+				if (__instance.transform.parent != null && __instance.transform.parent.parent != null && __instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
+				{
+					return;
+				}
 				__instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 

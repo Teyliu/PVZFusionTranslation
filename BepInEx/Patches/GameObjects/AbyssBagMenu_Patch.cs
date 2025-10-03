@@ -18,6 +18,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             AbyssMenu2.Instance.UpdateIcons();
             Utils.ConvertButtonText(__instance.transform, "Goback");
+
+            foreach (TextMeshProUGUI text in __instance.transform.FindChild("Background").GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText("背包_深渊");
+                text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+            }
         }
     }
 }

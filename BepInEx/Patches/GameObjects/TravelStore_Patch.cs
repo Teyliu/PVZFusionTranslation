@@ -3,6 +3,7 @@ using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
+using System.Linq;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -26,14 +27,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             foreach (TravelBuff buff in __instance.travelBuffs)
             {
                 TextMeshProUGUI cost = buff.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-                if (!cost.text.Contains('0'))
-                    StringStore.TranslateTextUI(cost);
-                cost.font = Resources.Load<TMP_FontAsset>("fonts/Dynamic");
+                StringStore.TranslateTextUI(cost);
+                cost.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                FileLoader.DumpUntranslatedStrings(cost.text);
             }
             foreach (TextMeshProUGUI intr in __instance.introduces)
-                StringStore.TranslateTextUI(intr);
+                intr.text = StringStore.TranslateText(intr.text);
             foreach (var textMesh in __instance.points)
-                StringStore.TranslateTextUI(textMesh);
+                textMesh.text = StringStore.TranslateText(textMesh.text);
         }
     }
 }

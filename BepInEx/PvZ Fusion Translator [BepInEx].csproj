@@ -208,7 +208,7 @@
 		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
 		<Compile Include="Patches\Managers\Garden_Patch.cs" />
 		<Compile Include="Patches\Managers\InGameUI_Patch.cs" />
-		<Compile Include="Patches\Managers\IZEMgr_Patch.cs" />
+		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
