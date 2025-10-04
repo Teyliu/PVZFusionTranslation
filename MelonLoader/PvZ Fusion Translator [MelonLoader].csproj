@@ -400,6 +400,8 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\AnimUIOver_Patch.cs" />
+		<Compile Include="Patches\GameObjects\SpriteRenderer_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\MainMenu_Btn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\TreasureMoney_Patch.cs" />

@@ -28,7 +28,7 @@ namespace PvZ_Fusion_Translator
 					{
 						ImageConversion.LoadImage(ogTexture, File.ReadAllBytes(texturePath));
 
-						Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
+                        Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
 
 						ogTexture.name = "replaced_" + ogTexture.name;
 						return true;
@@ -196,7 +196,39 @@ namespace PvZ_Fusion_Translator
             return thePlantName;
         }
 
-		public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+        public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
+        {
+            string json;
+            string theZombieName = "";
+
+            string currentLanguage = Utils.Language.ToString();
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+            string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+
+            if (!File.Exists(path))
+            {
+                Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
+                Log.LogError("Zombie name could not be found!");
+                theZombieName = "";
+            }
+            else
+            {
+                json = File.ReadAllText(path);
+                AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
+
+                foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
+                {
+                    if ((int)zombieInfo.theZombieType == (int)theZombieType)
+                    {
+                        theZombieName = zombieInfo.name;
+                    }
+                }
+            }
+
+            return theZombieName;
+        }
+
+        public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
 
 		public static void RegisterPlantIndices()
 		{
