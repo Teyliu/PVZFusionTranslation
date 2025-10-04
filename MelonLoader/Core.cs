@@ -81,11 +81,6 @@ namespace PvZ_Fusion_Translator
 			{
                 TowerManager_Patch.UpdateText();
             }
-
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                Time.timeScale = 0;
-            }
         }
 
 		public override void OnGUI()
