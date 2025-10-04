@@ -179,6 +179,7 @@
 		<Compile Include="Patches\GameObjects\RogueStartMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\SpriteRenderer_patch.cs" />
 		<Compile Include="Patches\GameObjects\SeedLibrary_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />

@@ -94,10 +94,6 @@ public class Core : BasePlugin
 			Log.LogInfo("del del");
 			Utils.OpenTrello();
         }
-		if (Input.GetKeyDown(KeyCode.P))
-		{
-			Time.timeScale = 0;
-		}
         if (TowerManager.Instance != null)
         {
             TowerManager_Patch.UpdateText();
