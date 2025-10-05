@@ -22,7 +22,6 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 					return;
 				}
 
-				string originalText = __instance.text;
 				__instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 
