@@ -19,12 +19,13 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            PlantType thePlantType = __instance.plant.thePlantType;
+            BigGardenPlant thePlant = __instance.plant;
 
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                if(txt.name.Contains("Introduce"))
+                if (txt.name.Contains("Introduce") && thePlant != null)
                 {
+                    PlantType thePlantType = thePlant.thePlantType;
                     txt.text = StringStore.TranslateText(txt.text);
 
                     string text = txt.text;
