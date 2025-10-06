@@ -28,7 +28,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 TextMeshProUGUI cost = buff.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
                 cost.text = StringStore.TranslateText(cost.text);
                 cost.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                FileLoader.DumpUntranslatedStrings(cost.text);
+                //FileLoader.DumpUntranslatedStrings(cost.text);
             }
             foreach (TextMeshProUGUI intr in __instance.introduces)
                 intr.text = StringStore.TranslateText(intr.text);

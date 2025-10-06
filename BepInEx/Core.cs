@@ -33,7 +33,12 @@ public class Core : BasePlugin
 	public ConfigEntry<bool> configDefaultAudio;
 	public ConfigEntry<string> configLanguage;
 
-	public override void Load()
+    private static float lastCheck = 0f;
+	private static float checkTime = 0f;
+    private static float checkInterval = 2f;
+    private static bool stringreloaded = false;
+
+    public override void Load()
 	{
 		Log = base.Log;
 		Instance = this;
@@ -97,6 +102,25 @@ public class Core : BasePlugin
         if (TowerManager.Instance != null)
         {
             TowerManager_Patch.UpdateText();
+        }
+        if (Input.GetKeyDown(KeyCode.RightShift))
+		{
+			stringreloaded = !stringreloaded;
+		}
+		Core.DebugStringReload();
+    }
+
+	public static void DebugStringReload()
+	{
+        if (stringreloaded == true)
+        {
+            checkTime += Time.deltaTime;
+            if (checkTime >= checkInterval)
+            {
+                StringStore.Reload();
+                ShowToast("Strings Reloaded!");
+                checkTime = 0f;
+            }
         }
     }
 

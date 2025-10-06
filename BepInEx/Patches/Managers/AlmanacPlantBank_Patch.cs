@@ -14,7 +14,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
     {
         [HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
         [HarmonyPostfix]
-        private static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
+        public static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
         {
 #if MULTI_LANGUAGE
             string currentLanguage = Utils.Language.ToString();
