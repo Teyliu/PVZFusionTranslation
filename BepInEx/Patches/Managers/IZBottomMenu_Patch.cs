@@ -21,15 +21,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             ];
             for (int i = 0; i < array.Length; i++)
             {
-                string pattern = "([^\\s]+)，推荐难度：(\\d+)";
+                string fStr = StringStore.translationStringRegex["([^\\s]+)，推荐难度：(\\d+)"];
                 string[] parts = array[i].text.Split("，推荐难度：");
 
-                if (new Regex(pattern).IsMatch(array[i].text))
+                if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(array[i].text))
                 {
-                    if (StringStore.translationStringRegex.TryGetValue(pattern, out string fmt))
-                    {
-                        array[i].text = string.Format(fmt, StringStore.TranslateText(parts[0]), parts[1]);
-                    }
+                    array[i].text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
                 }
 
                 array[i] = StringStore.TranslateText(array[i]);
@@ -48,15 +45,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             ];
             for (int i = 0; i < array.Length; i++)
             {
-                string pattern = "([^\\s]+)，推荐难度：(\\d+)";
+                string fStr = StringStore.translationStringRegex["([^\\s]+)，推荐难度：(\\d+)"];
                 string[] parts = array[i].text.Split("，推荐难度：");
 
-                if (new Regex(pattern).IsMatch(array[i].text))
+                if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(array[i].text))
                 {
-                    if (StringStore.translationStringRegex.TryGetValue(pattern, out string fmt))
-                    {
-                        array[i].text = string.Format(fmt, StringStore.TranslateText(parts[0]), parts[1]);
-                    }
+                    array[i].text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
                 }
 
                 array[i] = StringStore.TranslateText(array[i]);
