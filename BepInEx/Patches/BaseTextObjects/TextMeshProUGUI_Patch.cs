@@ -17,12 +17,21 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
+				if(__instance.transform.parent.parent != null)
+				{
+                    if (__instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
+                    {
+                        return;
+                    }
+                }
+
 				__instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 
-				if (__instance.name.StartsWith("LevelName"))
+                if (__instance.name.StartsWith("LevelName"))
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
+
                     if (__instance.name == "LevelName2" || __instance.name == "LevelName3")
                     {
                         TowerManager_Patch.updatedText.Add(__instance.transform);
@@ -42,22 +51,26 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		[HarmonyPostfix]
 		private static void Awake(TextMeshProUGUI __instance)
 		{
-			if (!string.IsNullOrEmpty(__instance.text))
+            if (!string.IsNullOrEmpty(__instance.text))
 			{
-				__instance = StringStore.TranslateText(__instance);
+                if (__instance.transform.parent.parent != null)
+                {
+                    if (__instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
+                    {
+                        return;
+                    }
+                }
+
+                __instance = StringStore.TranslateText(__instance);
 				__instance.autoSizeTextContainer = false;
 
-				if (__instance.name.StartsWith("LevelName"))
-				{
-					__instance.text = __instance.text.Replace("\n", " ");
-				}
 				if (__instance.transform.parent != null && __instance.transform.parent.name.StartsWith("Window"))
 				{
 					__instance.fontSizeMin = 10;
 					__instance.fontSize = 12;
 				}
 
-				if (__instance.text == "Полный Хаосs" && __instance.transform.parent.parent.Find("Image").GetComponent<Image>().activeSprite.name == "Present")
+				if (__instance.text == "Полный Хаос" && __instance.transform.parent.parent.Find("Image").GetComponent<Image>().activeSprite.name == "Present")
 				{
 					__instance.text += "\nБесконечно";
 				}

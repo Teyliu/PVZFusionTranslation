@@ -42,6 +42,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             try
             {
+                // Clear existing dictionaries to prevent duplicate key errors
+                AudioClips.Clear();
+                AudioClipNames.Clear();
+                
                 if (!Directory.Exists(customAudioPath))
                     Directory.CreateDirectory(customAudioPath);
 

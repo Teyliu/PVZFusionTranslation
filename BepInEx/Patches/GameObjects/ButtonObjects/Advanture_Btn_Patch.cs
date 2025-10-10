@@ -1,5 +1,4 @@
 using HarmonyLib;
-using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
@@ -18,8 +17,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			if (__instance.name == "Goback")
 			{
 				Transform backgroundTransform = parentTransform.Find("Background");
-				backgroundTransform.Find("Name").GetComponent<TMP_Text>().autoSizeTextContainer = true;
-				backgroundTransform.Find("Shadow").GetComponent<TMP_Text>().autoSizeTextContainer = true;
+				if(backgroundTransform != null)
+				{
+                    backgroundTransform.Find("Name").GetComponent<TMP_Text>().autoSizeTextContainer = true;
+                    backgroundTransform.Find("Shadow").GetComponent<TMP_Text>().autoSizeTextContainer = true;
+                }
 			}
 
 			Transform levelTransform = parentTransform.Find("Levels");

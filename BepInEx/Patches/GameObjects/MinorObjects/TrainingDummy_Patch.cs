@@ -9,8 +9,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
         [HarmonyPostfix]
         public static void UpdateHealthText(TrainingDummy __instance)
         {
-            Zombie_Patch.TranslateHpUI(__instance.healthText);
-            Zombie_Patch.TranslateHpUI(__instance.healthTextShadow);
+            Zombie_Patch.TranslateHpUI_T(__instance.healthText, __instance);
+            Zombie_Patch.TranslateHpUI_T(__instance.healthTextShadow, __instance);
         }
     }
 }

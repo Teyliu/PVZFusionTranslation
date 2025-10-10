@@ -11,6 +11,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
         internal static void Init()
         {
+            // Clear existing dictionaries to prevent duplicate key errors
+            fontAssetDict.Clear();
+            fontAssetDictSecondary.Clear();
+            
             string fontsDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Fonts]");
 
 #if MULTI_LANGUAGE
@@ -27,7 +31,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
                         TMP_FontAsset fontAsset = FontHandler.LoadTMPFont(fontPath, true);
                         fontAsset.name = fileName;
-                        fontAssetDict.Add(fileName, fontAsset);
+                        if (!fontAssetDict.ContainsKey(fileName))
+                        {
+                            fontAssetDict.Add(fileName, fontAsset);
+                        }
 
                         Log.LogInfo($"Font for language '{fileName}' loaded");
                     }
@@ -65,18 +72,32 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
                         {
                             if (fileName.EndsWith("_Fallback"))
                             {
-                                fontAssetDictSecondary.Add(fileNameLanguage + "_Almanac", fontAssetDictSecondary[fileNameLanguage]);
+                                if (!fontAssetDictSecondary.ContainsKey(fileNameLanguage + "_Almanac"))
+                                {
+                                    fontAssetDictSecondary.Add(fileNameLanguage + "_Almanac", fontAssetDictSecondary[fileNameLanguage]);
+                                }
                                 fontAssetDictSecondary.Remove(fileNameLanguage);
                             }
                             else
                             {
-                                fontAssetDictSecondary.Add(fileNameLanguage + "_Fallback", fontAssetDictSecondary[fileNameLanguage]);
+                                if (!fontAssetDictSecondary.ContainsKey(fileNameLanguage + "_Fallback"))
+                                {
+                                    fontAssetDictSecondary.Add(fileNameLanguage + "_Fallback", fontAssetDictSecondary[fileNameLanguage]);
+                                }
                                 fontAssetDictSecondary.Remove(fileNameLanguage);
                             }
-                            fontAssetDictSecondary.Add(fileName, fallbackFont);
+                            if (!fontAssetDictSecondary.ContainsKey(fileName))
+                            {
+                                fontAssetDictSecondary.Add(fileName, fallbackFont);
+                            }
                         }
                         else
-                            fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
+                        {
+                            if (!fontAssetDictSecondary.ContainsKey(fileNameLanguage))
+                            {
+                                fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
+                            }
+                        }
 
                         // Log.LogInfo($"Fallback font for language '{fileNameLanguage}' loaded");
                     }

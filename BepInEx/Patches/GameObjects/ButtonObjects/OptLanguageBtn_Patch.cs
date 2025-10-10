@@ -242,9 +242,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			}
 		}
 
-        private static void ToggleCustomAssets(string type)
-        {
-            if (type != "Textures" && type != "Audio") return;
+		private static void ToggleCustomAssets(string type)
+		{
+			if (type != "Textures" && type != "Audio") return;
 
             if (type == "Textures")
             {

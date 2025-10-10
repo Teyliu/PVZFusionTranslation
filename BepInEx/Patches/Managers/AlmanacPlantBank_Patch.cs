@@ -14,7 +14,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
     {
         [HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
         [HarmonyPostfix]
-        private static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
+        public static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
         {
 #if MULTI_LANGUAGE
             string currentLanguage = Utils.Language.ToString();
@@ -60,22 +60,22 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             TextMeshPro component3 = __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>();
             TextMeshPro component4 = __instance.cost.GetComponent<TextMeshPro>();
             TextMeshPro component5 = __instance.introduce.GetComponentInChildren<TextMeshPro>();
-#if DEBUG
+            #if DEBUG
             Log.LogWarning($"Introduce text: {component?.text}");
             Log.LogWarning($"Plant name: {component2?.text}");
-#endif
-            component.text = Utils.RemoveColorTags(component.text);
+            #endif
+            //component.text = component.text ?? string.Empty;
 
             AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
 
             foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
             {
-                if (plantInfo.seedType == __instance.theSeedType)
+                if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
                 {
-#if DEBUG
+                    #if DEBUG
                     Log.LogInfo($"Processing plant type: {plantInfo.seedType}");
                     Log.LogInfo($"Plant info: {plantInfo.info}, Name: {plantInfo.name}, Cost: {plantInfo.cost}, Introduce: {plantInfo.introduce}");
-#endif
+                    #endif
                     component.autoSizeTextContainer = false;
                     component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
                     component.overflowMode = TextOverflowModes.Page;
@@ -88,7 +88,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     component2.text = plantInfo.name;
                     component2.autoSizeTextContainer = true;
 
-                    component3.text = Utils.RemoveColorTags(plantInfo.name);
+                    #if DEBUG
+                    Log.LogInfo($"Processing plant name: '{plantInfo.name}' (null: {plantInfo.name == null})");
+                    #endif
+                    component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
                     component3.autoSizeTextContainer = true;
 
                     component4.text = plantInfo.cost;
@@ -116,7 +119,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
                 foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
                 {
-                    if (plantInfo.seedType == __instance.theSeedType)
+                    if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
                     {
                         component.autoSizeTextContainer = false;
                         component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
@@ -130,7 +133,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         component2.text = plantInfo.name;
                         component2.autoSizeTextContainer = true;
 
-                        component3.text = Utils.RemoveColorTags(plantInfo.name);
+                        #if DEBUG
+                        Log.LogInfo($"Processing plant name: '{plantInfo.name}' (null: {plantInfo.name == null})");
+                        #endif
+                        component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
                         component3.autoSizeTextContainer = true;
 
                         component4.text = plantInfo.cost;
@@ -189,10 +195,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             if (Input.GetKey(KeyCode.LeftControl))
             {
                 FileLoader.DumpUntranslatedStrings(__instance.introduce.GetComponent<TextMeshPro>().text);
-                Log.LogInfo($"Info: {__instance.introduce.GetComponent<TextMeshPro>().text}");
+                //Log.LogInfo($"Info: {__instance.introduce.GetComponent<TextMeshPro>().text}");
                 FileLoader.DumpUntranslatedStrings(__instance.plantName.GetComponent<TextMeshPro>().text);
-                Log.LogInfo($"PlantName Name: {__instance.plantName.GetComponent<TextMeshPro>().text}");
-                Log.LogInfo($"PlantShadow Name: {__instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text}");
+                //Log.LogInfo($"PlantName Name: {__instance.plantName.GetComponent<TextMeshPro>().text}");
+                //Log.LogInfo($"PlantShadow Name: {__instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text}");
             }
             string currentLanguage = Utils.Language.ToString();
             __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);

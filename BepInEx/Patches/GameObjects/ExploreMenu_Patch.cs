@@ -1,0 +1,48 @@
+﻿using HarmonyLib;
+using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using UnityEngine;
+
+namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
+{
+    [HarmonyPatch(typeof(ExploreMenu))]
+    public static class ExploreMenu_Patch
+    {
+        [HarmonyPatch(nameof(ExploreMenu.Awake))]
+        [HarmonyPostfix]
+        private static void Awake(ExploreMenu __instance)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                txt.text = StringStore.TranslateText(txt.text);
+            }
+
+            Transform randomLevelTextTransform = __instance.transform.FindChild("RandomLevel");
+            foreach (TextMeshProUGUI txt in randomLevelTextTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                if (txt.name.Contains("Text (TMP)"))
+                {
+                    txt.autoSizeTextContainer = true;
+                    if (txt.name == "Text (TMP)")
+                    {
+                        txt.transform.localPosition = new Vector3(94.4225f, -45.1565f, 0f);
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(nameof(ExploreMenu.UpdateWindows))]
+        [HarmonyPostfix]
+        private static void UpdateWindows(ExploreMenu __instance)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                txt.text = StringStore.TranslateText(txt.text);
+            }
+        }
+    }
+}

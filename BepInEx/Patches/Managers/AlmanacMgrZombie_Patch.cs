@@ -62,53 +62,73 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			TextMeshPro component2 = __instance.zombieName.GetComponent<TextMeshPro>();
 			TextMeshPro component3 = __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>();
 
-			AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
-
-			foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
+			try
 			{
-				if (zombieInfo.theZombieType == __instance.theZombieType)
-				{
-					component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
-					component.overflowMode = TextOverflowModes.Page;
-					component2.text = zombieInfo.name;
-					component2.autoSizeTextContainer = true;
-					component3.text = Utils.RemoveColorTags(zombieInfo.name);
-					component3.autoSizeTextContainer = true;
+				AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
 
-					if (hasAlmanacFont)
-						component.font = almanacFontAsset;
-					else
-						component.font = fontAsset;
-					component2.font = fontAsset;
-					component3.font = fontAsset;
+				if (zombieData != null && zombieData.zombies != null)
+				{
+					foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
+					{
+						if (zombieInfo.theZombieType == __instance.theZombieType)
+						{
+							component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
+							component.overflowMode = TextOverflowModes.Page;
+							component2.text = zombieInfo.name;
+							component2.autoSizeTextContainer = true;
+							component3.text = Utils.RemoveColorTags(zombieInfo.name);
+							component3.autoSizeTextContainer = true;
+
+							if (hasAlmanacFont)
+								component.font = almanacFontAsset;
+							else
+								component.font = fontAsset;
+							component2.font = fontAsset;
+							component3.font = fontAsset;
+						}
+					}
 				}
+			}
+			catch (System.Exception ex)
+			{
+				Log.LogError($"Error parsing JSON in AlmanacMgrZombie_Patch: {ex.Message}");
 			}
 
 			if (File.Exists(moddedPath))
 			{
-				string moddedJson;
-				moddedJson = File.ReadAllText(moddedPath);
-
-				AlmanacMgrZombie.ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(moddedJson);
-
-				foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in moddedZombieData.zombies)
+				try
 				{
-					if (zombieInfo.theZombieType == __instance.theZombieType)
-					{
-						component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
-						component.overflowMode = TextOverflowModes.Page;
-						component2.text = zombieInfo.name;
-						component2.autoSizeTextContainer = true;
-						component3.text = Utils.RemoveColorTags(zombieInfo.name);
-						component3.autoSizeTextContainer = true;
+					string moddedJson;
+					moddedJson = File.ReadAllText(moddedPath);
 
-						if (hasAlmanacFont)
-							component.font = almanacFontAsset;
-						else
-							component.font = fontAsset;
-						component2.font = fontAsset;
-						component3.font = fontAsset;
+					AlmanacMgrZombie.ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(moddedJson);
+
+					if (moddedZombieData != null && moddedZombieData.zombies != null)
+					{
+						foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in moddedZombieData.zombies)
+						{
+							if (zombieInfo.theZombieType == __instance.theZombieType)
+							{
+								component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
+								component.overflowMode = TextOverflowModes.Page;
+								component2.text = zombieInfo.name;
+								component2.autoSizeTextContainer = true;
+								component3.text = Utils.RemoveColorTags(zombieInfo.name);
+								component3.autoSizeTextContainer = true;
+
+								if (hasAlmanacFont)
+									component.font = almanacFontAsset;
+								else
+									component.font = fontAsset;
+								component2.font = fontAsset;
+								component3.font = fontAsset;
+							}
+						}
 					}
+				}
+				catch (System.Exception ex)
+				{
+					Log.LogError($"Error parsing modded JSON in AlmanacMgrZombie_Patch: {ex.Message}");
 				}
 			}
 			DumpAlmanacModdedZombies(__instance);
@@ -141,9 +161,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			if (Input.GetKey(KeyCode.LeftControl))
 			{
 				FileLoader.DumpUntranslatedStrings(__instance.info.GetComponent<TextMeshPro>().text);
-				Log.LogInfo($"Info: {__instance.info.GetComponent<TextMeshPro>().text}");
+				//Log.LogInfo($"Info: {__instance.info.GetComponent<TextMeshPro>().text}");
 				FileLoader.DumpUntranslatedStrings(__instance.zombieName.GetComponent<TextMeshPro>().text);
-				Log.LogInfo($"Zombie Name: {__instance.zombieName.GetComponent<TextMeshPro>().text}");
+				//Log.LogInfo($"Zombie Name: {__instance.zombieName.GetComponent<TextMeshPro>().text}");
 			}
 		}
 	}
