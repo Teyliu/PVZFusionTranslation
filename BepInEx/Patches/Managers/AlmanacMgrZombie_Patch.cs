@@ -17,121 +17,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		[HarmonyPostfix]
 		private static void InitNameAndInfoFromJson(AlmanacMgrZombie __instance)
 		{
-			#if MULTI_LANGUAGE
-			string currentLanguage = Utils.Language.ToString();
-			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-			#else
-			string almanacDir = almanacDir = GetAssetDir(AssetType.Almanac);
-			string currentLanguage = "English";
-			#endif
-			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
-			string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
-
-			if (!File.Exists(path))
-			{
-				Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
-				return;
-			}
-
-			#if OBFUSCATE
-			if (CheckSumStore.IsModified(path))
-			{
-				Log.LogError("File {0} was modified!", path);
-				return;
-			}
-			#endif
-
-			string json;
-			json = File.ReadAllText(path);
-
-			bool hasAlmanacFont = false;
-			TMP_FontAsset almanacFontAsset = null;
-			if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
-			{
-				almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
-				hasAlmanacFont = true;
-			}
-
-			#if MULTI_LANGUAGE
-			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
-			#else
-			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
-			#endif
-
-			TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
-			TextMeshPro component2 = __instance.zombieName.GetComponent<TextMeshPro>();
-			TextMeshPro component3 = __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>();
-
-			try
-			{
-				AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
-
-				if (zombieData != null && zombieData.zombies != null)
-				{
-					foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
-					{
-						if (zombieInfo.theZombieType == __instance.theZombieType)
-						{
-							component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
-							component.overflowMode = TextOverflowModes.Page;
-							component2.text = zombieInfo.name;
-							component2.autoSizeTextContainer = true;
-							component3.text = Utils.RemoveColorTags(zombieInfo.name);
-							component3.autoSizeTextContainer = true;
-
-							if (hasAlmanacFont)
-								component.font = almanacFontAsset;
-							else
-								component.font = fontAsset;
-							component2.font = fontAsset;
-							component3.font = fontAsset;
-						}
-					}
-				}
-			}
-			catch (System.Exception ex)
-			{
-				Log.LogError($"Error parsing JSON in AlmanacMgrZombie_Patch: {ex.Message}");
-			}
-
-			if (File.Exists(moddedPath))
-			{
-				try
-				{
-					string moddedJson;
-					moddedJson = File.ReadAllText(moddedPath);
-
-					AlmanacMgrZombie.ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(moddedJson);
-
-					if (moddedZombieData != null && moddedZombieData.zombies != null)
-					{
-						foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in moddedZombieData.zombies)
-						{
-							if (zombieInfo.theZombieType == __instance.theZombieType)
-							{
-								component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
-								component.overflowMode = TextOverflowModes.Page;
-								component2.text = zombieInfo.name;
-								component2.autoSizeTextContainer = true;
-								component3.text = Utils.RemoveColorTags(zombieInfo.name);
-								component3.autoSizeTextContainer = true;
-
-								if (hasAlmanacFont)
-									component.font = almanacFontAsset;
-								else
-									component.font = fontAsset;
-								component2.font = fontAsset;
-								component3.font = fontAsset;
-							}
-						}
-					}
-				}
-				catch (System.Exception ex)
-				{
-					Log.LogError($"Error parsing modded JSON in AlmanacMgrZombie_Patch: {ex.Message}");
-				}
-			}
-			DumpAlmanacModdedZombies(__instance);
+            TranslateTextAlmanac(__instance);
+            DumpAlmanacModdedZombies(__instance);
             return;
 		}
 
@@ -176,39 +63,120 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPostfix]
         public static void TranslateTextAlmanac(AlmanacMgrZombie __instance)
         {
+#if MULTI_LANGUAGE
             string currentLanguage = Utils.Language.ToString();
-            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
-			__instance.introduce.font = FontStore.LoadTMPFont(currentLanguage);
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+#else
+			string almanacDir = almanacDir = GetAssetDir(AssetType.Almanac);
+			string currentLanguage = "English";
+#endif
+            string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+            string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
 
-			DumpAlmanacModdedZombies(__instance);
-            // translate all TMP components in info
-            foreach (TextMeshPro text in __instance.info.GetComponentsInChildren<TextMeshPro>())
+            if (!File.Exists(path))
             {
-                if (text != null)
+                Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
+                return;
+            }
+
+#if OBFUSCATE
+			if (CheckSumStore.IsModified(path))
+			{
+				Log.LogError("File {0} was modified!", path);
+				return;
+			}
+#endif
+
+            string json;
+            json = File.ReadAllText(path);
+
+            bool hasAlmanacFont = false;
+            TMP_FontAsset almanacFontAsset = null;
+            if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
+            {
+                almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
+                hasAlmanacFont = true;
+            }
+
+#if MULTI_LANGUAGE
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
+#else
+			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
+#endif
+
+            TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
+            TextMeshPro component2 = __instance.zombieName.GetComponent<TextMeshPro>();
+            TextMeshPro component3 = __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>();
+
+            try
+            {
+                AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
+
+                if (zombieData != null && zombieData.zombies != null)
                 {
-                    text.text = StringStore.TranslateText(text.text);
-					text.name = StringStore.TranslateText(text.name);
-                    text.font = FontStore.LoadTMPFont(currentLanguage);
+                    foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
+                    {
+                        if (zombieInfo.theZombieType == __instance.theZombieType)
+                        {
+                            component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
+                            component.overflowMode = TextOverflowModes.Page;
+                            component2.text = zombieInfo.name;
+                            component2.autoSizeTextContainer = true;
+                            component3.text = Utils.RemoveColorTags(zombieInfo.name);
+                            component3.autoSizeTextContainer = true;
+
+                            if (hasAlmanacFont)
+                                component.font = almanacFontAsset;
+                            else
+                                component.font = fontAsset;
+                            component2.font = fontAsset;
+                            component3.font = fontAsset;
+                        }
+                    }
                 }
             }
-			foreach (TextMeshPro text in __instance.zombieName.GetComponentsInChildren<TextMeshPro>())
-			{
-				if (text != null)
-				{
-					text.text = StringStore.TranslateText(text.text);
-					text.name = StringStore.TranslateText(text.name);
-					text.font = FontStore.LoadTMPFont(currentLanguage);
-                }
-			}
+            catch (System.Exception ex)
+            {
+                Log.LogError($"Error parsing JSON in AlmanacMgrZombie_Patch: {ex.Message}");
+            }
 
-            // Translate zombieName and its child
-            __instance.zombieName.name = StringStore.TranslateText(__instance.zombieName.name);
-            __instance.zombieName.GetComponent<TextMeshPro>().font = FontStore.LoadTMPFont(currentLanguage);
-			__instance.zombieName.transform.GetChild(0).name = StringStore.TranslateText(__instance.zombieName.transform.GetChild(0).name);
-            // Get both for less testing
-            __instance.zombieName.GetComponent<TextMeshPro>().text = StringStore.TranslateText(__instance.zombieName.GetComponent<TextMeshPro>().text);
-            __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>().text = StringStore.TranslateText(__instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>().text);
-            __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>().font = FontStore.LoadTMPFont(currentLanguage);
+            if (File.Exists(moddedPath))
+            {
+                try
+                {
+                    string moddedJson;
+                    moddedJson = File.ReadAllText(moddedPath);
+
+                    AlmanacMgrZombie.ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(moddedJson);
+
+                    if (moddedZombieData != null && moddedZombieData.zombies != null)
+                    {
+                        foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in moddedZombieData.zombies)
+                        {
+                            if (zombieInfo.theZombieType == __instance.theZombieType)
+                            {
+                                component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
+                                component.overflowMode = TextOverflowModes.Page;
+                                component2.text = zombieInfo.name;
+                                component2.autoSizeTextContainer = true;
+                                component3.text = Utils.RemoveColorTags(zombieInfo.name);
+                                component3.autoSizeTextContainer = true;
+
+                                if (hasAlmanacFont)
+                                    component.font = almanacFontAsset;
+                                else
+                                    component.font = fontAsset;
+                                component2.font = fontAsset;
+                                component3.font = fontAsset;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.LogError($"Error parsing modded JSON in AlmanacMgrZombie_Patch: {ex.Message}");
+                }
+            }
         }
     }
 }
