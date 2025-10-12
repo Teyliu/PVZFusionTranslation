@@ -25,8 +25,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 #endif
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
             string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
-
-            TranslateTextAlmanac(__instance);
+            
             if (!File.Exists(path))
             {
                 return;
@@ -108,7 +107,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     }
                     component2.font = fontAsset;
                     component3.font = fontAsset;
-                    TranslateTextAlmanac(__instance);
                 }
             }
 
@@ -156,18 +154,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     }
                 }
             }
-
-            foreach (TextMeshPro text in __instance.introduce.GetComponentsInChildren<TextMeshPro>())
-            {
-                if (text != null)
-                {
-                    string originalText = text.text;
-                    text.text = StringStore.TranslateText(text.text);
-                }
-            }
             
-
-            TranslateTextAlmanac(__instance);
             return;
         }
 
@@ -175,7 +162,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPrefix]
         private static bool OnMouseDown(AlmanacPlantBank __instance)
         {
-            TranslateTextAlmanac(__instance);
             TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
             if (component != null)
             {
@@ -185,67 +171,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             return true;
         }
 
-        // This method is used to translate the text in the AlmanacPlantBank when it starts. And some plants like LibraHp plants have different text type in the Almanac.
-        [HarmonyPatch(nameof(AlmanacPlantBank.Start))]
-        [HarmonyPostfix]
-        public static void TranslateTextAlmanac(AlmanacPlantBank __instance)
-        {
-            
-            // Dump the texts if needed
-            if (Input.GetKey(KeyCode.LeftControl))
-            {
-                FileLoader.DumpUntranslatedStrings(__instance.introduce.GetComponent<TextMeshPro>().text);
-                //Log.LogInfo($"Info: {__instance.introduce.GetComponent<TextMeshPro>().text}");
-                FileLoader.DumpUntranslatedStrings(__instance.plantName.GetComponent<TextMeshPro>().text);
-                //Log.LogInfo($"PlantName Name: {__instance.plantName.GetComponent<TextMeshPro>().text}");
-                //Log.LogInfo($"PlantShadow Name: {__instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text}");
-            }
-            string currentLanguage = Utils.Language.ToString();
-            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
-            __instance.introduce.font = FontStore.LoadTMPFont(currentLanguage);
-            TextMeshPro textMeshProComponent = __instance.introduce.GetComponent<TextMeshPro>();
-            foreach (TextMeshPro text in __instance.introduce.GetComponentsInChildren<TextMeshPro>())
-            {
-                if (text != null)
-                {
-                    string originalText = text.text;
-                    text.text = StringStore.TranslateText(text.text);
-                    text.font = FontStore.LoadTMPFont(currentLanguage);
-                }
-            }
-            // IDK why this is needed, but put it here to avoid issues
-            foreach (TextMeshProUGUI text in __instance.introduce.GetComponentsInChildren<TextMeshProUGUI>())
-            {
-                if (text != null)
-                {
-                    string originalText = text.text;
-                    text.text = StringStore.TranslateText(text.text);
-                    text.font = FontStore.LoadTMPFont(currentLanguage);
-                }
-            }
-            // IDK why this is needed, but put it here to avoid issues
-            foreach (TMPro.TMP_Text text in __instance.introduce.GetComponentsInChildren<TMPro.TMP_Text>())
-            {
-                if (text != null)
-                {
-                    string originalText = text.text;
-                    text.text = StringStore.TranslateText(text.text);
-                    text.font = FontStore.LoadTMPFont(currentLanguage);
-                }
-            }
-            __instance.plantName.text = StringStore.TranslateText(__instance.plantName.text);
-            __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text = StringStore.TranslateText(__instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text);
-            __instance.plantName.font = FontStore.LoadTMPFont(currentLanguage);
-            __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().font = FontStore.LoadTMPFont(currentLanguage);
-            __instance.cost.text = StringStore.TranslateText(__instance.cost.text);
-            __instance.cost.font = FontStore.LoadTMPFont(currentLanguage);
-        }
-
         [HarmonyPatch(nameof(AlmanacPlantBank.PVPInit))]
         [HarmonyPostfix]
         private static void PVPInit(AlmanacPlantBank __instance)
         {
-            TranslateTextAlmanac(__instance);
             TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
             if (component != null)
             {
