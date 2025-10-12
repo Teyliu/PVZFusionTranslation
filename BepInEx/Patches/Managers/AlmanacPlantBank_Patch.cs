@@ -1,10 +1,11 @@
-﻿using System.IO;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Il2CppInterop.Runtime;
 using PvZ_Fusion_Translator__BepInEx_;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
@@ -16,6 +17,39 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPostfix]
         public static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
         {
+            TranslateTextAlmanac(__instance);
+        }
+
+        [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
+        [HarmonyPrefix]
+        private static bool OnMouseDown(AlmanacPlantBank __instance)
+        {
+            TranslateTextAlmanac(__instance);
+            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
+            if (component != null)
+            {
+                component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ? 1 : component.pageToDisplay + 1;
+                return false;
+            }
+            return true;
+        }
+
+        // This method is used to translate the text in the AlmanacPlantBank when it starts. And some plants like LibraHp plants have different text type in the Almanac.
+        [HarmonyPatch(nameof(AlmanacPlantBank.Start))]
+        [HarmonyPostfix]
+        public static void TranslateTextAlmanac(AlmanacPlantBank __instance)
+        {
+
+            // Dump the texts if needed
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                FileLoader.DumpUntranslatedStrings(__instance.introduce.GetComponent<TextMeshPro>().text);
+                //Log.LogInfo($"Info: {__instance.introduce.GetComponent<TextMeshPro>().text}");
+                FileLoader.DumpUntranslatedStrings(__instance.plantName.GetComponent<TextMeshPro>().text);
+                //Log.LogInfo($"PlantName Name: {__instance.plantName.GetComponent<TextMeshPro>().text}");
+                //Log.LogInfo($"PlantShadow Name: {__instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>().text}");
+            }
+
 #if MULTI_LANGUAGE
             string currentLanguage = Utils.Language.ToString();
             string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
@@ -25,7 +59,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 #endif
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
             string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
-            
+
             if (!File.Exists(path))
             {
                 return;
@@ -59,10 +93,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             TextMeshPro component3 = __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>();
             TextMeshPro component4 = __instance.cost.GetComponent<TextMeshPro>();
             TextMeshPro component5 = __instance.introduce.GetComponentInChildren<TextMeshPro>();
-            #if DEBUG
+#if DEBUG
             Log.LogWarning($"Introduce text: {component?.text}");
             Log.LogWarning($"Plant name: {component2?.text}");
-            #endif
+#endif
             //component.text = component.text ?? string.Empty;
 
             AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
@@ -71,10 +105,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             {
                 if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
                 {
-                    #if DEBUG
+#if DEBUG
                     Log.LogInfo($"Processing plant type: {plantInfo.seedType}");
                     Log.LogInfo($"Plant info: {plantInfo.info}, Name: {plantInfo.name}, Cost: {plantInfo.cost}, Introduce: {plantInfo.introduce}");
-                    #endif
+#endif
                     component.autoSizeTextContainer = false;
                     component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
                     component.overflowMode = TextOverflowModes.Page;
@@ -87,9 +121,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     component2.text = plantInfo.name;
                     component2.autoSizeTextContainer = true;
 
-                    #if DEBUG
+#if DEBUG
                     Log.LogInfo($"Processing plant name: '{plantInfo.name}' (null: {plantInfo.name == null})");
-                    #endif
+#endif
                     component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
                     component3.autoSizeTextContainer = true;
 
@@ -131,9 +165,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         component2.text = plantInfo.name;
                         component2.autoSizeTextContainer = true;
 
-                        #if DEBUG
+#if DEBUG
                         Log.LogInfo($"Processing plant name: '{plantInfo.name}' (null: {plantInfo.name == null})");
-                        #endif
+#endif
                         component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
                         component3.autoSizeTextContainer = true;
 
@@ -154,35 +188,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     }
                 }
             }
-            
-            return;
-        }
-
-        [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
-        [HarmonyPrefix]
-        private static bool OnMouseDown(AlmanacPlantBank __instance)
-        {
-            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-            if (component != null)
-            {
-                component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ? 1 : component.pageToDisplay + 1;
-                return false;
-            }
-            return true;
         }
 
         [HarmonyPatch(nameof(AlmanacPlantBank.PVPInit))]
         [HarmonyPostfix]
         private static void PVPInit(AlmanacPlantBank __instance)
         {
-            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-            if (component != null)
-            {
-                string originalText = component.text;
-                component.autoSizeTextContainer = false;
-                component.text = StringStore.TranslateText(component.text);
-                __instance.introduce.GetComponent<TextMeshPro>().text = component.text;
-            }
+            TranslateTextAlmanac(__instance);
 
             Transform banTransform = __instance.transform.FindChild("Ban").GetChild(0);
             if (banTransform != null)
