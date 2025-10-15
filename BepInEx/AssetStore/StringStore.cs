@@ -147,11 +147,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			// Regex-based dynamic translation
 			foreach (var entry in translationStringRegex)
 			{
-				var regex = new Regex(entry.Key);
-				if (regex.IsMatch(originalText))
+				if (TestRegex(originalText, entry.Key))
 				{
-					// Extract dynamic parts from the original text
-					var match = regex.Match(originalText);
+                    // Extract dynamic parts from the original text
+                    var regex = new Regex(entry.Key);
+                    var match = regex.Match(originalText);
 					int groupCount = match.Groups.Count;
 
 					if (isLog)
@@ -180,7 +180,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			return originalText;
 		}
 
-		private static TextAlignmentOptions TextAnchorToTMPAlignment(TextAnchor anchor)
+        private static bool TestRegex(string originalText, string pattern)
+        {
+            return Regex.IsMatch(originalText, pattern);
+        }
+
+        private static TextAlignmentOptions TextAnchorToTMPAlignment(TextAnchor anchor)
 		{
 			return anchor switch
 			{

@@ -145,10 +145,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 			// Regex-based dynamic translation
 			foreach (var entry in translationStringRegex)
 			{
-				var regex = new Regex(entry.Key);
-				if (regex.IsMatch(originalText))
+				if (TestRegex(originalText, entry.Key))
 				{
 					// Extract dynamic parts from the original text
+					var regex = new Regex(entry.Key);
 					var match = regex.Match(originalText);
 					int groupCount = match.Groups.Count;
 
@@ -176,6 +176,11 @@ namespace PvZ_Fusion_Translator.AssetStore
 			if (isLog)
 				Log.LogDebug($"Text '{originalText}' not translated");
 			return originalText;
+		}
+
+		private static bool TestRegex(string originalText, string pattern)
+		{
+			return Regex.IsMatch(originalText, pattern);
 		}
 
 		private static TextAlignmentOptions TextAnchorToTMPAlignment(TextAnchor anchor)
