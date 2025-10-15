@@ -29,6 +29,5 @@ PvZ Fusion Translator is a **Melon Mod** that allows for an easier method of tra
 - [TrevTV/MelonLoader-AudioTools](https://github.com/TrevTV/MelonLoader-AudioTools) - Audio Replacer Developer
 
 # Contribution
-If you'd like to contribute in any way, please join us on our [Discord](https://discord.gg/FTfz45NGxh).
-
+If you'd like to contribute in any way, please join us on our [Discord](https://discord.gg/DPAC5ZVJ8T).
 
