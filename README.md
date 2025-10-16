@@ -2,9 +2,7 @@
 PvZ Fusion Translator is a **Melon Mod** that allows for an easier method of translating the in-game UI, the Almanac, and textures.
 
 # Installation
-- Install [MelonLoader](https://melonwiki.xyz/#/modders/quickstart).
-- Download and extract [AudioImportLib](https://thunderstore.io/c/bonelab/p/TrevTV/AudioImportLib/) to the `Mods` folder.
-- [Download](https://github.com/Dynamixus/PvZ-Fusion-Translator/releases/latest) and extract everything to the `Mods` folder in your game's installation directory.
+- Full installation can be found at the [main repository](https://github.com/Teyliu/PVZF-Translation).
 
 # Build
 - Edit `GamePath` in `PvZ Fusion Translator.csproj` to point to your game installation folder.
