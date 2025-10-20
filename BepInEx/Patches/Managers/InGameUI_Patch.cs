@@ -47,5 +47,31 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 }
             }
         }
+
+        [HarmonyPatch(nameof(InGameUI.Update))]
+        [HarmonyPostfix]
+        private static void Update(InGameUI __instance)
+        {
+            foreach(TextMeshProUGUI txt in __instance.ShovelBank.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                txt.text = StringStore.TranslateText(txt.text);
+                txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(InGameUI_IZ))]
+    public static class InGameUI_IZ_Patch
+    {
+        [HarmonyPatch(nameof(InGameUI_IZ.Update))]
+        [HarmonyPostfix]
+        private static void Update(InGameUI_IZ __instance)
+        {
+            foreach (TextMeshProUGUI txt in __instance.shovel.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                txt.text = StringStore.TranslateText(txt.text);
+                txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+            }
+        }
     }
 }

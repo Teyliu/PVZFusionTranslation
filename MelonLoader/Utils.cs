@@ -351,7 +351,7 @@ namespace PvZ_Fusion_Translator
 			// Ukrainian,
 			// Slovak,
 			Polish,
-			Hungarian,
+			Turkish,
 			Arabic,
 
 			LANG_END
