@@ -346,16 +346,17 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Javanese, //Filipino,
             Vietnamese,
             Indonesian,
-            Russian,
+            //Russian,
             Japanese,
             Korean,
 
             // third column
             // Ukrainian,
             // Slovak,
-            Polish,
+            //Polish,
             Turkish,
-            Arabic,
+            //Arabic,
+            Romanian,
 
             LANG_END
         }
