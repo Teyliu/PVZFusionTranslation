@@ -343,18 +343,19 @@ namespace PvZ_Fusion_Translator
 			Javanese, //Filipino,
 			Vietnamese,
 			Indonesian,
-			Russian,
+			//Russian,
 			Japanese,
 			Korean,
 
 			// third column
 			// Ukrainian,
 			// Slovak,
-			Polish,
+			//Polish,
 			Turkish,
-			Arabic,
+            //Arabic,
+            Romanian,
 
-			LANG_END
+            LANG_END
 		}
 
 		public enum ToggleEnum
