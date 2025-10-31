@@ -348,7 +348,7 @@ namespace PvZ_Fusion_Translator
 			Korean,
 
 			// third column
-			// Ukrainian,
+			 Ukrainian,
 			// Slovak,
 			//Polish,
 			Turkish,
