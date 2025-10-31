@@ -14,6 +14,7 @@
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
 	<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.0.1-BepInEx</GamePath>
+	<GamePathMelon>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.0.1</GamePathMelon>
 	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
 </PropertyGroup>
@@ -585,6 +586,7 @@
 
 <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins&quot;" />
+	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePathMelon)\Translation Builds\&quot;" />
 </Target>
 
 </Project>

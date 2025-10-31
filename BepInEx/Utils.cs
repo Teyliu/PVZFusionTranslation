@@ -351,7 +351,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Korean,
 
             // third column
-            // Ukrainian,
+             Ukrainian,
             // Slovak,
             //Polish,
             Turkish,
