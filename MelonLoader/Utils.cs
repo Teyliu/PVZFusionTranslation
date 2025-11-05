@@ -336,7 +336,7 @@ namespace PvZ_Fusion_Translator
 			Javanese, //Filipino,
 			Vietnamese,
 			Indonesian,
-			//Russian,
+			Russian, //NOTE: legacy language
 			Japanese,
 			Korean,
 
