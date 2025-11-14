@@ -2,10 +2,8 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using System.Text.Json;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -20,6 +18,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
             File.WriteAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "changelog.txt"), contentText.text);
+
+            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+            string changelogDir = Path.Combine(stringDir, "changelog.txt");
+
+            if (!File.Exists(changelogDir))
+            {
+                File.WriteAllText(changelogDir, contentText.text);
+            }
         }
 	
 		[HarmonyPostfix]
@@ -27,12 +33,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		private static void Post_Awake(NoticeMenu __instance)
 		{
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-			string changelogText = File.ReadAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "changelog.txt"));
-			
+            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+            string changelogDir = Path.Combine(stringDir, "changelog.txt");
+
+            string changelogText = File.ReadAllText(changelogDir);
+
             GameObject contentObject = __instance.transform.FindChild("Scroll View").GetChild(0).GetChild(0).gameObject; //bc normal Find or FindChild didn't work
             
 			TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
-			contentText.text = changelogText;
+            contentText.text = changelogText;
 
             ContentSizeFitter sizeFitter = contentObject.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

@@ -63,6 +63,13 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
 
             string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+            string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
+
+            if(!File.Exists(travelBuffDir))
+            {
+                File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
+            }
+
             string travelBuffs = File.ReadAllText(Path.Combine(stringDir, "travel_buffs.json"));
 
             translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(travelBuffs);
