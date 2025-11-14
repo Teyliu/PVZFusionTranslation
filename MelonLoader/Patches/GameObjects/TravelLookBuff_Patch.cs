@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using static PvZ_Fusion_Translator.Patches.Managers.TravelMgr_Patch;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
@@ -9,11 +10,13 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(TravelLookBuff))]
     public static class TravelLookBuff_Patch
     {
-        private static void TranslateTexts(TravelLookBuff instance)
+        private static void TranslateTexts(TravelLookBuff __instance)
         {
-            instance.introduce.text = StringStore.TranslateText(instance.introduce.text);
+            string buffText = translatedTravelBuffs[buffLinks[__instance.buffType]][__instance.buffIndex];
 
-            Transform transform = instance.rectTransform.transform;
+            __instance.introduce.text = buffText;
+
+            Transform transform = __instance.rectTransform.transform;
             var component1 = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             var component2 = transform.GetChild(1).GetComponent<TextMeshProUGUI>();
 

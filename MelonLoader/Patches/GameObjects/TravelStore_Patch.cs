@@ -2,21 +2,29 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using static PvZ_Fusion_Translator.Patches.Managers.TravelMgr_Patch;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
-	[HarmonyPatch(typeof(TravelStore))]
+    [HarmonyPatch(typeof(TravelStore))]
     public static class TravelStore_Patch
     {
         [HarmonyPatch(nameof(TravelStore.Update))]
-		[HarmonyPostfix]
-		private static void Update(TravelStore __instance)
+        [HarmonyPostfix]
+        private static void Update(TravelStore __instance)
         {
-            foreach (TextMeshProUGUI intr in __instance.introduces)
-                intr.text = StringStore.TranslateText(intr.text);
+            foreach(TextMeshProUGUI text in __instance.introduces)
+            {
+                if(__instance.currentSelect != null)
+                {
+                    text.text = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]][__instance.currentSelect.theBuffNumber];
+                }
+            }
             foreach (var textMesh in __instance.points)
+            {
                 textMesh.text = StringStore.TranslateText(textMesh.text);
+            }
         }
 
         [HarmonyPatch(nameof(TravelStore.RefreshBuff))]
@@ -28,12 +36,19 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 TextMeshProUGUI cost = buff.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
                 cost.text = StringStore.TranslateText(cost.text);
                 cost.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                FileLoader.DumpUntranslatedStrings(cost.text);
             }
-            foreach (TextMeshProUGUI intr in __instance.introduces)
-                intr.text = StringStore.TranslateText(intr.text);
+
+            foreach (TextMeshProUGUI text in __instance.introduces)
+            {
+                if (__instance.currentSelect != null)
+                {
+                    text.text = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]][__instance.currentSelect.theBuffNumber];
+                }
+            }
             foreach (var textMesh in __instance.points)
+            {
                 textMesh.text = StringStore.TranslateText(textMesh.text);
+            }
         }
     }
 }

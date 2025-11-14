@@ -15,7 +15,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         [HarmonyPostfix]
         private static void Postfix_Start(TravelLookMenu __instance)
         {
-            foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 txt.text = StringStore.TranslateText(txt.text);
                 txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
@@ -36,7 +36,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         [HarmonyPostfix]
         private static void Update(TravelLookMenu __instance)
         {
-            if(savedAssetString != __instance.treasureText.text)
+            if (savedAssetString != __instance.treasureText.text)
             {
                 __instance.treasureText.text = StringStore.TranslateText(__instance.treasureText.text);
                 savedAssetString = __instance.treasureText.text;

@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using static PvZ_Fusion_Translator.Patches.Managers.TravelMgr_Patch;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
@@ -13,9 +14,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         [HarmonyPostfix]
         private static void RefeshOptions(TravelBuffMenu __instance)
         {
-            foreach(TravelBuffOptionButton button in __instance.options)
+            foreach (TravelBuffOptionButton button in __instance.options)
             {
-                button.introduce.text = StringStore.TranslateText(button.introduce.text);
+                button.introduce.text = translatedTravelBuffs[buffLinks[button.buffType]][button.buffIndex];
             }
         }
     }

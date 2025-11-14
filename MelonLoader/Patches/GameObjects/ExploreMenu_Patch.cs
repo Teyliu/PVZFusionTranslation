@@ -23,13 +23,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             Transform randomLevelTextTransform = __instance.transform.FindChild("RandomLevel");
             foreach(TextMeshProUGUI txt in randomLevelTextTransform.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                if (txt.name.Contains("Text (TMP)"))
+                if (txt.name.Contains("(TMP)"))
                 {
+                    Log.LogDebug(txt.transform.parent.name);
                     txt.autoSizeTextContainer = true;
-                    if (txt.name == "Text (TMP)")
-                    {
-                        txt.transform.localPosition = new Vector3(94.4225f, -45.1565f, 0f);
-                    }
                 }
             }
         }
