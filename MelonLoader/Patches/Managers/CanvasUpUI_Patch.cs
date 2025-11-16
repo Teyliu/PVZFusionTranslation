@@ -20,8 +20,11 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			{
 				string originalKey = StringStore.translationString.FirstOrDefault(x => x.Value.Replace("\n", " ") == text.text).Key;
                 text.text = (StringStore.translationString.ContainsKey(originalKey + "_MG")) ? StringStore.TranslateText(originalKey + "_MG") : StringStore.TranslateText(text.text);
-                text.text = text.text.Replace("\n", " ");
-				text.font = fontAsset;
+                if(text.gameObject.name.Contains("LevelName"))
+				{
+                    text.text = text.text.Replace("\n", " ");
+                }
+                text.font = fontAsset;
             }
 		}
     }
