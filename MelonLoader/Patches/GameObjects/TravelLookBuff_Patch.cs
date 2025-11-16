@@ -17,6 +17,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             __instance.introduce.text = StringStore.TranslateText("无");
             __instance.set = false;
+
+            foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
         }
 
         [HarmonyPatch(nameof(TravelLookBuff.OnMouseUpAsButton))]
@@ -35,6 +40,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
             string buffText = (__instance.buffIndex < buffSet.Count) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
+            __instance.introduce.text = buffText;
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {

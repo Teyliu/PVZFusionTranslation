@@ -122,10 +122,46 @@ namespace PvZ_Fusion_Translator.AssetStore
 			checkText = text;
 			
 			return checkText;
-
 		}
 
-		public static string DoTranslateText(string originalText, bool isLog = false)
+        public static string TranslateText(string originalText, string pattern, bool isLog = false)
+        {
+            if (TestRegex(originalText, pattern) && translationStringRegex.ContainsKey(pattern))
+            {
+                // Extract dynamic parts from the original text
+                var regex = new Regex(pattern);
+                var match = regex.Match(originalText);
+                int groupCount = match.Groups.Count;
+
+                if (isLog)
+                    Log.LogDebug("Text found in translationStringRegex {0}: {1}", match, groupCount);
+
+                // List to hold formatted dynamic parts
+                List<string> dynamicParts = [];
+
+                // Loop through each group and determine its translation
+                for (int i = 1; i < groupCount; i++)
+                {
+                    string groupValue = match.Groups[i].Value;
+                    string translatedValue = translationString.ContainsKey(groupValue)
+                        ? translationString[groupValue]
+                        : groupValue;
+                    dynamicParts.Add(translatedValue);
+                }
+
+                // Format the output string with dynamic parts
+                return string.Format(translationStringRegex[pattern], [.. dynamicParts]);
+            }
+			else
+			{
+                if (isLog)
+                    Log.LogDebug($"Text '{originalText}' not translated");
+                FileLoader.DumpUntranslatedStrings(originalText);
+				return originalText;
+			}
+        }
+
+        public static string DoTranslateText(string originalText, bool isLog = false)
 		{
 			if (string.IsNullOrEmpty(originalText))
 			{

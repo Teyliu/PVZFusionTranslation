@@ -27,11 +27,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                     text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
                     textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-                    if(!text.name.Contains("_EVACUATE"))
-                    {
-                        text.autoSizeTextContainer = textShadow.autoSizeTextContainer = true;
-                    }
                 }
                 else
                 {
@@ -69,15 +64,33 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 if (__instance.transform.childCount >= 2)
                 {
-                    TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                    if(__instance.name == "EditMode")
+                    {
+                        TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-                    text.text = StringStore.TranslateText(text.text, false);
-                    textShadow.text = StringStore.TranslateText(textShadow.text, false);
+                        TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+                        TextMeshProUGUI[] extraTexts = __instance.transform.GetChild(1).GetComponentsInChildren<TextMeshProUGUI>();
 
-                    text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                    textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                    text.autoSizeTextContainer = textShadow.autoSizeTextContainer = true;
+                        text.text = StringStore.TranslateText(text.text, false);
+                        text.font = fontAsset;
+
+                        foreach(TextMeshProUGUI extraText in extraTexts)
+                        {
+                            extraText.text = StringStore.TranslateText(extraText.text, false);
+                            extraText.font = fontAsset;
+                        }
+                    }
+                    else
+                    {
+                        TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+                        TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+
+                        text.text = StringStore.TranslateText(text.text, false);
+                        textShadow.text = StringStore.TranslateText(textShadow.text, false);
+
+                        text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                        textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                    }
                 }
             }
             catch (Exception) { }

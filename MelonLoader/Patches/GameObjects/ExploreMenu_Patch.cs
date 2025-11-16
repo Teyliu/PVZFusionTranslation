@@ -21,14 +21,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
 
             Transform randomLevelTextTransform = __instance.transform.FindChild("RandomLevel");
-            foreach(TextMeshProUGUI txt in randomLevelTextTransform.GetComponentsInChildren<TextMeshProUGUI>())
-            {
-                if (txt.name.Contains("(TMP)"))
-                {
-                    Log.LogDebug(txt.transform.parent.name);
-                    txt.autoSizeTextContainer = true;
-                }
-            }
         }
 
         [HarmonyPatch(nameof(ExploreMenu.UpdateWindows))]

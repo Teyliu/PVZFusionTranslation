@@ -400,6 +400,8 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ExploreMakeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\SpriteRenderer_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\MainMenu_Btn_Patch.cs" />
@@ -457,6 +459,8 @@
 		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
+		<Compile Include="Patches\Managers\AbyssBuffData_Patch.cs" />
+		<Compile Include="Patches\Managers\AbyssInfo_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
 		<Compile Include="Patches\Managers\Garden_Patch.cs" />

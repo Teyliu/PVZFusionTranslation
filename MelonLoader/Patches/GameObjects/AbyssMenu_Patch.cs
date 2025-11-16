@@ -22,7 +22,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.levelInfo)
             {
-                txt.text = StringStore.TranslateText(txt.text, false);
+                txt.text = StringStore.TranslateText(txt.text, pattern: "第(\\d+)关\n场景：([^\\s]+)\n总波数：(\\d+)波\n特殊环境：([^\\s]+)\n难度：(\\d+)");
                 txt.font = fontAsset;
             }
 
@@ -41,7 +41,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.levelInfo)
             {
-                txt.text = StringStore.TranslateText(txt.text);
+                txt.text = StringStore.TranslateText(txt.text, pattern: "第(\\d+)关\n场景：([^\\s]+)\n总波数：(\\d+)波\n特殊环境：([^\\s]+)\n难度：(\\d+)");
                 txt.font = fontAsset;
             }
         }

@@ -21,6 +21,14 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             { BuffType.Debuff, "debuffs" },
         };
 
+        public static Dictionary<string, List<string>> dumpedTravelBuffs = new Dictionary<string, List<string>>()
+        {
+            { "advancedUpgrades", [] },
+            { "ultimateUpgrades", [] },
+            { "strongUltimates", [] },
+            { "debuffs", [] }
+        };
+
         public static Dictionary<string, List<string>> translatedTravelBuffs = new Dictionary<string, List<string>>();
 
         public static void DumpTravelBuffs(Il2CppSystem.Collections.Generic.Dictionary<int, string> source, Dictionary<string, List<string>> dest, string index)
@@ -35,13 +43,29 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             }
         }
 
+        public static string MatchTravelBuff(string originalText)
+        {
+            string res = "";
+
+            foreach(var i in dumpedTravelBuffs)
+            {
+                if(i.Value.Contains(originalText))
+                {
+                    res = translatedTravelBuffs[i.Key][i.Value.IndexOf(originalText)];
+                    break;
+                }
+            }
+
+            return res;
+        }
+
         [HarmonyPatch(nameof(TravelMgr.Awake))]
         [HarmonyPrefix]
         private static void Pre_Awake(TravelMgr __instance)
         {
             // Dump buffs
 
-            Dictionary<string, List<string>> dumpedTravelBuffs = new Dictionary<string, List<string>>()
+            dumpedTravelBuffs = new Dictionary<string, List<string>>() // reset dump
             {
                 { "advancedUpgrades", [] },
                 { "ultimateUpgrades", [] },
