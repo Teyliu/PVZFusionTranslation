@@ -3,7 +3,7 @@ using Il2Cpp;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(TravelBuff))]
+	[HarmonyPatch(typeof(TravelBuff))]
 	public static class TravelBuff_Patch
 	{
 		[HarmonyPatch(nameof(TravelBuff.OnMouseUpAsButton))]

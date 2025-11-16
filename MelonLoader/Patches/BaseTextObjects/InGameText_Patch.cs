@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.Managers;
 
 namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 {
@@ -25,7 +26,16 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 			
 			foreach (TextMeshProUGUI txt in __instance.textMeshes)
 			{
-				txt.text = StringStore.TranslateText(txt.text, true);
+				string travelMatch = TravelMgr_Patch.MatchTravelBuff(txt.text);
+
+				if(travelMatch != "")
+				{
+					txt.text = travelMatch;
+				} 
+				else
+				{
+                    txt.text = StringStore.TranslateText(txt.text, true);
+                }
                 txt.font = fontAsset;
 			}
 		}

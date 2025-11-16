@@ -394,7 +394,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Javanese, //Filipino,
             Vietnamese,
             Indonesian,
-            //Russian,
+            Russian, //NOTE: legacy language
             Japanese,
             Korean,
 

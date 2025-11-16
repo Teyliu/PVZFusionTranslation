@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 
 namespace PvZ_Fusion_Translator.Patches.Managers
 {

@@ -585,6 +585,7 @@
 
 <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins&quot;" />
+	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePathMelon)\Translation Builds\&quot;" />
 </Target>
 
 </Project>

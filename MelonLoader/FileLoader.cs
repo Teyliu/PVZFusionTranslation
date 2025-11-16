@@ -6,6 +6,7 @@ using PvZ_Fusion_Translator.Patches.OtherManagers;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace PvZ_Fusion_Translator
 {
@@ -312,10 +313,12 @@ namespace PvZ_Fusion_Translator
 			}
 			string LawnStrings = Resources.Load<TextAsset>("LawnStrings").text;
 			string ZombieStrings = Resources.Load<TextAsset>("ZombieStrings").text;
+			string AbyssBuffData = Resources.Load<TextAsset>("AbyssBuffData").text;
 			File.WriteAllText(Path.Combine(dumpDir, "LawnStrings.json"), LawnStrings);
 			File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
+			File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
-			Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
+            Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
 			foreach (Il2CppSystem.Collections.Generic.KeyValuePair<Achievement, Il2CppSystem.Tuple<string, string>> entry in AchievementClip.achievementsText)
 			{
 				achievementsList.Add(entry.Key, new AchievementObject(entry.Key, entry.Value.Item1, entry.Value.Item2));

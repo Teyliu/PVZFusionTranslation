@@ -26,7 +26,8 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 
                 if(new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(array[i].text))
                 {
-                    array[i].text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
+                    string customName = (StringStore.translationString.ContainsKey(parts[0] + "_IZ")) ? parts[0] + "_IZ" : parts[0];
+                    array[i].text = string.Format(fStr, StringStore.TranslateText(customName), parts[1]);
                 }
                 
                 array[i] = StringStore.TranslateText(array[i]);
