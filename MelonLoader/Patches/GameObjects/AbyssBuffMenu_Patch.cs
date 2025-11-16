@@ -64,27 +64,17 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 if (abyssBuffData.ContainsKey(text.text))
                 {
                     text.text = abyssBuffData[text.text];
-                    text.font = fontAsset;
                 }
                 else
                 {
-                    foreach (var x in abyssBuffData)
+                    string translatedRegex = TranslateAbyssBuffRegex(text.text);
+                    if (translatedRegex != null)
                     {
-                        if (x.Key.Contains("{value}"))
-                        {
-                            string pattern = Regex.Escape(x.Key).Replace("\\{value}", "(\\d+)");
-                            if (Regex.IsMatch(text.text, pattern))
-                            {
-                                var regex = new Regex(pattern);
-                                var match = regex.Match(text.text);
-
-                                text.text = String.Format(x.Value.Replace("value", "0"), match.Groups[1].Value);
-                                text.font = fontAsset;
-                                break;
-                            }
-                        }
+                        text.text = translatedRegex;
                     }
                 }
+
+                text.font = fontAsset;
             }
 
             foreach(AbyssBuffWindow window in __instance.GetComponentsInChildren<AbyssBuffWindow>())
@@ -99,6 +89,26 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             string abyssBuffText = File.ReadAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "abyss_buffs.json"));
             abyssBuffData = JsonSerializer.Deserialize<Dictionary<string, string>>(abyssBuffText);
+        }
+
+        public static string TranslateAbyssBuffRegex(string originalText)
+        {
+            foreach (var x in abyssBuffData)
+            {
+                if (x.Key.Contains("{value}"))
+                {
+                    string pattern = Regex.Escape(x.Key).Replace("\\{value}", "(\\d+)");
+                    if (Regex.IsMatch(originalText, pattern))
+                    {
+                        var regex = new Regex(pattern);
+                        var match = regex.Match(originalText);
+
+                        return String.Format(x.Value.Replace("value", "0"), match.Groups[1].Value);
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

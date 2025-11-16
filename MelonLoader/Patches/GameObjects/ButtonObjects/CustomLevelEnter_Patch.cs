@@ -12,26 +12,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
     {
 		[HarmonyPatch(nameof(CustomLevelEnter.Start))]
 		[HarmonyPostfix]
-		private static void Show(CustomLevelEnter __instance)
+		private static void Start(CustomLevelEnter __instance)
 		{
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+			foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
 			{
-                string text = txt.text;
-                Transform menuTransform = __instance.transform.parent.parent.parent.parent.parent.parent; // guys i'm really sorry please forgive me
-                string customIZStringKey = StringStore.translationString.FirstOrDefault(x => x.Value == text).Key + "_IZ"; // dawg what the fuck
-                bool hasCustomIZString = StringStore.translationString.ContainsKey(customIZStringKey);
-
-                if (hasCustomIZString && menuTransform.name.Contains("IZMenu"))
-                {
-                    txt.text = StringStore.TranslateText(customIZStringKey);
-                }
-                else
-                {
-                    txt.text = StringStore.TranslateText(text);
-                }
-
+				string originalKey = StringStore.translationString.FirstOrDefault(x => x.Value == txt.text).Key;
+				txt.text = (StringStore.translationString.ContainsKey(originalKey + "_IZ")) ? StringStore.TranslateText(originalKey + "_IZ") : StringStore.TranslateText(txt.text);
                 txt.font = fontAsset;
             }
 		}
