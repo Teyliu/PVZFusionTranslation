@@ -79,6 +79,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
 
         public static string TranslateHPText(string originalText, Zombie __instance)
         {
+            if(originalText == null)
+            {
+                return originalText;
+            }
+
             string finalText = __instance.healthText.text;
             int fIndex = -1;
             bool found = false;
