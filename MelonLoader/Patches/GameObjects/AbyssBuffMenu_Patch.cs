@@ -76,11 +76,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                 text.font = fontAsset;
             }
-
-            foreach(AbyssBuffWindow window in __instance.GetComponentsInChildren<AbyssBuffWindow>())
-            {
-                window.buffName.autoSizeTextContainer = true;
-            }
         }
 
         public static void LoadAbyssBuffData()

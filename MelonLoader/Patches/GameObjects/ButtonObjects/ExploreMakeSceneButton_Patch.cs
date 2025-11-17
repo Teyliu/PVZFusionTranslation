@@ -13,7 +13,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 		[HarmonyPatch(nameof(ExploreMakeSceneButton.Start))]
 		public static void Start(ExploreMakeSceneButton __instance)
 		{
-			__instance.sceneText.text = StringStore.TranslateText(__instance.sceneText.text);
+			__instance.sceneText.text = (StringStore.translationString.ContainsKey(__instance.sceneText.text + "_FS")) ? StringStore.TranslateText(__instance.sceneText.text + "_FS") : StringStore.TranslateText(__instance.sceneText.text);
 			__instance.sceneText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
         }
 	}

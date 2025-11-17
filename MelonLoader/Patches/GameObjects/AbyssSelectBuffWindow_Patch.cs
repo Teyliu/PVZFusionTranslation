@@ -33,7 +33,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 if (AbyssBuffMenu_Patch.abyssBuffData.ContainsKey(titleText.text))
                 {
-                    titleText.text = AbyssBuffMenu_Patch.abyssBuffData[titleText.text];
+                    if(titleText.name.Contains("shadow"))
+                    {
+                        titleText.text = Utils.RemoveColorTags(AbyssBuffMenu_Patch.abyssBuffData[titleText.text]);
+                    }
+                    else
+                    {
+                        titleText.text = AbyssBuffMenu_Patch.abyssBuffData[titleText.text];
+                    }
                 }
                 titleText.font = fontAsset;
             }
