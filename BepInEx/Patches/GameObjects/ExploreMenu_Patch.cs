@@ -20,17 +20,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             }
 
             Transform randomLevelTextTransform = __instance.transform.FindChild("RandomLevel");
-            foreach (TextMeshProUGUI txt in randomLevelTextTransform.GetComponentsInChildren<TextMeshProUGUI>())
-            {
-                if (txt.name.Contains("Text (TMP)"))
-                {
-                    txt.autoSizeTextContainer = true;
-                    if (txt.name == "Text (TMP)")
-                    {
-                        txt.transform.localPosition = new Vector3(94.4225f, -45.1565f, 0f);
-                    }
-                }
-            }
+            //foreach (TextMeshProUGUI txt in randomLevelTextTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            //{
+            //    if (txt.name.Contains("Text (TMP)"))
+            //    {
+            //        txt.autoSizeTextContainer = true;
+            //        if (txt.name == "Text (TMP)")
+            //        {
+            //            txt.transform.localPosition = new Vector3(94.4225f, -45.1565f, 0f);
+            //        }
+            //    }
+            //}
         }
 
         [HarmonyPatch(nameof(ExploreMenu.UpdateWindows))]

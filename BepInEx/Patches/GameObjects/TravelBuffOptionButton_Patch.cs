@@ -2,6 +2,9 @@
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
+using UnityEngine;
+using System.Collections.Generic;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -12,54 +15,24 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void SetBuff(TravelBuffOptionButton __instance)
         {
-            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            string buffText = (__instance.buffIndex < buffSet.Count) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
         }
 
         [HarmonyPatch(nameof(TravelBuffOptionButton.Awake))]
         [HarmonyPostfix]
         private static void Awake(TravelBuffOptionButton __instance)
         {
-            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            string buffText = (__instance.buffIndex < buffSet.Count) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
         }
 
         [HarmonyPatch(nameof(TravelBuffOptionButton.OnAnimOver))]
         [HarmonyPostfix]
         private static void OnAnimOver(TravelBuffOptionButton __instance)
         {
-            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            string buffText = (__instance.buffIndex < buffSet.Count) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
         }
-
-        [HarmonyPatch(nameof(TravelBuffOptionButton.SetBackground))]
-        [HarmonyPostfix]
-        private static void SetBackground(TravelBuffOptionButton __instance)
-        {
-            __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
-        }
-        //[HarmonyPatch(nameof(TravelMenuMgr.SetText))]
-        //[HarmonyPostfix]
-        //private static void SetText(TravelMenuMgr __instance)
-        //{
-        //	foreach(TextMeshProUGUI text in __instance.textMesh)
-        //	{
-        //		text.text = StringStore.TranslateText(text.text);
-        //	}
-        //	foreach(TextMeshProUGUI text in __instance.textMeshShadow)
-        //	{
-        //		text.text = StringStore.TranslateText(text.text);
-        //	}
-        //}
-        //[HarmonyPatch(nameof(TravelMenuMgr.SetRichText), [typeof(int), typeof(int), typeof(TextMeshProUGUI), typeof(string)])]
-        //[HarmonyPostfix]
-        //private static void SetRichText(TravelMenuMgr __instance)
-        //{
-        //	foreach(TextMeshProUGUI text in __instance.textMesh)
-        //	{
-        //		text.text = StringStore.TranslateText(text.text);
-        //	}
-        //	foreach(TextMeshProUGUI text in __instance.textMeshShadow)
-        //	{
-        //		text.text = StringStore.TranslateText(text.text);
-        //	}
-        //}
     }
 }

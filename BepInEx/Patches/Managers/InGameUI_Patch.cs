@@ -25,6 +25,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             TextMeshProUGUI[] array2 = array;
             for (int i = 0; i < array2.Length; i++)
             {
+                string originalText = array2[i].text;
                 array2[i].text = array2[i].text.Replace("\n", " ");
                 Regex checkFusionChallenge = new Regex("^超级([^\\s：]+)(：?挑战1?)");
 
@@ -42,7 +43,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 }
                 else
                 {
-                    array2[i] = StringStore.TranslateText(array2[i]);
+                    array2[i].text = (StringStore.translationString.ContainsKey(array2[i].text + "_MG")) ? StringStore.TranslateText(array2[i].text + "_MG") : StringStore.TranslateText(array2[i].text);
                     array2[i].text = array2[i].text.Replace("\n", " ");
                 }
             }

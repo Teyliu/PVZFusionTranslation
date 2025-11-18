@@ -6,9 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using BepInEx;
-using BepInEx.Configuration;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using TMPro;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
@@ -281,58 +278,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
 
             return theZombieName;
-        }
-
-        public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
-
-        public static void RegisterPlantIndices()
-        {
-            plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
-            string originalJson;
-            string translatedJson;
-
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-            string dumpDir = GetAssetDir(AssetType.Dumps);
-            string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
-            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-
-            if ((!File.Exists(path)))
-            {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-            }
-            else if ((!File.Exists(originalPath)))
-            {
-                Log.LogError($"LawnStrings.json file not found at path: {originalPath}");
-            }
-
-            else
-            {
-                originalJson = File.ReadAllText(originalPath);
-                translatedJson = File.ReadAllText(path);
-                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
-                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
-
-                for (int i = 0; i < originalPlantData.plants.Count; i++)
-                {
-                    PlantInfo originalPlantInfo = originalPlantData.plants[i];
-                    PlantInfo translatedPlantInfo = null;
-
-                    foreach (PlantInfo info in translatedPlantData.plants)
-                    {
-                        if (info.seedType == originalPlantInfo.seedType)
-                        {
-                            translatedPlantInfo = info;
-                        }
-                    }
-
-                    if (translatedPlantInfo != null)
-                    {
-                        KeyValuePair<int, string> temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
-                        plantIndices.Add(originalPlantInfo.seedType, temp);
-                    }
-                }
-            }
         }
 
         public static bool CheckForUntranslatedText(string text)

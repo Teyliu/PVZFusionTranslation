@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
@@ -14,7 +15,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             foreach (TravelBuffOptionButton button in __instance.options)
             {
-                button.introduce.text = StringStore.TranslateText(button.introduce.text);
+                button.introduce.text = translatedTravelBuffs[buffLinks[button.buffType]][button.buffIndex];
             }
         }
     }

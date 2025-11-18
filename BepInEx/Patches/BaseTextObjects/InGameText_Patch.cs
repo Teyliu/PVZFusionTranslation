@@ -1,7 +1,8 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 {
@@ -25,7 +26,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 			
 			foreach (TextMeshProUGUI txt in __instance.textMeshes)
 			{
-				txt.text = StringStore.TranslateText(txt.text, true);
+                string travelMatch = TravelMgr_Patch.MatchTravelBuff(txt.text);
+
+                if (travelMatch != "")
+                {
+                    txt.text = travelMatch;
+                }
+                else
+                {
+                    txt.text = StringStore.TranslateText(txt.text, true);
+                }
                 txt.font = fontAsset;
 			}
 		}

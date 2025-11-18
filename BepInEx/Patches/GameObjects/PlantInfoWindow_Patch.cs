@@ -21,7 +21,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                if(txt.name.Contains("Introduce") && thePlant != null)
+                if (txt.name.Contains("Introduce") && thePlant != null)
                 {
                     PlantType thePlantType = thePlant.thePlantType;
                     txt.text = StringStore.TranslateText(txt.text);

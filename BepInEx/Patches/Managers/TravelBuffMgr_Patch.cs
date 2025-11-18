@@ -1,5 +1,7 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {

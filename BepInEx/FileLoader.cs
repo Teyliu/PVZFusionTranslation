@@ -7,6 +7,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {
@@ -277,8 +278,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
             string LawnStrings = Resources.Load<TextAsset>("LawnStrings").text;
             string ZombieStrings = Resources.Load<TextAsset>("ZombieStrings").text;
+            string AbyssBuffData = Resources.Load<TextAsset>("AbyssBuffData").text;
             File.WriteAllText(Path.Combine(dumpDir, "LawnStrings.json"), LawnStrings);
             File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
+            File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
             Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
             foreach (var entry in AchievementClip.achievementsText)

@@ -122,10 +122,10 @@
 		<Compile Include="Patches\BaseTextObjects\TextMeshPro_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TextMeshProUGUI_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_InputField_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AbyssBagMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssCheckInBag_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssDevelopMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AbyssMenu2_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AbyssSelectBuffWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
@@ -136,6 +136,8 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssLevelEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\CustomLevelEnter_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\InGameBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\MainMenu_Btn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
@@ -150,6 +152,7 @@
 		<Compile Include="Patches\GameObjects\CustomSettings_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CustomSun_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ExploreEnterWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ExploreMakeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ExploreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\FruitNinjaSelectWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GardenBagMenu_Patch.cs" />
@@ -199,8 +202,11 @@
 		<Compile Include="Patches\GameObjects\TreasureWarehouseMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIDifficulty_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIZombieNum_Patch.cs" />
+		<Compile Include="Patches\Managers\AbyssBuffData_Patch.cs" />
+		<Compile Include="Patches\Managers\AbyssInfo_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacPlantBank_Patch.cs" />
+		<Compile Include="Patches\Managers\CanvasUpUI_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
 		<Compile Include="Patches\Managers\DifficultyMgr_Patch.cs" />
@@ -214,6 +220,7 @@
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\TravelBuffMgr_Patch.cs" />
+		<Compile Include="Patches\Managers\TravelMgr_Patch.cs" />
 		<Compile Include="Patches\Managers\TreasureManager_Patch.cs" />
 		<Compile Include="Patches\Managers\UIMgr_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
@@ -585,7 +592,8 @@
 
 <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins&quot;" />
-	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePathMelon)\Translation Builds\&quot;" />
+	<!--<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePathMelon)\Translation Builds\&quot;" />-->
+	
 </Target>
 
 </Project>

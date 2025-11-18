@@ -80,6 +80,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
 
         public static string TranslateHPText(string originalText, Zombie __instance)
         {
+            if(originalText == null)
+            {
+                return originalText;
+            }
             string finalText = __instance.healthText.text;
             int fIndex = -1;
             bool found = false;
@@ -147,46 +151,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
                 {
                     case 0:
                         finalText = string.Format(fStr, __instance.lastDamage, DPS, __instance.totalDamage);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return finalText;
-        }
-
-        public static string TranslateHPText(string originalText, Zombie __instance)
-        {
-            string finalText = __instance.healthText.text;
-            int fIndex = -1;
-            bool found = false;
-
-            for (int i = 0; i < HPStrings.Count; i++)
-            {
-                var hp = HPStrings.ElementAt(i);
-                Regex regex = new Regex(hp.Key);
-                if (regex.IsMatch(originalText))
-                {
-                    fIndex = i;
-                    found = true;
-                }
-            }
-
-            if (fIndex > -1 && found)
-            {
-                string fStr = HPStrings.ElementAt(fIndex).Value;
-
-                switch (fIndex)
-                {
-                    case 1:
-                        finalText = string.Format(fStr, __instance.theHealth, __instance.theMaxHealth, __instance.theFirstArmorHealth, __instance.theFirstArmorMaxHealth, __instance.theSecondArmorHealth, __instance.theSecondArmorMaxHealth);
-                        break;
-                    case 2:
-                        finalText = string.Format(fStr, __instance.theHealth, __instance.theMaxHealth, __instance.theFirstArmorHealth, __instance.theFirstArmorMaxHealth);
-                        break;
-                    case 3:
-                        finalText = string.Format(fStr, __instance.theHealth, __instance.theMaxHealth);
                         break;
                     default:
                         break;
