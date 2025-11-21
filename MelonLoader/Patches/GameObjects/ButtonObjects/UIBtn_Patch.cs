@@ -16,7 +16,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             if(__instance.TryGetComponent<BackToIndex>(out BackToIndex component))
             {
-                Log.LogDebug("found BackToIndex class");
                 Utils.ConvertButtonText(__instance.transform.parent, "BackToIndex");
             }
         }
