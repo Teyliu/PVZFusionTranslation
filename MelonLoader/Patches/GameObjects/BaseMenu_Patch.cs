@@ -114,6 +114,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         StringStore.TranslateTextTransform(pageEndlessLevelTransform.Find("LastPage"));
                     }
 
+                    Transform pageNewAdvantureLevelTransform = levelsTransform.transform.Find("PageNewAdvantureLevel");
+                    if (pageNewAdvantureLevelTransform != null)
+                    {
+                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("BackToIndex"));
+                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("Nextpage"));
+                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("LastPage"));
+                    }
+
                     foreach (TextMeshProUGUI txt in mainTransform.GetComponentsInChildren<TextMeshProUGUI>())
                     {
                         txt.text = StringStore.TranslateText(txt.text);
