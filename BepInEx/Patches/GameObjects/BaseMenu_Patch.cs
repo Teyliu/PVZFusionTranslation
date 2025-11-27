@@ -114,6 +114,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         StringStore.TranslateTextTransform(pageEndlessLevelTransform.Find("LastPage"));
                     }
 
+                    Transform pageNewAdvantureLevelTransform = levelsTransform.transform.Find("PageNewAdvantureLevel");
+                    if (pageNewAdvantureLevelTransform != null)
+                    {
+                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("BackToIndex"));
+                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("Nextpage"));
+                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("LastPage"));
+                    }
+
                     foreach (TextMeshProUGUI txt in mainTransform.GetComponentsInChildren<TextMeshProUGUI>())
                     {
                         // Still dump untranslated strings for modded plants and zombies

@@ -1,89 +1,48 @@
 ﻿using HarmonyLib;
-using System;
-using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using TMPro;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
-	[HarmonyPatch(typeof(OppositeBuffManager))]
-	public static class OppositeBuffManager_Patch
-	{
-#if TESTING
-		[HarmonyPatch(nameof(OppositeBuffManager.InitBuffPool))]
-		[HarmonyPostfix]
-		private static void InitBuffPool(OppositeBuffManager __instance)
-		{
-			foreach(TextMeshProUGUI text in __instance.textA_bad)
-			{
-				string stripText = text.text.Replace("但", "");
-				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
-				text.text = replacementText;
-			}
-			foreach(TextMeshProUGUI text in __instance.textA_good)
-			{
-				text.text = StringStore.TranslateText(text.text);
-			}
+    [HarmonyPatch(typeof(OppositeBuffManager))]
+    public static class OppositeBuffManager_Patch
+    {
+        public static Dictionary<BuffType, string> buffLinks = TravelMgr_Patch.buffLinks;
+        public static Dictionary<string, List<string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
+        public static string badPattern = @"^但(.*)";
+        public static string badFormat = StringStore.translationStringRegex.ContainsKey(badPattern) ? StringStore.translationStringRegex[badPattern] : "But, {0}";
+        public static TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-			foreach(TextMeshProUGUI text in __instance.textB_bad)
-			{
-				string stripText = text.text.Replace("但", "");
-				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
-				text.text = replacementText;
-			}
-			foreach(TextMeshProUGUI text in __instance.textB_good)
-			{
-				text.text = StringStore.TranslateText(text.text);
-			}
-		}
+        [HarmonyPatch(nameof(OppositeBuffManager.Awake))]
+        [HarmonyPostfix]
+        private static void Awake(OppositeBuffManager __instance)
+        {
+            TranslateOppositeText(__instance.textA_bad, BuffType.Debuff, __instance.buffA.theDebuffID, true);
+            TranslateOppositeText(__instance.textA_good, __instance.buffA.theOptionType, __instance.buffA.theOptionID);
+            TranslateOppositeText(__instance.textB_bad, BuffType.Debuff, __instance.buffB.theDebuffID, true);
+            TranslateOppositeText(__instance.textB_good, __instance.buffB.theOptionType, __instance.buffB.theOptionID);
+        }
 
-		[HarmonyPatch(nameof(OppositeBuffManager.SetText), new Type[] { typeof(TextMeshProUGUI), typeof(BuffType), typeof(int)})]
-		[HarmonyPostfix]
-		private static void SetText(OppositeBuffManager __instance)
-		{
-			foreach(TextMeshProUGUI text in __instance.textA_bad)
-			{
-				string stripText = text.text.Replace("?", "");
-				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
-				text.text = replacementText;
-			}
-			foreach(TextMeshProUGUI text in __instance.textA_good)
-			{
-				text.text = StringStore.TranslateText(text.text);
-			}
+        public static void TranslateOppositeText(Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> textList, BuffType buffType, int buffIndex, bool isBad = false)
+        {
+            string buff = translatedTravelBuffs[buffLinks[buffType]][buffIndex];
 
-			foreach(TextMeshProUGUI text in __instance.textB_bad)
-			{
-				string stripText = text.text.Replace("但", "");
-				string translatedText = StringStore.TranslateText(stripText);
-				string replacementText = StringStore.translationString["但"] + translatedText;
-				text.text = replacementText;
-			}
-			foreach(TextMeshProUGUI text in __instance.textB_good)
-			{
-				text.text = StringStore.TranslateText(text.text);
-			}
-		}
-#endif
+            foreach (var text in textList)
+            {
+                if (isBad)
+                {
+                    text.text = string.Format(badFormat, buff);
+                }
+                else
+                {
+                    text.text = buff;
+                }
 
-        [HarmonyPatch(nameof(OppositeBuffManager.SetText), new Type[] { typeof(TextMeshProUGUI), typeof(BuffType), typeof(int)})]
-		[HarmonyPostfix]
-		private static void SetText(OppositeBuffManager __instance, ref TextMeshProUGUI text)
-		{
-			StringStore.TranslateTextUI(text);
-		}
-
-		[HarmonyPatch(nameof(OppositeBuffManager.Awake))]
-		[HarmonyPostfix]
-		private static void Awake(OppositeBuffManager __instance)
-		{
-			StringStore.TranslateTextUI(__instance.textA_bad[0]);
-			StringStore.TranslateTextUI(__instance.textA_bad[1]);
-			StringStore.TranslateTextUI(__instance.textB_bad[0]);
-			StringStore.TranslateTextUI(__instance.textB_bad[1]);
-		}
-
-	}
+                text.font = fontAsset;
+            }
+        }
+    }
 }

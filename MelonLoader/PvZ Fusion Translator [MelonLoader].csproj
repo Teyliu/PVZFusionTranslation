@@ -401,7 +401,7 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\OppositeBuffManager_Patch.cs" />
+		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\BackToIndex_Patch.cs" />
@@ -494,7 +494,6 @@
 		<Compile Include="Patches\Managers\InGameUI_Patch.cs" />
 		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\MenuText_Patch.cs" />
-		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptionBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptLanguageBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\PauseMenu_Btn_Patch.cs" />
