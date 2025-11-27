@@ -178,5 +178,23 @@ namespace PvZ_Fusion_Translator.Patches.Managers
                 banTransform.GetComponent<TextMeshPro>().text = StringStore.TranslateText(banTransform.GetComponent<TextMeshPro>().text);
             }
         }
+
+		[HarmonyPatch(nameof(AlmanacPlantBank.Start))]
+		[HarmonyPostfix]
+		public static void Post_Start(AlmanacPlantBank __instance)
+		{
+            GameObject skinTextObj = __instance.skinButton.transform.GetChild(0).gameObject;
+            GameObject skinShadowTextObj = UnityEngine.Object.Instantiate(skinTextObj, parent: __instance.skinButton.transform);
+            TextMeshPro skinShadowText = skinShadowTextObj.GetComponent<TextMeshPro>();
+            skinShadowText.text = StringStore.TranslateText("换肤_S");
+            skinShadowText.sortingOrder -= 2;
+            skinShadowTextObj.transform.Translate(new Vector3(0.015f, -0.015f, 0));
+			skinTextObj.transform.Translate(new Vector3(-0.022f, 0));
+            skinShadowTextObj.transform.Translate(new Vector3(-0.022f, 0));
+            __instance.skinButton.transform.localScale /= 1.75f;
+            __instance.skinButton.transform.Translate(new Vector3(-0.075f, -0.15f, 0));
+			__instance.skinButton.transform.GetChild(1).Translate(new Vector3(0.35f, 0));
+			__instance.skinButton.transform.GetChild(2).Translate(new Vector3(-0.35f, 0));
+        }
 	}
 }
