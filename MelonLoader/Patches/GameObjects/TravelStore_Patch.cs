@@ -19,7 +19,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 if(__instance.currentSelect != null)
                 {
                     var buffList = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]];
-                    if(__instance.currentSelect.theBuffNumber < buffList.Count)
+                    if(__instance.currentSelect.theBuffNumber < buffList.Count && __instance.currentSelect.theBuffNumber > -1)
                     {
                         text.text = buffList[__instance.currentSelect.theBuffNumber];
                     }
@@ -50,7 +50,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             {
                 if (__instance.currentSelect != null)
                 {
-                    text.text = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]][__instance.currentSelect.theBuffNumber];
+                    var buffList = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]];
+                    if (__instance.currentSelect.theBuffNumber < buffList.Count && __instance.currentSelect.theBuffNumber > -1)
+                    {
+                        text.text = buffList[__instance.currentSelect.theBuffNumber];
+                    }
+                    else
+                    {
+                        text.text = StringStore.TranslateText(text.text);
+                    }
                 }
             }
             foreach (var textMesh in __instance.points)
