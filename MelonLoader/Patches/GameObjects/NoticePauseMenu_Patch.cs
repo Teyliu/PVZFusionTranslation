@@ -14,7 +14,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		[HarmonyPatch(nameof(NoticeMenu.Awake))]
 		private static void Pre_Awake(NoticeMenu __instance)
 		{
-            GameObject contentObject = __instance.transform.FindChild("Scroll View").GetChild(0).GetChild(0).gameObject; //bc normal Find or FindChild didn't work
+            GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
             TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
             File.WriteAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "changelog.txt"), contentText.text);

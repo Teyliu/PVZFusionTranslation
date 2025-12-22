@@ -14,13 +14,13 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 		[HarmonyPostfix]
 		private static void InitNameAndInfoFromJson(AlmanacMgrZombie __instance)
 		{
-			#if MULTI_LANGUAGE
+#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-			#else
+#else
 			string almanacDir = almanacDir = GetAssetDir(AssetType.Almanac);
 			string currentLanguage = "English";
-			#endif
+#endif
 			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
 			string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
 
@@ -30,13 +30,13 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				return;
 			}
 
-			#if OBFUSCATE
+#if OBFUSCATE
 			if (CheckSumStore.IsModified(path))
 			{
 				Log.LogError("File {0} was modified!", path);
 				return;
 			}
-			#endif
+#endif
 
 			string json;
 			json = File.ReadAllText(path);
@@ -49,19 +49,19 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				hasAlmanacFont = true;
 			}
 
-			#if MULTI_LANGUAGE
+#if MULTI_LANGUAGE
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
-			#else
+#else
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
-			#endif
+#endif
 
 			TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
 			TextMeshPro component2 = __instance.zombieName.GetComponent<TextMeshPro>();
 			TextMeshPro component3 = __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>();
 
-			AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
+			ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
 
-			foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
+			foreach (ZombieInfo zombieInfo in zombieData.zombies)
 			{
 				if (zombieInfo.theZombieType == __instance.theZombieType)
 				{
@@ -86,9 +86,9 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				string moddedJson;
 				moddedJson = File.ReadAllText(moddedPath);
 
-				AlmanacMgrZombie.ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(moddedJson);
+				ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(moddedJson);
 
-				foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in moddedZombieData.zombies)
+				foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
 				{
 					if (zombieInfo.theZombieType == __instance.theZombieType)
 					{
