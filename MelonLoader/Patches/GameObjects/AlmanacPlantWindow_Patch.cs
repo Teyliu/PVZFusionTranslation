@@ -43,8 +43,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 {
                     foreach (TextMeshProUGUI text in __instance.showedPlantName)
                     {
+                        text.autoSizeTextContainer = false;
                         text.text = $"{Utils.RemoveSizeTags(plantInfo.name)} ({plantInfo.seedType})";
                         text.font = fontAsset;
+                        text.fontSizeMax = 21;
                     }
 
                     __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n";
