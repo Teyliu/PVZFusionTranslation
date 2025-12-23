@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>D:\PvZ Fusion\Game Files</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.2.1</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -401,8 +401,17 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacZombieWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacZombieMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacPlantMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacPlantWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\Almanac_Patch.cs" />
+		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
+		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\BackToIndex_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\UIBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ExploreMakeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSelectBuffWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\SpriteRenderer_Patch.cs" />
@@ -491,7 +500,6 @@
 		<Compile Include="Patches\Managers\InGameUI_Patch.cs" />
 		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\MenuText_Patch.cs" />
-		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptionBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptLanguageBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\PauseMenu_Btn_Patch.cs" />
@@ -521,5 +529,6 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Mods\&quot;" />
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Translation Builds\&quot;" />
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PVZF-Translation\&quot;" />
 	</Target>
 </Project>

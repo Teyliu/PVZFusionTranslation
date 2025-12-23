@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 {

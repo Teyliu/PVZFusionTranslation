@@ -4,6 +4,7 @@ using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using static PvZ_Fusion_Translator.Patches.Managers.TravelMgr_Patch;
 using UnityEngine;
+using MelonLoader;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -16,7 +17,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             foreach (TravelBuffOptionButton button in __instance.options)
             {
-                button.introduce.text = translatedTravelBuffs[buffLinks[button.buffType]][button.buffIndex];
+                List<string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
+                string buffText = (button.buffIndex < buffSet.Count && button.show != null) ? buffSet[button.buffIndex] : StringStore.TranslateText(button.introduce.text);
+                button.introduce.text = buffText;
             }
         }
     }

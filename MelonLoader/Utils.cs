@@ -80,15 +80,27 @@ namespace PvZ_Fusion_Translator
 			Process.Start(new ProcessStartInfo(website) { UseShellExecute = true });
 		}
 
-		 public static string RemoveColorTags(string text)
+		public static string RemoveColorTags(string text)
         {
-            if (string.IsNullOrEmpty(text))
+			if (string.IsNullOrEmpty(text))
                 return text ?? string.Empty;
 
             // Remove opening color tags like <color=#FF0000>
             string withoutOpenTags = Regex.Replace(text, @"<color=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
             // Remove closing color tags like </color>
             string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</color>", string.Empty, RegexOptions.IgnoreCase);
+            return withoutCloseTags;
+		}
+
+        public static string RemoveSizeTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            // Remove opening color tags like <color=#FF0000>
+            string withoutOpenTags = Regex.Replace(text, @"<size=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
+            // Remove closing color tags like </color>
+            string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</size>", string.Empty, RegexOptions.IgnoreCase);
             return withoutCloseTags;
         }
 
@@ -203,39 +215,39 @@ namespace PvZ_Fusion_Translator
             return thePlantName;
         }
 
-        public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
-        {
-            string json;
-            string theZombieName = "";
+		public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
+		{
+			string json;
+			string theZombieName = "";
 
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-            string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+			string currentLanguage = Utils.Language.ToString();
+			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
 
-            if (!File.Exists(path))
-            {
-                Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
-                Log.LogError("Zombie name could not be found!");
-                theZombieName = "";
-            }
-            else
-            {
-                json = File.ReadAllText(path);
-                AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
+			if (!File.Exists(path))
+			{
+				Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
+				Log.LogError("Zombie name could not be found!");
+				theZombieName = "";
+			}
+			else
+			{
+				json = File.ReadAllText(path);
+                ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
 
-                foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
-                {
-                    if ((int)zombieInfo.theZombieType == (int)theZombieType)
-                    {
-                        theZombieName = zombieInfo.name;
-                    }
-                }
-            }
+				foreach (ZombieInfo zombieInfo in zombieData.zombies)
+				{
+					if ((int)zombieInfo.theZombieType == (int)theZombieType)
+					{
+						theZombieName = zombieInfo.name;
+					}
+				}
+			}
 
-            return theZombieName;
-        }
+			return theZombieName;
+		}
 
-        public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+		public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
 
 		public static void RegisterPlantIndices()
 		{

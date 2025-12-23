@@ -7,170 +7,170 @@ using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Managers
 {
-	[HarmonyPatch(typeof(AlmanacPlantBank))]
-	public static partial class AlmanacPlantBank_Patch
-	{
-		[HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
-		[HarmonyPostfix]
-		private static void InitNameAndInfoFromJson(Il2Cpp.AlmanacPlantBank __instance)
-		{
-			#if MULTI_LANGUAGE
-			string currentLanguage = Utils.Language.ToString();
-			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-			#else
+    [HarmonyPatch(typeof(AlmanacPlantBank))]
+    public static partial class AlmanacPlantBank_Patch
+    {
+        [HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
+        [HarmonyPostfix]
+        private static void InitNameAndInfoFromJson(Il2Cpp.AlmanacPlantBank __instance)
+        {
+#if MULTI_LANGUAGE
+            string currentLanguage = Utils.Language.ToString();
+            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+#else
 			string almanacDir = GetAssetDir(AssetType.Almanac);
 			string currentLanguage = "English";
-			#endif
-			string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-			string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
+#endif
+            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+            string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
 
-			if (!File.Exists(path))
-			{
-				Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-				return;
-			}
+            if (!File.Exists(path))
+            {
+                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+                return;
+            }
 
-			#if OBFUSCATE
+#if OBFUSCATE
 			if (CheckSumStore.IsModified(path))
 			{
 				Log.LogError("File {0} was modified!", path);
 				return;
 			}
-			#endif
+#endif
 
-			string json;
-			json = File.ReadAllText(path);
-			
-			bool hasAlmanacFont = false;
-			TMP_FontAsset almanacFontAsset = null;
-			if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
-			{
-				almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
-				hasAlmanacFont = true;
-			}
+            string json;
+            json = File.ReadAllText(path);
 
-			#if MULTI_LANGUAGE
-			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
-			#else
+            bool hasAlmanacFont = false;
+            TMP_FontAsset almanacFontAsset = null;
+            if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
+            {
+                almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
+                hasAlmanacFont = true;
+            }
+
+#if MULTI_LANGUAGE
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
+#else
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
-			#endif
+#endif
 
-			TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-			TextMeshPro component2 = __instance.plantName.GetComponent<TextMeshPro>();
-			TextMeshPro component3 = __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>();
-			TextMeshPro component4 = __instance.cost.GetComponent<TextMeshPro>();
+            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
+            TextMeshPro component2 = __instance.plantName.GetComponent<TextMeshPro>();
+            TextMeshPro component3 = __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>();
+            TextMeshPro component4 = __instance.cost.GetComponent<TextMeshPro>();
 
-			AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+            AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
 
             foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
-			{
+            {
                 if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
-				{
-					component.autoSizeTextContainer = false;
-					component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
-					component.overflowMode = TextOverflowModes.Page;
+                {
+                    component.autoSizeTextContainer = false;
+                    component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
+                    component.overflowMode = TextOverflowModes.Page;
 
-					// fix dimensions for cost text
-					component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
-					component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
-					component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
-					component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
-					
+                    // fix dimensions for cost text
+                    component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
+                    component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
+                    component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
+                    component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
 
-					component2.text = plantInfo.name;
-					component2.autoSizeTextContainer = true;
+
+                    component2.text = plantInfo.name;
+                    component2.autoSizeTextContainer = true;
 
                     component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
-					component3.autoSizeTextContainer = true;
+                    component3.autoSizeTextContainer = true;
 
-					component4.text = plantInfo.cost;
+                    component4.text = plantInfo.cost;
 
-					if (hasAlmanacFont)
-					{
-						component.font = almanacFontAsset;
-						component4.font = almanacFontAsset;
-					}
-					else
-					{
-						component.font = fontAsset;
-						component4.font = fontAsset;
-					}
-					component2.font = fontAsset;
-					component3.font = fontAsset;
-				}
-			}
+                    if (hasAlmanacFont)
+                    {
+                        component.font = almanacFontAsset;
+                        component4.font = almanacFontAsset;
+                    }
+                    else
+                    {
+                        component.font = fontAsset;
+                        component4.font = fontAsset;
+                    }
+                    component2.font = fontAsset;
+                    component3.font = fontAsset;
+                }
+            }
 
-			if (File.Exists(moddedPath))
-			{
-				string moddedJson;
-				moddedJson = File.ReadAllText(moddedPath);
+            if (File.Exists(moddedPath))
+            {
+                string moddedJson;
+                moddedJson = File.ReadAllText(moddedPath);
 
-				AlmanacPlantBank.PlantData moddedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(moddedJson);
+                AlmanacPlantBank.PlantData moddedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(moddedJson);
 
                 foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
-				{
+                {
                     if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
-					{
-						component.autoSizeTextContainer = false;
-						component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
-						component.overflowMode = TextOverflowModes.Page;
+                    {
+                        component.autoSizeTextContainer = false;
+                        component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
+                        component.overflowMode = TextOverflowModes.Page;
 
-						// fix dimensions for cost text
-						component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
-						component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
-						component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
-						component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
-					
+                        // fix dimensions for cost text
+                        component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
+                        component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
+                        component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
+                        component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
 
-						component2.text = plantInfo.name;
-						component2.autoSizeTextContainer = true;
+
+                        component2.text = plantInfo.name;
+                        component2.autoSizeTextContainer = true;
 
                         component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
-						component3.autoSizeTextContainer = true;
+                        component3.autoSizeTextContainer = true;
 
-						component4.text = plantInfo.cost;
+                        component4.text = plantInfo.cost;
 
-						if (hasAlmanacFont)
-						{
-							component.font = almanacFontAsset;
-							component4.font = almanacFontAsset;
-						}
-						else
-						{
-							component.font = fontAsset;
-							component4.font = fontAsset;
-						}
-						component2.font = fontAsset;
-						component3.font = fontAsset;
-					}
-				}
-			}
+                        if (hasAlmanacFont)
+                        {
+                            component.font = almanacFontAsset;
+                            component4.font = almanacFontAsset;
+                        }
+                        else
+                        {
+                            component.font = fontAsset;
+                            component4.font = fontAsset;
+                        }
+                        component2.font = fontAsset;
+                        component3.font = fontAsset;
+                    }
+                }
+            }
 
             return;
-		}
+        }
 
-		[HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
-		[HarmonyPrefix]
-		private static bool OnMouseDown(AlmanacPlantBank __instance)
-		{
-			TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-			if (component != null)
-			{
-				component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ? 1 : component.pageToDisplay + 1;
-				return false;
-			}
-			return true;
-		}
+        [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
+        [HarmonyPrefix]
+        private static bool OnMouseDown(AlmanacPlantBank __instance)
+        {
+            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
+            if (component != null)
+            {
+                component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ? 1 : component.pageToDisplay + 1;
+                return false;
+            }
+            return true;
+        }
 
-		[HarmonyPatch(nameof(AlmanacPlantBank.PVPInit))]
-		[HarmonyPostfix]
-		private static void PVPInit(Il2Cpp.AlmanacPlantBank __instance)
-		{
-			TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-			if (component != null)
-			{
-				component.autoSizeTextContainer = false;
-			}
+        [HarmonyPatch(nameof(AlmanacPlantBank.PVPInit))]
+        [HarmonyPostfix]
+        private static void PVPInit(Il2Cpp.AlmanacPlantBank __instance)
+        {
+            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
+            if (component != null)
+            {
+                component.autoSizeTextContainer = false;
+            }
 
             Transform banTransform = __instance.transform.FindChild("Ban").GetChild(0);
             if (banTransform != null)
@@ -178,5 +178,23 @@ namespace PvZ_Fusion_Translator.Patches.Managers
                 banTransform.GetComponent<TextMeshPro>().text = StringStore.TranslateText(banTransform.GetComponent<TextMeshPro>().text);
             }
         }
-	}
+
+        [HarmonyPatch(nameof(AlmanacPlantBank.Start))]
+        [HarmonyPostfix]
+        public static void Post_Start(AlmanacPlantBank __instance)
+        {
+            GameObject skinTextObj = __instance.skinButton.transform.GetChild(0).gameObject;
+            GameObject skinShadowTextObj = UnityEngine.Object.Instantiate(skinTextObj, parent: __instance.skinButton.transform);
+            TextMeshPro skinShadowText = skinShadowTextObj.GetComponent<TextMeshPro>();
+            skinShadowText.text = StringStore.TranslateText("换肤_S");
+            skinShadowText.sortingOrder -= 2;
+            skinShadowTextObj.transform.Translate(new Vector3(0.015f, -0.015f, 0));
+            skinTextObj.transform.Translate(new Vector3(-0.022f, 0));
+            skinShadowTextObj.transform.Translate(new Vector3(-0.022f, 0));
+            __instance.skinButton.transform.localScale /= 1.75f;
+            __instance.skinButton.transform.Translate(new Vector3(-0.075f, -0.15f, 0));
+            __instance.skinButton.transform.GetChild(1).Translate(new Vector3(0.35f, 0));
+            __instance.skinButton.transform.GetChild(2).Translate(new Vector3(-0.35f, 0));
+        }
+    }
 }
