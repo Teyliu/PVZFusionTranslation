@@ -49,7 +49,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         text.fontSizeMax = 21;
                     }
 
-                    __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n";
+                    __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n" + Utils.RemoveSizeTags(plantInfo.cost) + "\n\n";
                     __instance.showedPlantIntroduce.font = fontAsset;
                     __instance.showedPlantIntroduce.margin = new Vector4(6, 2, 12, 0);
 
