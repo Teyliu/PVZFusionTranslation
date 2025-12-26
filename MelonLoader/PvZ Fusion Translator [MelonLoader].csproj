@@ -406,6 +406,7 @@
 		<Compile Include="Patches\GameObjects\AlmanacPlantMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacPlantWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Almanac_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\Brain_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlantDamageMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveOptionWindow_Patch.cs" />
