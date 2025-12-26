@@ -406,6 +406,9 @@
 		<Compile Include="Patches\GameObjects\AlmanacPlantMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacPlantWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Almanac_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlantDamageMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\EveBuffMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\EveOptionWindow_Patch.cs" />
 		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
 		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
