@@ -7,6 +7,7 @@ using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static Il2Cpp.AlmanacPlantBank;
 using static PvZ_Fusion_Translator.FileLoader;
 using static PvZ_Fusion_Translator.Utils;
 
@@ -50,7 +51,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         public static bool SearchChanged(AlmanacPlantMenu __instance, ref TMP_InputField inputField)
         {
             string search = inputField.text;
-            if (search != StringStore.TranslateText("搜索"))
+            if (search != StringStore.TranslateText("搜索") && search != "")
             {
                 string currentLanguage = Utils.Language.ToString();
                 string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
@@ -62,30 +63,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                 TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
 
-                AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+                PlantData plantData = JsonUtility.FromJson<PlantData>(json);
 
                 Il2CppSystem.Collections.Generic.List<PlantType> searchedPlants = new();
 
-                foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+                foreach (PlantInfo plantInfo in plantData.plants)
                 {
-                    //List<int> uniqueIngredients = GetIngredients(plantInfo.seedType);
-
-                    //// ingredient-based search
-
-                    //foreach(int i in uniqueIngredients)
-                    //{
-                    //    string name = Utils.GetPlantNameFromAlmanac((PlantType)i);
-
-                    //    if(name.ToLower().Contains(search.ToLower()))
-                    //    {
-                    //        searchedPlants.Add((PlantType)i);
-                    //    }
-                    //}
-
-                    // keyword-based search
-
-                    // name-based search
-
                     if (plantInfo.name.ToLower().Contains(search.ToLower()))
                     {
                         searchedPlants.Add((PlantType)plantInfo.seedType);
@@ -98,66 +81,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
 
             return true;
-        }
-
-        private static List<int> GetIngredients(int theSeedType)
-        {
-            List<int> ingredientPairs = new();
-            Il2CppSystem.Array mixData = MixData.data.Cast<Il2CppSystem.Array>();
-            int rows = mixData.GetLength(0);
-            int columns = mixData.GetLength(1);
-
-            for(int i = 0; i < rows; i++)
-            {
-                for(int j = 0; j < columns; j++)
-                {
-                    if(ContainsFormula(theSeedType))
-                    {
-                        if (mixData.GetValue(i, j).Unbox<int>() == theSeedType)
-                        {
-                            if (!ingredientPairs.Contains(i))
-                            {
-                                ingredientPairs.Add(i);
-                            }
-
-                            if (!ingredientPairs.Contains(j))
-                            {
-                                ingredientPairs.Add(j);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return ingredientPairs;
-                    }
-                    
-                }
-            }
-
-            return ingredientPairs;
-        }
-
-        private static bool ContainsFormula(int theSeedType)
-        {
-            bool contains = false;
-
-            Il2CppSystem.Array mixData = MixData.data.Cast<Il2CppSystem.Array>();
-            int rows = mixData.GetLength(0);
-            int columns = mixData.GetLength(1);
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < columns; j++)
-                {
-                    if (mixData.GetValue(i, j).Unbox<int>() == theSeedType)
-                    {
-                        contains = true;
-                        return contains;
-                    }
-                }
-            }
-
-            return contains;
         }
     }
 }

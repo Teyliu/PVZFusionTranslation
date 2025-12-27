@@ -38,7 +38,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             string changelogText = File.ReadAllText(changelogDir);
 
-            GameObject contentObject = __instance.transform.FindChild("Scroll View").GetChild(0).GetChild(0).gameObject; //bc normal Find or FindChild didn't work
+            GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
             
 			TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
             contentText.text = changelogText;

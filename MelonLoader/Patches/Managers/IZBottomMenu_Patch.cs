@@ -14,24 +14,19 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 		[HarmonyPostfix]
 		public static void ChangeStringz(IZBottomMenu __instance)
 		{
-			TextMeshProUGUI[] array =
-            [
-                __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>(),
-				__instance.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>(),
-			];
-			for (int i = 0; i < array.Length; i++)
+			foreach(TextMeshProUGUI text in __instance.levelName)
 			{
                 string fStr = StringStore.translationStringRegex["([^\\s]+)，推荐难度：(\\d+)"];
-                string[] parts = array[i].text.Split("，推荐难度：");
+                string[] parts = text.text.Split("，推荐难度：");
 
-                if(new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(array[i].text))
+                if(new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(text.text))
                 {
                     string customName = (StringStore.translationString.ContainsKey(parts[0] + "_IZ")) ? parts[0] + "_IZ" : parts[0];
-                    array[i].text = string.Format(fStr, StringStore.TranslateText(customName), parts[1]);
+                    text.text = string.Format(fStr, StringStore.TranslateText(customName), parts[1]);
                 }
-                
-                array[i] = StringStore.TranslateText(array[i]);
-				array[i].text = array[i].text.Replace("\n", " ");
+
+                text.text = StringStore.TranslateText(text.text);
+                text.text = text.text.Replace("\n", " ");
 			}
 		}
 
@@ -39,23 +34,18 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         [HarmonyPostfix]
         public static void SetLevelName(IZBottomMenu __instance)
         {
-            TextMeshProUGUI[] array =
-            [
-                __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>(),
-                __instance.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>(),
-            ];
-            for (int i = 0; i < array.Length; i++)
+            foreach(TextMeshProUGUI text in __instance.levelName)
             {
                 string fStr = StringStore.translationStringRegex["([^\\s]+)，推荐难度：(\\d+)"];
-                string[] parts = array[i].text.Split("，推荐难度：");
+                string[] parts = text.text.Split("，推荐难度：");
 
-                if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(array[i].text))
+                if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(text.text))
                 {
-                    array[i].text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
+                    text.text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
                 }
 
-                array[i] = StringStore.TranslateText(array[i]);
-                array[i].text = array[i].text.Replace("\n", " ");
+                text.text = StringStore.TranslateText(text.text);
+                text.text = text.text.Replace("\n", " ");
             }
         }
     }

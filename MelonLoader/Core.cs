@@ -35,7 +35,7 @@ namespace PvZ_Fusion_Translator
 			AudioStore.Init();
 			FontStore.Init();
 			Utils.RegisterPlantIndices();
-
+			//Utils.RegisterRecipeLinks();
         }
 
 		public override void OnLateInitializeMelon()

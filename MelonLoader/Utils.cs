@@ -7,6 +7,7 @@ using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
@@ -298,6 +299,49 @@ namespace PvZ_Fusion_Translator
 				}
 			}
 		}
+
+		public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
+
+		public static void RegisterRecipeLinks()
+		{
+			recipeLinks.Clear();
+
+			Il2CppSystem.Array mixData = MixData.data.Cast<Il2CppSystem.Array>();
+			int rows = mixData.GetLength(0);
+			int columns = mixData.GetLength(1);
+
+			foreach (PlantType plantType in Enum.GetValues(typeof(PlantType)))
+			{
+				int seedType = (int)plantType;
+
+				recipeLinks.Add(seedType, new());
+
+				if(seedType > 0)
+				{
+                    foreach (PlantType checkType in Enum.GetValues(typeof(PlantType)))
+                    {
+						if(checkType > 0)
+						{
+                            int[] checks = [mixData.GetValue(seedType, (int)checkType).Unbox<int>(), mixData.GetValue((int)checkType, seedType).Unbox<int>()];
+
+                            if (checks[0] != 0)
+                            {
+                                recipeLinks[seedType].Add(checks[0]);
+                            }
+
+                            if (checks[1] != 0)
+                            {
+                                recipeLinks[seedType].Add(checks[1]);
+                            }
+                        }
+                    }
+                }
+				if (recipeLinks[seedType].Count > 0)
+				{
+					Log.LogDebug($"Found {recipeLinks[seedType].Count} fusions for {seedType}!");
+				}
+            }
+        }
 
 		public static bool CheckForUntranslatedText(string text)
 		{
