@@ -133,3 +133,4 @@ MelonLoader/bin/x64/Debug/net6.0/WebSocketDotNet.dll
 /BepInEx/bin/Debug/net6.0
 .HOWTO-sync-MelonLoader-from-origin-main.txt
 /MelonLoader/bin/ReleaseMulti/net6.0
+BepInEx/Patches/GameObjects/changes.txt

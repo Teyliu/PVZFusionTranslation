@@ -54,7 +54,9 @@ public class Core : BasePlugin
 		StringStore.Init();
 		FontStore.Init();
 		Utils.RegisterPlantIndices();
-		//PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
+
+        //Utils.RegisterRecipeLinks();
+        //PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
 
         InitCoroutine();
 	}

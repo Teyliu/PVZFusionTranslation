@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
@@ -13,122 +14,27 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Awake(BaseMenu __instance)
         {
-            Transform mainTransform = __instance.transform;
-            if (mainTransform != null)
+            TranslateBaseMenu(__instance, "Level");
+            TranslateBaseMenu(__instance, "Levels");
+            TranslateBaseMenu(__instance, "CustomLevel");
+        }
+
+        public static void TranslateBaseMenu(BaseMenu __instance, string levelsName)
+        {
+            Transform levels = __instance.transform.Find(levelsName);
+            if (levels != null)
             {
-                StringStore.TranslateTextTransform(mainTransform.Find("Goback"));
-                StringStore.TranslateTextTransform(mainTransform.Find("Switich"));
-
-                Transform levelTransform = mainTransform.Find("Level");
-                if (levelTransform != null)
+                List<Transform> children = levels.GetComponentsInChildren<Transform>(true).ToList();
+                foreach (Transform child in children)
                 {
-                    StringStore.TranslateTextTransform(levelTransform.Find("Nextpage"));
-                    StringStore.TranslateTextTransform(levelTransform.Find("LastPage"));
+                    if (child.name == "Nextpage" || child.name == "LastPage" || child.name == "BackToIndex")
+                    {
+                        StringStore.TranslateTextTransform(child);
+                    }
                 }
 
-                Transform customLevelTransform = mainTransform.Find("CustomLevel");
-                if (customLevelTransform != null)
-                {
-                    StringStore.TranslateTextTransform(customLevelTransform.Find("Nextpage"));
-                    StringStore.TranslateTextTransform(customLevelTransform.Find("LastPage"));
-                }
-
-                Transform levelsTransform = mainTransform.Find("Levels");
-                if (levelsTransform != null)
-                {
-
-                    StringStore.TranslateTextTransform(levelsTransform.Find("Nextpage"));
-                    StringStore.TranslateTextTransform(levelsTransform.Find("LastPage"));
-
-                    Transform pageMiniGamesTransform = levelsTransform.transform.Find("PageMiniGames");
-                    if (pageMiniGamesTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageMiniGamesTransform.Find("BackToIndex"));
-                        StringStore.TranslateTextTransform(pageMiniGamesTransform.Find("Nextpage"));
-                        StringStore.TranslateTextTransform(pageMiniGamesTransform.Find("LastPage"));
-                    }
-
-                    Transform pageUnlockChallengeTransform = levelsTransform.transform.Find("PageUnlockChallenge");
-                    if (pageUnlockChallengeTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageUnlockChallengeTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageFlagChallengeTransform = levelsTransform.transform.Find("PageFlagChallenge");
-                    if (pageFlagChallengeTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageFlagChallengeTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageTravelExperienceTransform = levelsTransform.transform.Find("PageTravelExperience");
-                    if (pageTravelExperienceTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageTravelExperienceTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageGardenProtectionTransform = levelsTransform.transform.Find("PageGardenProtection");
-                    if (pageGardenProtectionTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageGardenProtectionTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageNormalTravelTransform = levelsTransform.transform.Find("PageNormalTravel");
-                    if (pageNormalTravelTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageNormalTravelTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageRandomLevelTransform = levelsTransform.transform.Find("PageRandomLevel");
-                    if (pageRandomLevelTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageRandomLevelTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageUltimateExperienceTransform = levelsTransform.transform.Find("PageUltimateExprience");
-                    if (pageUltimateExperienceTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageUltimateExperienceTransform.Find("BackToIndex"));
-                    }
-
-                    Transform pageAdvantureLevelTransform = levelsTransform.transform.Find("PageAdvantureLevel");
-                    if (pageAdvantureLevelTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageAdvantureLevelTransform.Find("BackToIndex"));
-                        StringStore.TranslateTextTransform(pageAdvantureLevelTransform.Find("Nextpage"));
-                        StringStore.TranslateTextTransform(pageAdvantureLevelTransform.Find("LastPage"));
-                    }
-
-                    Transform pageScaryPotTransform = levelsTransform.transform.Find("PageScaryPot");
-                    if (pageScaryPotTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageScaryPotTransform.Find("BackToIndex"));
-                        StringStore.TranslateTextTransform(pageScaryPotTransform.Find("Nextpage"));
-                        StringStore.TranslateTextTransform(pageScaryPotTransform.Find("LastPage"));
-                    }
-
-                    Transform pageEndlessLevelTransform = levelsTransform.transform.Find("PageEndlessLevel");
-                    if (pageEndlessLevelTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageEndlessLevelTransform.Find("BackToIndex"));
-                        StringStore.TranslateTextTransform(pageEndlessLevelTransform.Find("Nextpage"));
-                        StringStore.TranslateTextTransform(pageEndlessLevelTransform.Find("LastPage"));
-                    }
-
-                    Transform pageNewAdvantureLevelTransform = levelsTransform.transform.Find("PageNewAdvantureLevel");
-                    if (pageNewAdvantureLevelTransform != null)
-                    {
-                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("BackToIndex"));
-                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("Nextpage"));
-                        StringStore.TranslateTextTransform(pageNewAdvantureLevelTransform.Find("LastPage"));
-                    }
-
-                    foreach (TextMeshProUGUI txt in mainTransform.GetComponentsInChildren<TextMeshProUGUI>())
-                    {
-                        // Still dump untranslated strings for modded plants and zombies
-                        FileLoader.DumpUntranslatedStrings(txt.text);
-                        txt.text = StringStore.TranslateText(txt.text);
-                    }
-                }
+                StringStore.TranslateTextTransform(__instance.transform.Find("Goback"));
+                StringStore.TranslateTextTransform(__instance.transform.Find("Switich"));
             }
         }
     }

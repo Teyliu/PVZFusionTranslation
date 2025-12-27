@@ -1,59 +1,45 @@
-﻿using System;
-using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+﻿using HarmonyLib;
 using TMPro;
+using System;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
     [HarmonyPatch(typeof(UIButton))]
     public static class UIButton_Patch
     {
-        [HarmonyPatch(nameof(UIButton.Start))]
+        [HarmonyPatch(typeof(UIButton), nameof(UIButton.Start))]
         [HarmonyPostfix]
-        private static void Postfix_Start(UIButton __instance)
+        public static void Start(UIButton __instance)
         {
-            try
+            if (__instance.transform.childCount >= 2)
             {
-                // Also handle TMP components directly under the button
-                if (__instance.transform.childCount >= 2)
-                {
-                    TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                TMP_FontAsset font = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-                    text.text = StringStore.TranslateText(text.text, false);
-                    textShadow.text = StringStore.TranslateText(textShadow.text, false);
-
-                    text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                    textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                }
-                else
+                foreach (TextMeshProUGUI text in __instance.transform.GetComponentsInChildren<TextMeshProUGUI>())
                 {
-                    // Convert and translate legacy Text components
-                    Text[] textComponents = __instance.GetComponentsInChildren<Text>(true);
-                    TextMeshProUGUI[] textMeshComponents = __instance.GetComponentsInChildren<TextMeshProUGUI>(true);
-                    foreach (Text textComponent in textComponents)
+                    if (__instance.transform.name == "Goback")
                     {
-                        if (textComponent != null && !string.IsNullOrEmpty(textComponent.text))
-                        {
-                            string translatedText = StringStore.TranslateText(textComponent.text);
-                            if (!string.IsNullOrEmpty(translatedText) && translatedText != textComponent.text)
-                            {
-                                TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-                                TextMeshProUGUI newTMP = StringStore.ConvertToTextMeshPro(textComponent, fontAsset, true);
-
-                                if (newTMP != null)
-                                {
-                                    newTMP.text = translatedText;
-                                }
-                            }
-                        }
+                        text.text = "合上";
+                    }
+                    text.text = StringStore.TranslateText(text.text);
+                    text.font = font;
+                }
+            }
+            else
+            {
+                StringStore.TranslateTextTransform(__instance.transform);
+                if (__instance.transform.name == "Goback")
+                {
+                    foreach (TextMeshProUGUI text in __instance.transform.GetComponentsInChildren<TextMeshProUGUI>())
+                    {
+                        text.text = StringStore.TranslateText("合上");
                     }
                 }
             }
-            catch (Exception) { }
         }
 
         [HarmonyPatch(nameof(UIButton.OnMouseUpAsButton))]
@@ -68,29 +54,29 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     {
                         TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-                    TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI[] extraTexts = __instance.transform.GetChild(1).GetComponentsInChildren<TextMeshProUGUI>();
+                        TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+                        TextMeshProUGUI[] extraTexts = __instance.transform.GetChild(1).GetComponentsInChildren<TextMeshProUGUI>();
 
-                    text.text = StringStore.TranslateText(text.text, false);
-                    text.font = fontAsset;
+                        text.text = StringStore.TranslateText(text.text, false);
+                        text.font = fontAsset;
 
-                    foreach (TextMeshProUGUI extraText in extraTexts)
-                    {
-                        extraText.text = StringStore.TranslateText(extraText.text, false);
-                        extraText.font = fontAsset;
+                        foreach (TextMeshProUGUI extraText in extraTexts)
+                        {
+                            extraText.text = StringStore.TranslateText(extraText.text, false);
+                            extraText.font = fontAsset;
+                        }
                     }
-                }
-                else
-                {
-                    TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                    else
+                    {
+                        TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+                        TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
 
-                    text.text = StringStore.TranslateText(text.text, false);
-                    textShadow.text = StringStore.TranslateText(textShadow.text, false);
+                        text.text = StringStore.TranslateText(text.text, false);
+                        textShadow.text = StringStore.TranslateText(textShadow.text, false);
 
-                    text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                    textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                }
+                        text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                        textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                    }
                 }
             }
             catch (Exception) { }

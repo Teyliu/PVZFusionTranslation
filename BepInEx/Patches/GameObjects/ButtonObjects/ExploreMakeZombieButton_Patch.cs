@@ -15,6 +15,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 		{
 			__instance.sceneText.text = Utils.GetZombieNameFromAlmanac(__instance.theZombieType);
 			__instance.sceneText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-        }
+		}
 	}
 }

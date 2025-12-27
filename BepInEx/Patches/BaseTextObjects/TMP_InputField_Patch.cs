@@ -2,6 +2,7 @@ using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 {

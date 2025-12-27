@@ -1,12 +1,14 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using TMPro;
+using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -63,6 +65,50 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 }
             }
         }
+
+        public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
+
+        public static void RegisterRecipeLinks()
+        {
+            recipeLinks.Clear();
+
+            Il2CppSystem.Array mixData = MixData.data.Cast<Il2CppSystem.Array>();
+            int rows = mixData.GetLength(0);
+            int columns = mixData.GetLength(1);
+
+            foreach (PlantType plantType in Enum.GetValues(typeof(PlantType)))
+            {
+                int seedType = (int)plantType;
+
+                recipeLinks.Add(seedType, new());
+
+                if (seedType > 0)
+                {
+                    foreach (PlantType checkType in Enum.GetValues(typeof(PlantType)))
+                    {
+                        if (checkType > 0)
+                        {
+                            int[] checks = [mixData.GetValue(seedType, (int)checkType).Unbox<int>(), mixData.GetValue((int)checkType, seedType).Unbox<int>()];
+
+                            if (checks[0] != 0)
+                            {
+                                recipeLinks[seedType].Add(checks[0]);
+                            }
+
+                            if (checks[1] != 0)
+                            {
+                                recipeLinks[seedType].Add(checks[1]);
+                            }
+                        }
+                    }
+                }
+                if (recipeLinks[seedType].Count > 0)
+                {
+                    Log.LogDebug($"Found {recipeLinks[seedType].Count} fusions for {seedType}!");
+                }
+            }
+        }
+
         internal static bool TryReplaceTexture2D(Texture2D ogTexture)
         {
             if (ogTexture != null)
@@ -134,6 +180,16 @@ namespace PvZ_Fusion_Translator__BepInEx_
             string withoutOpenTags = Regex.Replace(text, @"<color=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
             // Remove closing color tags like </color>
             string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</color>", string.Empty, RegexOptions.IgnoreCase);
+            return withoutCloseTags;
+        }
+
+        public static string RemoveSizeTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            string withoutOpenTags = Regex.Replace(text, @"<size=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
+            string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</size>", string.Empty, RegexOptions.IgnoreCase);
             return withoutCloseTags;
         }
 
@@ -266,9 +322,9 @@ namespace PvZ_Fusion_Translator__BepInEx_
             else
             {
                 json = File.ReadAllText(path);
-                AlmanacMgrZombie.ZombieAlmanacData zombieData = JsonUtility.FromJson<AlmanacMgrZombie.ZombieAlmanacData>(json);
+                ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
 
-                foreach (AlmanacMgrZombie.ZombieInfo zombieInfo in zombieData.zombies)
+                foreach (ZombieInfo zombieInfo in zombieData.zombies)
                 {
                     if ((int)zombieInfo.theZombieType == (int)theZombieType)
                     {
@@ -279,6 +335,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
             return theZombieName;
         }
+
+
 
         public static bool CheckForUntranslatedText(string text)
         {
