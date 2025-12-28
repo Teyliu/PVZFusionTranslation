@@ -13,8 +13,10 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.2.1</GamePath>
+		<GamePath>D:\PvZ Fusion\Game Files</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
+		<!--<GamePath>D:\PvZ Fusion\Game Files</GamePath>-->
+		<!--<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.2.1</GamePath>-->
 	</PropertyGroup>
 	
 	<ItemGroup>
