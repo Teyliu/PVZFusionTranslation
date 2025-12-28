@@ -87,7 +87,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                             {
                                 string info = plantInfo.info ?? "";
                                 string introduce = plantInfo.introduce ?? "";
-                                __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + Utils.RemoveSizeTags(introduce) + "\n\n";
+                                char[] toTrim = Environment.NewLine.ToCharArray();
+                    __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n" + Utils.RemoveSizeTags(plantInfo.cost).TrimStart(toTrim) + "\n\n";
                                 __instance.showedPlantIntroduce.font = fontAsset;
                                 __instance.showedPlantIntroduce.margin = new Vector4(6, 2, 12, 0);
                                 __instance.showedPlantIntroduce.enableWordWrapping = true;
@@ -145,7 +146,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                             {
                                                 string info = plantInfo.info ?? "";
                                                 string introduce = plantInfo.introduce ?? "";
-                                                __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + Utils.RemoveSizeTags(introduce) + "\n\n";
+                                                char[] toTrim = Environment.NewLine.ToCharArray();
+                    __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n" + Utils.RemoveSizeTags(plantInfo.cost).TrimStart(toTrim) + "\n\n";
                                                 __instance.showedPlantIntroduce.font = fontAsset;
                                                 __instance.showedPlantIntroduce.margin = new Vector4(6, 2, 12, 0);
                                                 __instance.showedPlantIntroduce.enableWordWrapping = true;
