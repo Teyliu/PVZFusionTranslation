@@ -10,9 +10,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     {
         [HarmonyPatch(nameof(AbyssStoreMenu.Update))]
         [HarmonyPostfix]
-        private static void UpdateInfo(AbyssStoreMenu __instance)
+        private static void Update(AbyssStoreMenu __instance)
         {
-            __instance.yourMoney.text = StringStore.TranslateText(__instance.yourMoney.text);
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+                text.font = fontAsset;
+            }
         }
     }
 }
