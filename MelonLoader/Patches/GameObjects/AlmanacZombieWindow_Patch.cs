@@ -51,6 +51,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                     __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(zombieInfo.info) + "\n\n" + Utils.RemoveSizeTags(zombieInfo.introduce) + "\n\n";
                     __instance.showedZombieIntroduce.font = fontAsset;
+                    __instance.showedZombieIntroduce.fontSizeMax = 21;
                     __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
 
                     __instance.showedZombieIntroduce.enableWordWrapping = true;
