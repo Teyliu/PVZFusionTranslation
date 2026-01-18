@@ -11,6 +11,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 	public static class InGameText_Patch
 	{
         [HarmonyPatch(nameof(InGameText.ShowText))]
+        [HarmonyPostfix]
         public static void ShowText(InGameText __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());

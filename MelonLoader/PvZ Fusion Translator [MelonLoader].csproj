@@ -401,6 +401,12 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureEvolutionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureStarMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMissionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureHelpMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMenu2_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacPlantMenu_Patch.cs" />
