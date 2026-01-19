@@ -12,41 +12,52 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         [HarmonyPostfix]
         private static void Start(AdvantureMenu __instance)
         {
-            foreach (TextMeshProUGUI titleText in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            __instance.difficulty.text = Utils.RemoveSizeTags(StringStore.TranslateText(__instance.difficulty.text));
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                titleText.text = StringStore.TranslateText(titleText.text);
+                text.text = StringStore.TranslateText(text.text);
             }
-            __instance.difficulty.text = StringStore.TranslateText(__instance.difficulty.text);
-            __instance.chapterDifficulty.text = StringStore.TranslateText(__instance.chapterDifficulty.text, pattern: "章节难度：([^\\s]+)");
-            __instance.starCount.text = StringStore.TranslateText(__instance.starCount.text);
         }
 
         [HarmonyPatch(nameof(AdvantureMenu.ChangeDifficulty))]
         [HarmonyPostfix]
         private static void ChangeDifficulty(AdvantureMenu __instance)
         {
-            __instance.difficulty.text = StringStore.TranslateText(__instance.difficulty.text);
+            __instance.difficulty.text = Utils.RemoveSizeTags(StringStore.TranslateText(__instance.difficulty.text));
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
         }
 
         [HarmonyPatch(nameof(AdvantureMenu.GetChapterDifficulty))]
         [HarmonyPostfix]
         private static void GetChapterDifficulty(AdvantureMenu __instance)
         {
-            __instance.chapterDifficulty.text = StringStore.TranslateText(__instance.chapterDifficulty.text, pattern: "章节难度：([^\\s]+)");
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
         }
 
         [HarmonyPatch(nameof(AdvantureMenu.UpdateChapterDifficulty))]
         [HarmonyPostfix]
         private static void UpdateChapterDifficulty(AdvantureMenu __instance)
         {
-            __instance.chapterDifficulty.text = StringStore.TranslateText(__instance.chapterDifficulty.text, pattern: "章节难度：([^\\s]+)");
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
         }
 
         [HarmonyPatch(nameof(AdvantureMenu.UpdateStarCount))]
         [HarmonyPostfix]
         private static void UpdateStarCount(AdvantureMenu __instance)
         {
-            __instance.starCount.text = StringStore.TranslateText(__instance.starCount.text);
+            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
         }
     }
 }

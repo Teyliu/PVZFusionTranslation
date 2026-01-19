@@ -346,9 +346,16 @@ namespace PvZ_Fusion_Translator
 		public static bool CheckForUntranslatedText(string text)
 		{
             Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
-            Match match = regex.Match(text);
-
-			return match.Success;
+			try 
+			{
+				Match match = regex.Match(text);
+				return match.Success;
+			} 
+			catch(Exception e) 
+			{
+				Log.LogError(e);
+			}
+			return false;
         }
 
 #if MULTI_LANGUAGE

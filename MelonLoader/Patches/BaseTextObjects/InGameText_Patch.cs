@@ -3,6 +3,7 @@ using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Managers;
+using System.Text.RegularExpressions;
 using UnityEngine.TextCore.Text;
 
 namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
@@ -29,6 +30,11 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                     txt.text = StringStore.TranslateText(txt.text, true);
                 }
                 txt.font = fontAsset;
+            }
+
+            if(__instance.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI text))
+            {
+                text.text = StringStore.TranslateText(text.text);
             }
         }
 	}

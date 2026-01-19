@@ -124,6 +124,61 @@ namespace PvZ_Fusion_Translator.AssetStore
 			return checkText;
 		}
 
+        public static string TranslateColorText(string originalText, bool isLog = false)
+        {
+			string first = ReplaceInsideColorTags(originalText);
+			string text = ReplaceOutsideColorTags(first);
+            string checkText;
+			#if DEBUG
+            Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
+            Match match = regex.Match(text);
+
+            if (match.Success)
+            {
+                // Log.LogDebug("Untranslated String: " + match.Value);
+                FileLoader.DumpUntranslatedStrings(text);
+            }
+			#endif
+            checkText = text;
+
+            return checkText;
+        }
+
+        public static string ReplaceOutsideColorTags(string input)
+        {
+            string pattern = @"(<color[^>]*>.*?</color>)";
+            var parts = Regex.Split(input, pattern);
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    parts[i] = DoTranslateText(parts[i], false);
+					if(Utils.CheckForUntranslatedText(parts[i]))
+					{
+						FileLoader.DumpUntranslatedStrings(parts[i]);
+					}
+                }
+            }
+
+            return string.Join("", parts);
+        }
+
+        public static string ReplaceInsideColorTags(string input)
+        {
+            string text = Regex.Replace(input, @"(<color=[^>]+>)(.*?)(</color>)", match =>
+            {
+				string translatedText = DoTranslateText(match.Groups[2].Value, false);
+                if (Utils.CheckForUntranslatedText(translatedText))
+                {
+                    FileLoader.DumpUntranslatedStrings(translatedText);
+                }
+                return match.Groups[1].Value + DoTranslateText(match.Groups[2].Value, false) + match.Groups[3].Value;
+            });
+
+			return text;
+        }
+
         public static string TranslateText(string originalText, string pattern, bool isLog = false)
         {
             if (TestRegex(originalText, pattern) && translationStringRegex.ContainsKey(pattern))
@@ -214,7 +269,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 			return originalText;
 		}
 
-		private static bool TestRegex(string originalText, string pattern)
+		public static bool TestRegex(string originalText, string pattern)
 		{
 			return Regex.IsMatch(originalText, pattern);
 		}

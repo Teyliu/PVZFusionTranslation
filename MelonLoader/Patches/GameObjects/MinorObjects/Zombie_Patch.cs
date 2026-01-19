@@ -17,7 +17,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}\nType 2 armor: {4}/{5}" },
             { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}" },
             { "^HP：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 2 armor: {2}/{3}" },
-            { "^HP：(\\d+)/(\\d+)$", "HP: {0}/{1}" },
+            { "^HP：(\\d+)/(\\d+)$", "HP: {0}/{1}" }
         };
 
         public static void LoadHPStrings()
@@ -56,7 +56,21 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             if (textTMP)
             {
                 string origText = textTMP.text;
-                string translatedText = TranslateHPText(origText, __instance);
+                string translatedText = origText;
+                string pattern = "([^\\s]+)阶\n([^\\s]+)";
+                if (StringStore.TestRegex(translatedText, pattern))
+                {
+                    var regex = new Regex(pattern);
+                    var match = regex.Match(translatedText);
+                    string regularText = match.Groups[2].Value;
+                    string halfText = TranslateHPText(regularText, __instance);
+                    string fStr = StringStore.translationStringRegex[pattern];
+                    translatedText = string.Format(fStr, [match.Groups[1].Value, halfText]);
+                }
+                else
+                {
+                    translatedText = TranslateHPText(origText, __instance);
+                }
                 textTMP.text = translatedText == origText ? origText : translatedText;
                 textTMP.autoSizeTextContainer = false;
                 if (translatedText != origText)
