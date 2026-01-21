@@ -39,12 +39,23 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             string changelogText = File.ReadAllText(changelogDir);
 
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
-            
-			TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
+
+            TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
             contentText.text = changelogText;
+            contentText.margin = new Vector4(6, 2, 12, 0);
+
+            contentText.enableWordWrapping = true;
+            contentText.overflowMode = TextOverflowModes.ScrollRect;
+
+            Canvas.ForceUpdateCanvases();
+            contentText.ForceMeshUpdate();
+
+            //float textHeight = contentText.preferredHeight;
+            //RectTransform contentRect = contentObject.GetComponent<RectTransform>();
+            //contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, textHeight);
 
             ContentSizeFitter sizeFitter = contentObject.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
-	}
+    }
 }

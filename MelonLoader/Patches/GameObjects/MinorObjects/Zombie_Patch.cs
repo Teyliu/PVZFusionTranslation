@@ -57,15 +57,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             {
                 string origText = textTMP.text;
                 string translatedText = origText;
-                string pattern = "([^\\s]+)阶\n([^\\s]+)";
+                string pattern = "(\\d+)阶\n([\\s\\S]+)";
                 if (StringStore.TestRegex(translatedText, pattern))
                 {
-                    var regex = new Regex(pattern);
-                    var match = regex.Match(translatedText);
-                    string regularText = match.Groups[2].Value;
-                    string halfText = TranslateHPText(regularText, __instance);
+                    var match = Regex.Match(translatedText, pattern, RegexOptions.Singleline);
+                    string tier = match.Groups[1].Value;
+                    string healthText = TranslateHPText(match.Groups[2].Value, __instance);
                     string fStr = StringStore.translationStringRegex[pattern];
-                    translatedText = string.Format(fStr, [match.Groups[1].Value, halfText]);
+                    translatedText = string.Format(fStr, [tier, healthText]);
                 }
                 else
                 {
@@ -105,8 +104,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             for(int i = 0; i < HPStrings.Count; i++)
             {
                 var hp = HPStrings.ElementAt(i);
-                Regex regex = new Regex(hp.Key);
-                if(regex.IsMatch(originalText))
+                if(Regex.Match(originalText, hp.Key, RegexOptions.Singleline).Success)
                 {
                     fIndex = i;
                     found = true;
@@ -160,6 +158,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             {
                 string fStr = HPStrings.ElementAt(fIndex).Value;
                 string DPS = originalText.Split("\n")[1].Replace("DPS：", "");
+                DPS = StringStore.TranslateText(DPS);
 
                 switch (fIndex)
                 {

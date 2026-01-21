@@ -124,61 +124,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 			return checkText;
 		}
 
-        public static string TranslateColorText(string originalText, bool isLog = false)
-        {
-			string first = ReplaceInsideColorTags(originalText);
-			string text = ReplaceOutsideColorTags(first);
-            string checkText;
-			#if DEBUG
-            Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
-            Match match = regex.Match(text);
-
-            if (match.Success)
-            {
-                // Log.LogDebug("Untranslated String: " + match.Value);
-                FileLoader.DumpUntranslatedStrings(text);
-            }
-			#endif
-            checkText = text;
-
-            return checkText;
-        }
-
-        public static string ReplaceOutsideColorTags(string input)
-        {
-            string pattern = @"(<color[^>]*>.*?</color>)";
-            var parts = Regex.Split(input, pattern);
-
-            for (int i = 0; i < parts.Length; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    parts[i] = DoTranslateText(parts[i], false);
-					if(Utils.CheckForUntranslatedText(parts[i]))
-					{
-						FileLoader.DumpUntranslatedStrings(parts[i]);
-					}
-                }
-            }
-
-            return string.Join("", parts);
-        }
-
-        public static string ReplaceInsideColorTags(string input)
-        {
-            string text = Regex.Replace(input, @"(<color=[^>]+>)(.*?)(</color>)", match =>
-            {
-				string translatedText = DoTranslateText(match.Groups[2].Value, false);
-                if (Utils.CheckForUntranslatedText(translatedText))
-                {
-                    FileLoader.DumpUntranslatedStrings(translatedText);
-                }
-                return match.Groups[1].Value + DoTranslateText(match.Groups[2].Value, false) + match.Groups[3].Value;
-            });
-
-			return text;
-        }
-
         public static string TranslateText(string originalText, string pattern, bool isLog = false)
         {
             if (TestRegex(originalText, pattern) && translationStringRegex.ContainsKey(pattern))
@@ -266,12 +211,73 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 			if (isLog)
 				Log.LogDebug($"Text '{originalText}' not translated");
+			if(Utils.CheckForUntranslatedText(originalText))
+			{
+				FileLoader.DumpUntranslatedStrings(originalText);
+			}
 			return originalText;
 		}
 
-		public static bool TestRegex(string originalText, string pattern)
+        public static string TranslateColorText(string originalText, bool isLog = false)
+        {
+            string text = TranslateColorSegments(originalText);
+            string checkText;
+#if DEBUG
+            Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
+            Match match = regex.Match(text);
+
+            if (match.Success)
+            {
+                // Log.LogDebug("Untranslated String: " + match.Value);
+                FileLoader.DumpUntranslatedStrings(text);
+            }
+#endif
+            checkText = text;
+
+            return checkText;
+        }
+
+		public static string TranslateColorSegments(string input)
 		{
-			return Regex.IsMatch(originalText, pattern);
+			string result = "";
+            string pattern = @"<color=[^>]+>[\s\S]*?<\/color>|(?:<(?!color=)|[^<])+";
+            string smallPattern = @"(<color=[^>]+>)(.*?)(</color>)";
+            MatchCollection matches = Regex.Matches(input, pattern);
+
+            for (int i = 0; i < matches.Count; i++)
+			{
+				Match match = matches[i];
+				if (Regex.Match(match.Value, smallPattern, RegexOptions.Singleline).Success)
+				{
+					result += TranslateColorSegment(match.Value);
+                }
+				else
+				{
+                    result += DoTranslateText(match.Value);
+				}
+			}
+
+            return result;
+		}
+
+		public static string TranslateColorSegment(string input)
+		{
+			string result = input;
+			string pattern = @"(<color=[^>]+>)(.*?)(</color>)";
+			Match match = Regex.Match(input, pattern, RegexOptions.Singleline);
+            string translatedText = DoTranslateText(match.Groups[2].Value);
+			if(Utils.CheckForUntranslatedText(translatedText))
+			{
+				FileLoader.DumpUntranslatedStrings(translatedText);
+			}
+            result = match.Groups[1].Value + translatedText + match.Groups[3].Value;
+
+            return result;
+		}
+        public static bool TestRegex(string originalText, string pattern, bool singleLine = false)
+		{
+			RegexOptions options = (singleLine) ? RegexOptions.None : RegexOptions.Singleline;
+			return Regex.IsMatch(originalText, pattern, options);
 		}
 
 		private static TextAlignmentOptions TextAnchorToTMPAlignment(TextAnchor anchor)
