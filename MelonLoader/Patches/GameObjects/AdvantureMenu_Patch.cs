@@ -45,7 +45,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
         public static void TranslateAdvantureMenu(AdvantureMenu __instance)
         {
-            __instance.difficulty.text = Utils.RemoveSizeTags(StringStore.TranslateText(__instance.difficulty.text));
+            bool hasSBString = StringStore.translationString.ContainsKey(__instance.difficulty.text + "_SB");
+            __instance.difficulty.text = Utils.RemoveSizeTags(hasSBString ? StringStore.TranslateText(__instance.difficulty.text + "_SB") : StringStore.TranslateText(__instance.difficulty.text));
             __instance.chapterDifficulty.text = StringStore.TranslateText(__instance.chapterDifficulty.text);
             __instance.starCount.text = StringStore.TranslateText(__instance.starCount.text);
 
