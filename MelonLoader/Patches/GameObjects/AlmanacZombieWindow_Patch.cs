@@ -35,9 +35,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             TMP_FontAsset fontAsset = (hasAlmanacFont) ? FontStore.LoadTMPFontAlmanac(Utils.Language.ToString()) : FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+            ZombieAlmanacData zombieAlmanacData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+            var zombieDataDic = ZombieDataManager.zombieDataDic;
 
-            foreach (ZombieInfo zombieInfo in zombieData.zombies)
+            foreach (ZombieInfo zombieInfo in zombieAlmanacData.zombies)
             {
                 if (zombieInfo.theZombieType == __instance.currentZombieType)
                 {
@@ -49,7 +50,16 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         text.fontSizeMax = 21;
                     }
 
-                    __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(zombieInfo.info) + "\n\n" + Utils.RemoveSizeTags(zombieInfo.introduce) + "\n\n";
+                    ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
+
+                    string spawnInfo = "";
+                    string spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\n出怪权重: (\\d+)"];
+                    if(spawnInfoFormat != null)
+                    {
+                        spawnInfo = string.Format(spawnInfoFormat, [zombieData.summonLevel, zombieData.summonWeight]) + "\n\n";
+                    }
+
+                    __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(zombieInfo.info) + "\n\n" + spawnInfo + Utils.RemoveSizeTags(zombieInfo.introduce) + "\n\n";
                     __instance.showedZombieIntroduce.font = fontAsset;
                     __instance.showedZombieIntroduce.fontSizeMax = 21;
                     __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);

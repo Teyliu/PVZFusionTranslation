@@ -21,7 +21,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 string travelMatch = TravelMgr_Patch.MatchTravelBuff(txt.text);
-                string originalText = "";
+                string originalText = txt.text;
 
                 if (txt.gameObject.name.Contains("shadow"))
                 {
@@ -31,6 +31,15 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 if (travelMatch != "")
                 {
                     txt.text = travelMatch;
+                    if (txt.gameObject.name.Contains("main"))
+                    {
+                        originalText = txt.text;
+                        Transform shadowText = txt.transform.parent.Find("Text_shadow");
+                        if (shadowText != null)
+                        {
+                            shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
+                        }
+                    }
                 }
                 else if(Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success)
                 {
