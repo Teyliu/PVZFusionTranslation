@@ -13,7 +13,7 @@
 		https://nuget.samboy.dev/v3/index.json
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
-	<GamePath>D:\PvZ Fusion\BepInEx Game Files</GamePath>
+	<GamePath>C:\Users\Admin\Downloads\PvZ FUSION VH FANMADE</GamePath>
 	<GamePathMelon>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.1.1</GamePathMelon>
 	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
@@ -135,6 +135,12 @@
 		<Compile Include="Patches\GameObjects\AlmanacZombieMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Almanac_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureEvolutionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureHelpMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMenu2_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMissionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureStarMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\BaseMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />

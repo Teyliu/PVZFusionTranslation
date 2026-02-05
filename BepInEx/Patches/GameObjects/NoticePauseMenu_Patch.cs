@@ -12,9 +12,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     public class NoticePauseMenu_Patch
     {
         [HarmonyPrefix]
-		[HarmonyPatch(nameof(NoticeMenu.Awake))]
-		private static void Pre_Awake(NoticeMenu __instance)
-		{
+        [HarmonyPatch(nameof(NoticeMenu.Awake))]
+        private static void Pre_Awake(NoticeMenu __instance)
+        {
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
             TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
@@ -28,6 +28,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 File.WriteAllText(changelogDir, contentText.text);
             }
         }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(NoticeMenu.Awake))]
         private static void Post_Awake(NoticeMenu __instance)
@@ -42,6 +43,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
             TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
             contentText.text = changelogText;
+            contentText.margin = new Vector4(6, 2, 12, 0);
+
+            contentText.enableWordWrapping = true;
+            contentText.overflowMode = TextOverflowModes.ScrollRect;
+
+            Canvas.ForceUpdateCanvases();
+            contentText.ForceMeshUpdate();
+
+            //float textHeight = contentText.preferredHeight;
+            //RectTransform contentRect = contentObject.GetComponent<RectTransform>();
+            //contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, textHeight);
 
             ContentSizeFitter sizeFitter = contentObject.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

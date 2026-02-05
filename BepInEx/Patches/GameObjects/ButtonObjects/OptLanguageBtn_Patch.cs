@@ -248,20 +248,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 
             if (type == "Textures")
             {
-                Utils.customTextures = !Utils.customTextures;
                 ConfigEntry<bool> customTexturesEntry;
                 Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out customTexturesEntry);
-                customTexturesEntry.BoxedValue = !Utils.customTextures;
+                customTexturesEntry.BoxedValue = !customTexturesEntry.Value; // Toggle the config value
                 TextureStore.Reload();
                 Coroutine replaceTextureRoutine = Core.MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
             }
 
             if (type == "Audio")
             {
-                Utils.customAudio = !Utils.customAudio;
                 ConfigEntry<bool> customAudioEntry;
                 Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out customAudioEntry);
-                customAudioEntry.BoxedValue = !Utils.customAudio;
+                customAudioEntry.BoxedValue = !customAudioEntry.Value; // Toggle the config value
             }
             Core.Instance.Config.Save();
         }

@@ -42,9 +42,9 @@ public class Core : BasePlugin
 	{
 		Log = base.Log;
 		Instance = this;
+		LoadConfig();
 		MonoInstance = AddComponent<UnityCoroutineHelper>();
 		Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-		LoadConfig();
         dtStart = DateTime.Now;
 
         FileLoader.LoadLanguage();

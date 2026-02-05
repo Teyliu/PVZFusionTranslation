@@ -341,9 +341,16 @@ namespace PvZ_Fusion_Translator__BepInEx_
         public static bool CheckForUntranslatedText(string text)
         {
             Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
-            Match match = regex.Match(text);
-
-            return match.Success;
+			try 
+			{
+				Match match = regex.Match(text);
+				return match.Success;
+			} 
+			catch(Exception e) 
+			{
+				Log.LogError(e);
+			}
+			return false;
         }
 
 
@@ -380,8 +387,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static string mainCategory = "PvZ_Fusion_Translator";
 
-        public static bool customTextures = !Core.Instance.configDefaultTextures.Value;
-        public static bool customAudio = !Core.Instance.configDefaultAudio.Value;
+        public static bool customTextures => Core.Instance != null && !Core.Instance.configDefaultTextures.Value;
+        public static bool customAudio => Core.Instance != null && !Core.Instance.configDefaultAudio.Value;
 
         public enum LanguageEnum
         {

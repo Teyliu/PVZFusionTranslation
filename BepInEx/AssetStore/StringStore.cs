@@ -166,6 +166,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
             }
         }
 
+	public static string TranslateColorText(string originalText, bool isLog = false)
+	{
+		string pattern = @"(<color[^>]*>.*?</color>)";
+		if (TestRegex(originalText, pattern))
+		{
+			return DoTranslateText(originalText, isLog);
+		}
+		return originalText;
+	}
+
         public static string DoTranslateText(string originalText, bool isLog = false)
         {
 			if (string.IsNullOrEmpty(originalText))
@@ -219,7 +229,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			return originalText;
 		}
 
-        private static bool TestRegex(string originalText, string pattern)
+        public static bool TestRegex(string originalText, string pattern)
         {
             return Regex.IsMatch(originalText, pattern);
         }

@@ -47,11 +47,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 TMP_FontAsset fontAsset = null;
                 fontAsset = (hasAlmanacFont) ? FontStore.LoadTMPFontAlmanac(Utils.Language.ToString()) : FontStore.LoadTMPFont(Utils.Language.ToString());
 
-                ZombieAlmanacData zombieData = null;
-                zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+                ZombieAlmanacData zombieAlmanacData = null;
+                zombieAlmanacData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+                var zombieDataDic = ZombieDataManager.zombieDataDic;
 
                 bool foundMatch = false;
-                foreach (ZombieInfo zombieInfo in zombieData.zombies)
+                foreach (ZombieInfo zombieInfo in zombieAlmanacData.zombies)
                 {
                     if (zombieInfo == null) continue;
                     if (zombieInfo.theZombieType == __instance.currentZombieType)
@@ -76,7 +77,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                             {
                                 string info = zombieInfo.info ?? "";
                                 string introduce = zombieInfo.introduce ?? "";
-                                __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + Utils.RemoveSizeTags(introduce) + "\n\n";
+
+                                ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
+
+                                string spawnInfo = "";
+                                string spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\\n出怪权重: (\\d+)"];
+                                if(spawnInfoFormat != null)
+                                {
+                                    spawnInfo = string.Format(spawnInfoFormat, new object[] { zombieData.summonLevel, zombieData.summonWeight }) + "\n\n";
+                                }
+
+                                __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + spawnInfo + Utils.RemoveSizeTags(introduce) + "\n\n";
                                 __instance.showedZombieIntroduce.font = fontAsset;
                                 __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
                                 __instance.showedZombieIntroduce.enableWordWrapping = true;
