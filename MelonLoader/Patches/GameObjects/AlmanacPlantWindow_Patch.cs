@@ -52,6 +52,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     char[] toTrim = Environment.NewLine.ToCharArray();
                     __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n" + Utils.RemoveSizeTags(plantInfo.cost).TrimStart(toTrim) + "\n\n";
                     __instance.showedPlantIntroduce.font = fontAsset;
+                    __instance.showedPlantIntroduce.fontSizeMax = 21;
                     __instance.showedPlantIntroduce.margin = new Vector4(6, 2, 12, 0);
 
                     __instance.showedPlantIntroduce.enableWordWrapping = true;

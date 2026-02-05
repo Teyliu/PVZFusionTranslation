@@ -13,10 +13,8 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>D:\PvZ Fusion\Game Files</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.3.1</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
-		<!--<GamePath>D:\PvZ Fusion\Game Files</GamePath>-->
-		<!--<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.2.1</GamePath>-->
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -403,6 +401,12 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureEvolutionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureStarMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMissionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureHelpMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMenu2_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AdvantureMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacPlantMenu_Patch.cs" />
