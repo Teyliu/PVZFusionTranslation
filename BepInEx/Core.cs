@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
@@ -13,7 +13,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.1.1")]
+[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.3.1")]
 [BepInProcess("PlantsVsZombiesRH.exe")]
 public class Core : BasePlugin
 {
@@ -47,13 +47,14 @@ public class Core : BasePlugin
 		Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
         dtStart = DateTime.Now;
 
-        FileLoader.LoadLanguage();
+		FileLoader.LoadLanguage();
 
 		AudioStore.Init();
 		TextureStore.Init();
 		StringStore.Init();
 		FontStore.Init();
 		Utils.RegisterPlantIndices();
+		Utils.CacheAlmanacData();
 
         //Utils.RegisterRecipeLinks();
         //PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();

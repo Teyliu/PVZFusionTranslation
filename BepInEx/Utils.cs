@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
@@ -21,6 +21,44 @@ namespace PvZ_Fusion_Translator__BepInEx_
     public class Utils
     {
         public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+        
+        public static ZombieAlmanacData CachedZombieData = null;
+        public static ZombieAlmanacData CachedModdedZombieData = null;
+        public static bool ZombieDataCached = false;
+
+        public static void CacheAlmanacData()
+        {
+            try
+            {
+                string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+                string zombiePath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+                string moddedZombiePath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
+
+                if (File.Exists(zombiePath))
+                {
+                    string zombieJson = File.ReadAllText(zombiePath);
+                    CachedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(zombieJson);
+                    Log.LogInfo($"Cached {CachedZombieData?.zombies?.Count ?? 0} zombie entries");
+                }
+                else
+                {
+                    Log.LogWarning($"ZombieStringsTranslate.json not found at: {zombiePath}");
+                }
+
+                if (File.Exists(moddedZombiePath))
+                {
+                    string moddedZombieJson = File.ReadAllText(moddedZombiePath);
+                    CachedModdedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(moddedZombieJson);
+                    Log.LogInfo($"Cached {CachedModdedZombieData?.zombies?.Count ?? 0} modded zombie entries");
+                }
+
+                ZombieDataCached = true;
+            }
+            catch (Exception ex)
+            {
+                Log.LogError($"Error caching almanac data: {ex.Message}");
+            }
+        }
 
         public static void RegisterPlantIndices()
         {
@@ -225,34 +263,13 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static string GetPlantNameFromAlmanac(PlantType thePlantType)
         {
-            string json;
-            string thePlantName = "";
-
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-
-            if (!File.Exists(path))
+            int seedType = (int)thePlantType;
+            if (plantIndices.TryGetValue(seedType, out var plantInfo))
             {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-                Log.LogError("Plant name could not be found!");
-                thePlantName = "";
+                return plantInfo.Value;
             }
-            else
-            {
-                json = File.ReadAllText(path);
-                AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
-
-                foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
-                {
-                    if (plantInfo.seedType == (int)thePlantType)
-                    {
-                        thePlantName = plantInfo.name;
-                    }
-                }
-            }
-
-            return thePlantName;
+            
+            return "";
         }
 
         public static string GetPlantNameFromAlmanac(string theOriginalPlantName)
@@ -306,34 +323,32 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
         {
-            string json;
-            string theZombieName = "";
-
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-            string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
-
-            if (!File.Exists(path))
+            if (!ZombieDataCached || CachedZombieData == null || CachedZombieData.zombies == null)
             {
-                Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
-                Log.LogError("Zombie name could not be found!");
-                theZombieName = "";
+                Log.LogWarning("Zombie data not cached, unable to get zombie name");
+                return "";
             }
-            else
-            {
-                json = File.ReadAllText(path);
-                ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
 
-                foreach (ZombieInfo zombieInfo in zombieData.zombies)
+            foreach (ZombieInfo zombieInfo in CachedZombieData.zombies)
+            {
+                if ((int)zombieInfo.theZombieType == (int)theZombieType)
+                {
+                    return zombieInfo.name ?? "";
+                }
+            }
+
+            if (CachedModdedZombieData != null && CachedModdedZombieData.zombies != null)
+            {
+                foreach (ZombieInfo zombieInfo in CachedModdedZombieData.zombies)
                 {
                     if ((int)zombieInfo.theZombieType == (int)theZombieType)
                     {
-                        theZombieName = zombieInfo.name;
+                        return zombieInfo.name ?? "";
                     }
                 }
             }
 
-            return theZombieName;
+            return "";
         }
 
 

@@ -1,8 +1,9 @@
-﻿using TMPro;
+using TMPro;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 {
@@ -13,6 +14,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 		public static Dictionary<string, string> translationStringRegex = new();
 
 		public static Dictionary<string, string> translationString = new();
+
+		private static Dictionary<string, Regex> compiledRegexCache = new();
+
+		private static Dictionary<string, string> translationResultCache = new Dictionary<string, string>();
+		private const int MAX_CACHE_SIZE = 5000;
 
 		public static Dictionary<string, Dictionary<string, string>> patchesStore = new()
 		{
@@ -66,13 +72,40 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 		internal static void Init()
 		{
 			FileLoader.LoadStrings();
+			CompileRegexCache();
+		}
+
+		private static void CompileRegexCache()
+		{
+			try
+			{
+				foreach (var entry in translationStringRegex)
+				{
+					try
+					{
+						compiledRegexCache[entry.Key] = new Regex(entry.Key, RegexOptions.Compiled);
+					}
+					catch (Exception ex)
+					{
+						Log.LogWarning($"Failed to compile regex pattern '{entry.Key}': {ex.Message}");
+					}
+				}
+				Log.LogInfo($"Compiled {compiledRegexCache.Count} regex patterns");
+			}
+			catch (Exception ex)
+			{
+				Log.LogError($"Error compiling regex cache: {ex.Message}");
+			}
 		}
 
 		internal static void Reload()
 		{
+			translationResultCache.Clear();
 			translationString.Clear();
 			translationStringRegex.Clear();
+			compiledRegexCache.Clear();
 			FileLoader.LoadStrings();
+			CompileRegexCache();
 		}
 
 		public static TextMeshPro TranslateText(TextMeshPro originalTMP, bool isLog = false)
@@ -109,7 +142,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
 		public static string TranslateText(string originalText, bool isLog = false)
 		{
+			// Check cache first
+			if (translationResultCache.TryGetValue(originalText, out string cachedResult))
+			{
+				return cachedResult;
+			}
+
 			string text = DoTranslateText(originalText, false);
+
+			// Add to cache with size limit
+			if (translationResultCache.Count < MAX_CACHE_SIZE)
+			{
+				translationResultCache[originalText] = text;
+			}
+
 			string checkText;
 			#if DEBUG
 			Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
@@ -121,18 +167,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 				FileLoader.DumpUntranslatedStrings(text);
 			}
 			#endif
-			checkText = text;
-			
-			return checkText;
 
+			checkText = text;
+
+			return checkText;
 		}
 
-        public static string TranslateText(string originalText, string pattern, bool isLog = false)
+		public static string TranslateText(string originalText, string pattern, bool isLog = false)
         {
             if (TestRegex(originalText, pattern) && translationStringRegex.ContainsKey(pattern))
             {
                 // Extract dynamic parts from the original text
-                var regex = new Regex(pattern);
+                var regex = compiledRegexCache.TryGetValue(pattern, out var cachedRegex) ? cachedRegex : new Regex(pattern);
                 var match = regex.Match(originalText);
                 int groupCount = match.Groups.Count;
 
@@ -198,8 +244,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			{
 				if (TestRegex(originalText, entry.Key))
 				{
-                    // Extract dynamic parts from the original text
-                    var regex = new Regex(entry.Key);
+                    // Extract dynamic parts from original text
+                    var regex = compiledRegexCache.TryGetValue(entry.Key, out var cachedRegex) ? cachedRegex : new Regex(entry.Key);
                     var match = regex.Match(originalText);
 					int groupCount = match.Groups.Count;
 
@@ -231,6 +277,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
         public static bool TestRegex(string originalText, string pattern)
         {
+            if (compiledRegexCache.TryGetValue(pattern, out var cachedRegex))
+            {
+                return cachedRegex.IsMatch(originalText);
+            }
             return Regex.IsMatch(originalText, pattern);
         }
 

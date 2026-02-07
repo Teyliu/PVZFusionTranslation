@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,12 +40,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			}
 #endif
 
-			string json;
+		string json;
 			json = File.ReadAllText(path);
 
 			bool hasAlmanacFont = false;
 			TMP_FontAsset almanacFontAsset = null;
-			if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
+			if (FontStore.fontAssetDictSecondary != null && 
+			    (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage)))
 			{
 				almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
 				hasAlmanacFont = true;
@@ -57,11 +58,34 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
 #endif
 
+			if (__instance.info == null || __instance.zombieName == null)
+			{
+				Log.LogError("[AlmanacMgrZombie_Patch] Required components are null");
+				return;
+			}
+
 			TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
 			TextMeshPro component2 = __instance.zombieName.GetComponent<TextMeshPro>();
-			TextMeshPro component3 = __instance.zombieName.transform.GetChild(0).GetComponent<TextMeshPro>();
+			TextMeshPro component3 = null;
+			Transform zombieNameChild = __instance.zombieName.transform.GetChild(0);
+			if (zombieNameChild != null)
+			{
+				component3 = zombieNameChild.GetComponent<TextMeshPro>();
+			}
+
+			if (component == null || component2 == null)
+			{
+				Log.LogError("[AlmanacMgrZombie_Patch] TextMeshPro components are null");
+				return;
+			}
 
 			ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+
+			if (zombieData?.zombies == null)
+			{
+				Log.LogError("[AlmanacMgrZombie_Patch] Zombie data is null");
+				return;
+			}
 
 			foreach (ZombieInfo zombieInfo in zombieData.zombies)
 			{
@@ -71,42 +95,59 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 					component.overflowMode = TextOverflowModes.Page;
 					component2.text = zombieInfo.name;
 					component2.autoSizeTextContainer = true;
-					component3.text = Utils.RemoveColorTags(zombieInfo.name);
-					component3.autoSizeTextContainer = true;
+					
+					if (component3 != null)
+					{
+						component3.text = Utils.RemoveColorTags(zombieInfo.name);
+						component3.autoSizeTextContainer = true;
+					}
 
 					if (hasAlmanacFont)
 						component.font = almanacFontAsset;
 					else
 						component.font = fontAsset;
 					component2.font = fontAsset;
-					component3.font = fontAsset;
+					if (component3 != null)
+					{
+						component3.font = fontAsset;
+					}
 				}
 			}
 
-			if (File.Exists(moddedPath))
+		if (File.Exists(moddedPath))
 			{
 				string moddedJson;
 				moddedJson = File.ReadAllText(moddedPath);
 
 				ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(moddedJson);
 
-				foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
+				if (moddedZombieData?.zombies != null)
 				{
-					if (zombieInfo.theZombieType == __instance.theZombieType)
+					foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
 					{
-						component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
-						component.overflowMode = TextOverflowModes.Page;
-						component2.text = zombieInfo.name;
-						component2.autoSizeTextContainer = true;
-						component3.text = Utils.RemoveColorTags(zombieInfo.name);
-						component3.autoSizeTextContainer = true;
+						if (zombieInfo.theZombieType == __instance.theZombieType)
+						{
+							component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
+							component.overflowMode = TextOverflowModes.Page;
+							component2.text = zombieInfo.name;
+							component2.autoSizeTextContainer = true;
+							
+							if (component3 != null)
+							{
+								component3.text = Utils.RemoveColorTags(zombieInfo.name);
+								component3.autoSizeTextContainer = true;
+							}
 
-						if (hasAlmanacFont)
-							component.font = almanacFontAsset;
-						else
-							component.font = fontAsset;
-						component2.font = fontAsset;
-						component3.font = fontAsset;
+							if (hasAlmanacFont)
+								component.font = almanacFontAsset;
+							else
+								component.font = fontAsset;
+							component2.font = fontAsset;
+							if (component3 != null)
+							{
+								component3.font = fontAsset;
+							}
+						}
 					}
 				}
 			}
@@ -118,11 +159,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		[HarmonyPrefix]
 		private static bool OnMouseDown(AlmanacMgrZombie __instance)
 		{
-			TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
-			if (component != null)
+			if (__instance.info != null)
 			{
-				component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ? 1 : component.pageToDisplay + 1;
-				return false;
+				TextMeshPro component = __instance.info.GetComponent<TextMeshPro>();
+				if (component != null)
+				{
+					component.pageToDisplay = component.pageToDisplay > component.m_pageNumber ?1 : component.pageToDisplay + 1;
+					return false;
+				}
 			}
 			return true;
 		}

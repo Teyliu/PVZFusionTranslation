@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using UnityEngine.UI;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -38,6 +38,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             string changelogDir = Path.Combine(stringDir, "changelog.txt");
 
             string changelogText = File.ReadAllText(changelogDir);
+
+            // Highlight "JustNull" with purple bold color
+            if (!string.IsNullOrEmpty(changelogText))
+            {
+                changelogText = changelogText.Replace("JustNull", "<b><color=#FF6B6B>JustNull</color></b>");
+            }
 
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 

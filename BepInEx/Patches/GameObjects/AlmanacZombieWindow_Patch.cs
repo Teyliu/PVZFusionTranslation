@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
@@ -21,19 +21,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             try
             {
                 string currentLanguage = Utils.Language.ToString();
-                string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-                string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
-                string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
-
-                if (!File.Exists(path))
-                {
-                    Log.LogWarning($"[AlmanacZombieWindow_Patch] ZombieStringsTranslate.json not found at: {path}");
-                    return;
-                }
-
-                string json;
-                json = File.ReadAllText(path);
-
+                
                 bool hasAlmanacFont = false;
                 TMP_FontAsset almanacFontAsset = null;
                 if (FontStore.fontAssetDictSecondary != null && 
@@ -47,9 +35,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 TMP_FontAsset fontAsset = null;
                 fontAsset = (hasAlmanacFont) ? FontStore.LoadTMPFontAlmanac(Utils.Language.ToString()) : FontStore.LoadTMPFont(Utils.Language.ToString());
 
-                ZombieAlmanacData zombieAlmanacData = null;
-                zombieAlmanacData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+                ZombieAlmanacData zombieAlmanacData = Utils.CachedZombieData;
+                if (zombieAlmanacData == null || zombieAlmanacData.zombies == null)
+                {
+                    Log.LogWarning($"[AlmanacZombieWindow_Patch] Cached zombie data is null or empty");
+                    return;
+                }
+
                 var zombieDataDic = ZombieDataManager.zombieDataDic;
+                bool hasZombieDataDic = zombieDataDic != null;
 
                 bool foundMatch = false;
                 foreach (ZombieInfo zombieInfo in zombieAlmanacData.zombies)
@@ -78,13 +72,28 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                 string info = zombieInfo.info ?? "";
                                 string introduce = zombieInfo.introduce ?? "";
 
-                                ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
-
                                 string spawnInfo = "";
-                                string spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\\n出怪权重: (\\d+)"];
-                                if(spawnInfoFormat != null)
+                                if (hasZombieDataDic && zombieDataDic.ContainsKey(__instance.currentZombieType))
                                 {
-                                    spawnInfo = string.Format(spawnInfoFormat, new object[] { zombieData.summonLevel, zombieData.summonWeight }) + "\n\n";
+                                    try
+                                    {
+                                        ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
+                                        string spawnInfoFormat = null;
+                                        if (StringStore.translationStringRegex != null && 
+                                            StringStore.translationStringRegex.ContainsKey("出怪等级: (\\d+)\\n出怪权重: (\\d+)"))
+                                        {
+                                            spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\\n出怪权重: (\\d+)"];
+                                        }
+                                        
+                                        if (spawnInfoFormat != null)
+                                        {
+                                            spawnInfo = string.Format(spawnInfoFormat, new object[] { zombieData.summonLevel, zombieData.summonWeight }) + "\n\n";
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.LogWarning($"[AlmanacZombieWindow_Patch] Error accessing zombie data: {ex.Message}");
+                                    }
                                 }
 
                                 __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + spawnInfo + Utils.RemoveSizeTags(introduce) + "\n\n";
@@ -93,7 +102,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                 __instance.showedZombieIntroduce.enableWordWrapping = true;
                                 __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
 
-                                Canvas.ForceUpdateCanvases();
                                 __instance.showedZombieIntroduce.ForceMeshUpdate();
 
                                 if (__instance.zombieTextContent != null)
@@ -111,69 +119,57 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     }
                 }
 
-                if (!foundMatch && File.Exists(moddedPath))
+                if (!foundMatch)
                 {
-                    try
+                    ZombieAlmanacData moddedZombieData = Utils.CachedModdedZombieData;
+                    if (moddedZombieData != null && moddedZombieData.zombies != null)
                     {
-                        string moddedJson = File.ReadAllText(moddedPath);
-                        if (!string.IsNullOrEmpty(moddedJson))
+                        foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
                         {
-                            ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(moddedJson);
-                            if (moddedZombieData != null && moddedZombieData.zombies != null)
+                            if (zombieInfo == null) continue;
+                            if (zombieInfo.theZombieType == __instance.currentZombieType)
                             {
-                                foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
+                                try
                                 {
-                                    if (zombieInfo == null) continue;
-                                    if (zombieInfo.theZombieType == __instance.currentZombieType)
+                                    if (__instance.showedZombieName != null)
                                     {
-                                        try
+                                        foreach (TextMeshProUGUI text in __instance.showedZombieName)
                                         {
-                                            if (__instance.showedZombieName != null)
-                                            {
-                                                foreach (TextMeshProUGUI text in __instance.showedZombieName)
-                                                {
-                                                    if (text == null) continue;
-                                                    text.autoSizeTextContainer = false;
-                                                    string zombieName = zombieInfo.name ?? "";
-                                                    text.text = $"{Utils.RemoveSizeTags(zombieName)} ({(int)zombieInfo.theZombieType})";
-                                                    text.font = fontAsset;
-                                                    text.fontSizeMax = 21;
-                                                }
-                                            }
-
-                                            if (__instance.showedZombieIntroduce != null)
-                                            {
-                                                string info = zombieInfo.info ?? "";
-                                                string introduce = zombieInfo.introduce ?? "";
-                                                __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + Utils.RemoveSizeTags(introduce) + "\n\n";
-                                                __instance.showedZombieIntroduce.font = fontAsset;
-                                                __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
-                                                __instance.showedZombieIntroduce.enableWordWrapping = true;
-                                                __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
-
-                                                Canvas.ForceUpdateCanvases();
-                                                __instance.showedZombieIntroduce.ForceMeshUpdate();
-
-                                                if (__instance.zombieTextContent != null)
-                                                {
-                                                    float textHeight = __instance.showedZombieIntroduce.preferredHeight;
-                                                    __instance.zombieTextContent.sizeDelta = new Vector2(__instance.zombieTextContent.sizeDelta.x, textHeight);
-                                                }
-                                            }
+                                            if (text == null) continue;
+                                            text.autoSizeTextContainer = false;
+                                            string zombieName = zombieInfo.name ?? "";
+                                            text.text = $"{Utils.RemoveSizeTags(zombieName)} ({(int)zombieInfo.theZombieType})";
+                                            text.font = fontAsset;
+                                            text.fontSizeMax = 21;
                                         }
-                                        catch (Exception ex)
+                                    }
+
+                                    if (__instance.showedZombieIntroduce != null)
+                                    {
+                                        string info = zombieInfo.info ?? "";
+                                        string introduce = zombieInfo.introduce ?? "";
+                                        __instance.showedZombieIntroduce.text = Utils.RemoveSizeTags(info) + "\n\n" + Utils.RemoveSizeTags(introduce) + "\n\n";
+                                        __instance.showedZombieIntroduce.font = fontAsset;
+                                        __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
+                                        __instance.showedZombieIntroduce.enableWordWrapping = true;
+                                        __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
+
+                                        __instance.showedZombieIntroduce.ForceMeshUpdate();
+
+                                        if (__instance.zombieTextContent != null)
                                         {
-                                            Log.LogError($"[AlmanacZombieWindow_Patch] Error updating modded zombie info: {ex.Message}");
+                                            float textHeight = __instance.showedZombieIntroduce.preferredHeight;
+                                            __instance.zombieTextContent.sizeDelta = new Vector2(__instance.zombieTextContent.sizeDelta.x, textHeight);
                                         }
-                                        break;
                                     }
                                 }
+                                catch (Exception ex)
+                                {
+                                    Log.LogError($"[AlmanacZombieWindow_Patch] Error updating modded zombie info: {ex.Message}");
+                                }
+                                break;
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.LogWarning($"[AlmanacZombieWindow_Patch] Error reading ModdedZombiesTranslate.json: {ex.Message}");
                     }
                 }
             }

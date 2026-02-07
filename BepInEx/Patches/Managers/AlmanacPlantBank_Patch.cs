@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System.IO;
@@ -43,7 +43,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
             bool hasAlmanacFont = false;
             TMP_FontAsset almanacFontAsset = null;
-            if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
+            if (FontStore.fontAssetDictSecondary != null && 
+                (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage)))
             {
                 almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
                 hasAlmanacFont = true;
@@ -55,12 +56,35 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
 #endif
 
+            if (__instance.introduce == null || __instance.plantName == null || __instance.cost == null)
+            {
+                Log.LogError("[AlmanacPlantBank_Patch] Required components are null");
+                return;
+            }
+
             TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
             TextMeshPro component2 = __instance.plantName.GetComponent<TextMeshPro>();
-            TextMeshPro component3 = __instance.plantName.transform.GetChild(0).GetComponent<TextMeshPro>();
+            TextMeshPro component3 = null;
+            Transform plantNameChild = __instance.plantName.transform.GetChild(0);
+            if (plantNameChild != null)
+            {
+                component3 = plantNameChild.GetComponent<TextMeshPro>();
+            }
             TextMeshPro component4 = __instance.cost.GetComponent<TextMeshPro>();
 
+            if (component == null || component2 == null || component4 == null)
+            {
+                Log.LogError("[AlmanacPlantBank_Patch] TextMeshPro components are null");
+                return;
+            }
+
             AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+
+            if (plantData?.plants == null)
+            {
+                Log.LogError("[AlmanacPlantBank_Patch] Plant data is null");
+                return;
+            }
 
             foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
             {
@@ -80,8 +104,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     component2.text = plantInfo.name;
                     component2.autoSizeTextContainer = true;
 
-                    component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
-                    component3.autoSizeTextContainer = true;
+                    if (component3 != null)
+                    {
+                        component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
+                        component3.autoSizeTextContainer = true;
+                    }
 
                     component4.text = plantInfo.cost;
 
@@ -96,7 +123,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         component4.font = fontAsset;
                     }
                     component2.font = fontAsset;
-                    component3.font = fontAsset;
+                    if (component3 != null)
+                    {
+                        component3.font = fontAsset;
+                    }
                 }
             }
 
@@ -107,41 +137,50 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
                 AlmanacPlantBank.PlantData moddedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(moddedJson);
 
-                foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
+                if (moddedPlantData?.plants != null)
                 {
-                    if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
+                    foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
                     {
-                        component.autoSizeTextContainer = false;
-                        component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
-                        component.overflowMode = TextOverflowModes.Page;
-
-                        // fix dimensions for cost text
-                        component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
-                        component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
-                        component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
-                        component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
-
-
-                        component2.text = plantInfo.name;
-                        component2.autoSizeTextContainer = true;
-
-                        component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
-                        component3.autoSizeTextContainer = true;
-
-                        component4.text = plantInfo.cost;
-
-                        if (hasAlmanacFont)
+                        if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
                         {
-                            component.font = almanacFontAsset;
-                            component4.font = almanacFontAsset;
+                            component.autoSizeTextContainer = false;
+                            component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
+                            component.overflowMode = TextOverflowModes.Page;
+
+                            // fix dimensions for cost text
+                            component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
+                            component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
+                            component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
+                            component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
+
+
+                            component2.text = plantInfo.name;
+                            component2.autoSizeTextContainer = true;
+
+                            if (component3 != null)
+                            {
+                                component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
+                                component3.autoSizeTextContainer = true;
+                            }
+
+                            component4.text = plantInfo.cost;
+
+                            if (hasAlmanacFont)
+                            {
+                                component.font = almanacFontAsset;
+                                component4.font = almanacFontAsset;
+                            }
+                            else
+                            {
+                                component.font = fontAsset;
+                                component4.font = fontAsset;
+                            }
+                            component2.font = fontAsset;
+                            if (component3 != null)
+                            {
+                                component3.font = fontAsset;
+                            }
                         }
-                        else
-                        {
-                            component.font = fontAsset;
-                            component4.font = fontAsset;
-                        }
-                        component2.font = fontAsset;
-                        component3.font = fontAsset;
                     }
                 }
             }
@@ -166,16 +205,27 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPostfix]
         private static void PVPInit(AlmanacPlantBank __instance)
         {
-            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-            if (component != null)
+            if (__instance.introduce != null)
             {
-                component.autoSizeTextContainer = false;
+                TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
+                if (component != null)
+                {
+                    component.autoSizeTextContainer = false;
+                }
             }
 
-            Transform banTransform = __instance.transform.FindChild("Ban").GetChild(0);
-            if (banTransform != null)
+            Transform banTransform = __instance.transform.Find("Ban");
+            if (banTransform != null && banTransform.childCount > 0)
             {
-                banTransform.GetComponent<TextMeshPro>().text = StringStore.TranslateText(banTransform.GetComponent<TextMeshPro>().text);
+                Transform banChild = banTransform.GetChild(0);
+                if (banChild != null)
+                {
+                    TextMeshPro banText = banChild.GetComponent<TextMeshPro>();
+                    if (banText != null)
+                    {
+                        banText.text = StringStore.TranslateText(banText.text);
+                    }
+                }
             }
         }
 
@@ -183,18 +233,50 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPostfix]
         public static void Post_Start(AlmanacPlantBank __instance)
         {
+            if (__instance.skinButton == null || __instance.skinButton.transform == null)
+            {
+                Log.LogWarning("[AlmanacPlantBank_Patch] Skin button is null");
+                return;
+            }
+
+            if (__instance.skinButton.transform.childCount == 0)
+            {
+                Log.LogWarning("[AlmanacPlantBank_Patch] Skin button has no children");
+                return;
+            }
+
             GameObject skinTextObj = __instance.skinButton.transform.GetChild(0).gameObject;
+            if (skinTextObj == null)
+            {
+                Log.LogWarning("[AlmanacPlantBank_Patch] Skin text object is null");
+                return;
+            }
+
             GameObject skinShadowTextObj = UnityEngine.Object.Instantiate(skinTextObj, parent: __instance.skinButton.transform);
+            if (skinShadowTextObj == null)
+            {
+                Log.LogWarning("[AlmanacPlantBank_Patch] Failed to instantiate skin shadow text");
+                return;
+            }
+
             TextMeshPro skinShadowText = skinShadowTextObj.GetComponent<TextMeshPro>();
-            skinShadowText.text = StringStore.TranslateText("换肤_S");
-            skinShadowText.sortingOrder -= 2;
+            if (skinShadowText != null)
+            {
+                skinShadowText.text = StringStore.TranslateText("换肤_S");
+                skinShadowText.sortingOrder -= 2;
+            }
+
             skinShadowTextObj.transform.Translate(new Vector3(0.015f, -0.015f, 0));
             skinTextObj.transform.Translate(new Vector3(-0.022f, 0));
             skinShadowTextObj.transform.Translate(new Vector3(-0.022f, 0));
             __instance.skinButton.transform.localScale /= 1.75f;
             __instance.skinButton.transform.Translate(new Vector3(-0.075f, -0.15f, 0));
-            __instance.skinButton.transform.GetChild(1).Translate(new Vector3(0.35f, 0));
-            __instance.skinButton.transform.GetChild(2).Translate(new Vector3(-0.35f, 0));
+            
+            if (__instance.skinButton.transform.childCount > 2)
+            {
+                __instance.skinButton.transform.GetChild(1).Translate(new Vector3(0.35f, 0));
+                __instance.skinButton.transform.GetChild(2).Translate(new Vector3(-0.35f, 0));
+            }
         }
     }
 }
