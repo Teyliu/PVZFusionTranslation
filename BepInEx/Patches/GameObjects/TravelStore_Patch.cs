@@ -1,8 +1,8 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using UnityEngine;
 using System.Linq;
 
@@ -14,24 +14,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Update(TravelStore __instance)
         {
-            foreach (TextMeshProUGUI text in __instance.introduces)
+            if (__instance.pointText != null)
             {
-                if (__instance.currentSelect != null)
+                foreach (var textMesh in __instance.pointText)
                 {
-                    var buffList = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]];
-                    if (__instance.currentSelect.theBuffNumber < buffList.Count && __instance.currentSelect.theBuffNumber > -1)
-                    {
-                        text.text = buffList[__instance.currentSelect.theBuffNumber];
-                    }
-                    else
-                    {
-                        text.text = StringStore.TranslateText(text.text);
-                    }
+                    textMesh.text = StringStore.TranslateText(textMesh.text);
                 }
             }
-            foreach (var textMesh in __instance.points)
+            
+            if (__instance.refreshText != null)
             {
-                textMesh.text = StringStore.TranslateText(textMesh.text);
+                foreach (var textMesh in __instance.refreshText)
+                {
+                    textMesh.text = StringStore.TranslateText(textMesh.text);
+                }
             }
         }
 
@@ -39,31 +35,88 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void RefreshBuff(TravelStore __instance)
         {
-            foreach (TravelBuff buff in __instance.travelBuffs)
+            if (__instance.buyBuffWindows != null)
             {
-                TextMeshProUGUI cost = buff.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-                cost.text = StringStore.TranslateText(cost.text);
-                cost.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-            }
-
-            foreach (TextMeshProUGUI text in __instance.introduces)
-            {
-                if (__instance.currentSelect != null)
+                foreach (TravelStoreWindow window in __instance.buyBuffWindows)
                 {
-                    var buffList = translatedTravelBuffs[buffLinks[(BuffType)__instance.currentSelect.theBuffType]];
-                    if (__instance.currentSelect.theBuffNumber < buffList.Count && __instance.currentSelect.theBuffNumber > -1)
+                    if (window.set)
                     {
-                        text.text = buffList[__instance.currentSelect.theBuffNumber];
-                    }
-                    else
-                    {
-                        text.text = StringStore.TranslateText(text.text);
+                        string originalText = TravelMgr.Instance.GetText((int)window.buffType, window.buffIndex);
+                        string translatedText = Managers.TravelMgr_Patch.MatchTravelBuff(originalText);
+                        
+                        if (!string.IsNullOrEmpty(translatedText) && translatedText != originalText)
+                        {
+                            foreach (var textMesh in window.buttonText)
+                            {
+                                if (textMesh != null)
+                                {
+                                    textMesh.text = translatedText;
+                                }
+                            }
+                        }
                     }
                 }
             }
-            foreach (var textMesh in __instance.points)
+            
+            if (__instance.buyPlantWindows != null)
             {
-                textMesh.text = StringStore.TranslateText(textMesh.text);
+                foreach (TravelStoreWindow window in __instance.buyPlantWindows)
+                {
+                    if (window.set)
+                    {
+                        string originalText = TravelMgr.Instance.GetText((int)window.buffType, window.buffIndex);
+                        string translatedText = Managers.TravelMgr_Patch.MatchTravelBuff(originalText);
+                        
+                        if (!string.IsNullOrEmpty(translatedText) && translatedText != originalText)
+                        {
+                            foreach (var textMesh in window.buttonText)
+                            {
+                                if (textMesh != null)
+                                {
+                                    textMesh.text = translatedText;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (__instance.pointText != null)
+            {
+                foreach (var textMesh in __instance.pointText)
+                {
+                    textMesh.text = StringStore.TranslateText(textMesh.text);
+                }
+            }
+            
+            if (__instance.refreshText != null)
+            {
+                foreach (var textMesh in __instance.refreshText)
+                {
+                    textMesh.text = StringStore.TranslateText(textMesh.text);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(TravelStoreWindow), nameof(TravelStoreWindow.SetType))]
+        [HarmonyPostfix]
+        private static void SetType(TravelStoreWindow __instance, int index, BuffType buffType)
+        {
+            if (__instance.set && __instance.buttonText != null)
+            {
+                string originalText = TravelMgr.Instance.GetText((int)buffType, index);
+                string translatedText = Managers.TravelMgr_Patch.MatchTravelBuff(originalText);
+                
+                if (!string.IsNullOrEmpty(translatedText) && translatedText != originalText)
+                {
+                    foreach (var textMesh in __instance.buttonText)
+                    {
+                        if (textMesh != null)
+                        {
+                            textMesh.text = translatedText;
+                        }
+                    }
+                }
             }
         }
     }

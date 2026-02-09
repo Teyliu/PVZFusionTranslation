@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +20,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             { BuffType.UltimateBuff, "ultimateUpgrades" },
             { BuffType.UnlockPlant, "strongUltimates" },
             { BuffType.Debuff, "debuffs" },
+            { BuffType.InvestmentBuff, "investmentBuffs" }
         };
 
         public static Dictionary<string, List<string>> dumpedTravelBuffs = new Dictionary<string, List<string>>()
@@ -27,22 +28,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             { "advancedUpgrades", [] },
             { "ultimateUpgrades", [] },
             { "strongUltimates", [] },
-            { "debuffs", [] }
+            { "debuffs", [] },
+            { "investmentBuffs", [] }
         };
 
         public static Dictionary<string, List<string>> translatedTravelBuffs = new Dictionary<string, List<string>>();
-
-        public static void DumpTravelBuffs(Il2CppSystem.Collections.Generic.Dictionary<int, string> source, Dictionary<string, List<string>> dest, string index)
-        {
-            foreach (var i in source)
-            {
-                if (!Utils.CheckForUntranslatedText(i.Value))
-                {
-                    break;
-                }
-                dest[index].Add(i.Value);
-            }
-        }
 
         public static string MatchTravelBuff(string originalText)
         {
@@ -60,44 +50,107 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             return res;
         }
 
-        [HarmonyPatch(nameof(TravelMgr.Awake))]
+        [HarmonyPatch("get_Instance")]
         [HarmonyPrefix]
-        private static void Pre_Awake(TravelMgr __instance)
+        private static void Pre_get_Instance()
         {
-            // Dump buffs
+            if (dumpedTravelBuffs["advancedUpgrades"].Count > 0)
+                return;
 
-            dumpedTravelBuffs = new Dictionary<string, List<string>>() // reset dump
+            dumpedTravelBuffs = new Dictionary<string, List<string>>()
             {
                 { "advancedUpgrades", [] },
                 { "ultimateUpgrades", [] },
                 { "strongUltimates", [] },
-                { "debuffs", [] }
+                { "debuffs", [] },
+                { "investmentBuffs", [] }
             };
 
-            DumpTravelBuffs(TravelMgr.advancedBuffs, dumpedTravelBuffs, "advancedUpgrades");
-            DumpTravelBuffs(TravelMgr.ultimateBuffs, dumpedTravelBuffs, "ultimateUpgrades");
-            DumpTravelBuffs(TravelMgr.unlocks, dumpedTravelBuffs, "strongUltimates");
-            DumpTravelBuffs(TravelMgr.debuffs, dumpedTravelBuffs, "debuffs");
-
-            string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
-            var options = new JsonSerializerOptions
+            try 
             {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                WriteIndented = true
-            };
-            File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
+                if (TravelDictionary.advancedBuffsText != null)
+                {
+                    foreach (var kvp in TravelDictionary.advancedBuffsText)
+                    {
+                        if (kvp.Value != null && Utils.CheckForUntranslatedText(kvp.Value))
+                            dumpedTravelBuffs["advancedUpgrades"].Add(kvp.Value);
+                    }
+                }
+                
+                if (TravelDictionary.ultimateBuffsText != null)
+                {
+                    foreach (var kvp in TravelDictionary.ultimateBuffsText)
+                    {
+                        if (kvp.Value != null && Utils.CheckForUntranslatedText(kvp.Value))
+                            dumpedTravelBuffs["ultimateUpgrades"].Add(kvp.Value);
+                    }
+                }
+                
+                if (TravelDictionary.unlocksText != null)
+                {
+                    foreach (var kvp in TravelDictionary.unlocksText)
+                    {
+                        if (kvp.Value != null && Utils.CheckForUntranslatedText(kvp.Value))
+                            dumpedTravelBuffs["strongUltimates"].Add(kvp.Value);
+                    }
+                }
+                
+                if (TravelDictionary.debuffData != null)
+                {
+                    foreach (var kvp in TravelDictionary.debuffData)
+                    {
+                        if (kvp.Value.Item1 != null && Utils.CheckForUntranslatedText(kvp.Value.Item1))
+                            dumpedTravelBuffs["debuffs"].Add(kvp.Value.Item1);
+                    }
+                }
 
-            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
-            string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
+                if (TravelMgr.InvestBuffsData != null)
+                {
+                    foreach (var kvp in TravelMgr.InvestBuffsData)
+                    {
+                        var investBuff = kvp.Value;
+                        string description = GetInvestBuffDescription(kvp.Key);
+                        if (!string.IsNullOrEmpty(description) && Utils.CheckForUntranslatedText(description))
+                            dumpedTravelBuffs["investmentBuffs"].Add(description);
+                    }
+                }
 
-            if(!File.Exists(travelBuffDir))
-            {
-                File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
+                string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
+                var options = new JsonSerializerOptions
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                };
+                File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
+
+                string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+                string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
+
+                if(!File.Exists(travelBuffDir))
+                {
+                    File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
+                }
+
+                string travelBuffs = File.ReadAllText(travelBuffDir);
+
+                translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(travelBuffs);
             }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogError($"[TravelMgr_Patch] Error loading travel buffs: {ex.Message}");
+            }
+        }
 
-            string travelBuffs = File.ReadAllText(Path.Combine(stringDir, "travel_buffs.json"));
-
-            translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(travelBuffs);
+        private static string GetInvestBuffDescription(InvestBuff buff)
+        {
+            try
+            {
+                return buff.ToString();
+            }
+            catch
+            {
+                return "";
+            }
         }
     }
 }
