@@ -29,7 +29,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             { "ultimateUpgrades", [] },
             { "strongUltimates", [] },
             { "debuffs", [] },
-            { "investmentBuffs", [] }
+            { "investmentBuffs", [] },
+            { "synergies", [] }
         };
 
         public static Dictionary<string, List<string>> translatedTravelBuffs = new Dictionary<string, List<string>>();
@@ -63,10 +64,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 { "ultimateUpgrades", [] },
                 { "strongUltimates", [] },
                 { "debuffs", [] },
-                { "investmentBuffs", [] }
+                { "investmentBuffs", [] },
+                { "synergies", [] }
             };
 
-            try 
+            try
             {
                 if (TravelDictionary.advancedBuffsText != null)
                 {
@@ -76,7 +78,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                             dumpedTravelBuffs["advancedUpgrades"].Add(kvp.Value);
                     }
                 }
-                
+
                 if (TravelDictionary.ultimateBuffsText != null)
                 {
                     foreach (var kvp in TravelDictionary.ultimateBuffsText)
@@ -85,7 +87,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                             dumpedTravelBuffs["ultimateUpgrades"].Add(kvp.Value);
                     }
                 }
-                
+
                 if (TravelDictionary.unlocksText != null)
                 {
                     foreach (var kvp in TravelDictionary.unlocksText)
@@ -94,7 +96,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                             dumpedTravelBuffs["strongUltimates"].Add(kvp.Value);
                     }
                 }
-                
+
                 if (TravelDictionary.debuffData != null)
                 {
                     foreach (var kvp in TravelDictionary.debuffData)
@@ -112,6 +114,22 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         string description = GetInvestBuffDescription(kvp.Key);
                         if (!string.IsNullOrEmpty(description) && Utils.CheckForUntranslatedText(description))
                             dumpedTravelBuffs["investmentBuffs"].Add(description);
+                    }
+                }
+
+                if (TravelMgr.SynergysData != null)
+                {
+                    foreach (var kvp in TravelMgr.SynergysData)
+                    {
+                        var synergyData = kvp.Value;
+                        string synergyName = GetSynergyName(kvp.Key);
+                        string synergyDescription = GetSynergyDescription(synergyData);
+
+                        if (!string.IsNullOrEmpty(synergyName) && Utils.CheckForUntranslatedText(synergyName))
+                            dumpedTravelBuffs["synergies"].Add(synergyName);
+
+                        if (!string.IsNullOrEmpty(synergyDescription) && Utils.CheckForUntranslatedText(synergyDescription))
+                            dumpedTravelBuffs["synergies"].Add(synergyDescription);
                     }
                 }
 
@@ -146,6 +164,39 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             try
             {
                 return buff.ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        private static string GetSynergyName(SynergyType synergyType)
+        {
+            try
+            {
+                return synergyType.ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        private static string GetSynergyDescription(BaseSynergyData synergyData)
+        {
+            try
+            {
+                var allData = synergyData.GetAllData();
+                if (allData != null && allData.Count > 0)
+                {
+                    var lastLevel = allData[allData.Count - 1];
+                    if (lastLevel != null)
+                    {
+                        return lastLevel.Description;
+                    }
+                }
+                return "";
             }
             catch
             {
