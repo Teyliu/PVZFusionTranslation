@@ -58,6 +58,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
             {
                 string origText = textTMP.text;
                 string translatedText = origText;
+                if (translatedText == null) return;
                 string pattern = "(\\d+)阶\\n([\\s\\S]+)";
                 if (StringStore.TestRegex(translatedText, pattern))
                 {

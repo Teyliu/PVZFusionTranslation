@@ -26,7 +26,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 			
 			foreach (TextMeshProUGUI txt in __instance.textMeshes)
 			{
-				string travelMatch = TravelMgr_Patch.MatchTravelBuff(txt.text);
+				string travelMatch = "";
 				string originalText = txt.text;
 
 				if (txt.gameObject.name.Contains("shadow"))

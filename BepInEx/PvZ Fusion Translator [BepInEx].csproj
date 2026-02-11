@@ -13,7 +13,7 @@
 		https://nuget.samboy.dev/v3/index.json
 	</RestoreAdditionalProjectSources>
 	<RootNamespace>PvZ_Fusion_Translator__BepInEx_</RootNamespace>
-	<GamePath>C:\Users\Admin\Downloads\BepInEx Game Files</GamePath>
+	<GamePath>C:\Users\Admin\Downloads\PVZFusion3.4.1ComboPack</GamePath>
 	<GamePathMelon>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.1.1</GamePathMelon>
 	<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate;DebugMulti</Configurations>
 	<Platforms>AnyCPU;x64</Platforms>
