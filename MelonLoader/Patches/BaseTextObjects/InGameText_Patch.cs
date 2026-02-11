@@ -2,7 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using PvZ_Fusion_Translator.Patches.Managers;
+//using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEngine;
@@ -20,7 +20,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                string travelMatch = TravelMgr_Patch.MatchTravelBuff(txt.text);
+                string travelMatch = "";
                 string originalText = txt.text;
 
                 if (txt.gameObject.name.Contains("shadow"))

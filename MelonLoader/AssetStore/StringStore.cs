@@ -278,7 +278,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 		{
 			RegexOptions options = (singleLine) ? RegexOptions.None : RegexOptions.Singleline;
 			return Regex.IsMatch(originalText, pattern, options);
-		}
+        }
 
 		private static TextAlignmentOptions TextAnchorToTMPAlignment(TextAnchor anchor)
 		{

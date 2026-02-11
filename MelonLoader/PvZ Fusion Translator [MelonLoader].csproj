@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.3.1</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.4.1</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -475,12 +475,12 @@
 		<Compile Include="Patches\GameObjects\AbyssDevelopMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu2_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelBuffMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelLookBuff_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelLookMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\AbyssBuffData_Patch.cs" />
 		<Compile Include="Patches\Managers\AbyssInfo_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
@@ -488,11 +488,11 @@
 		<Compile Include="Patches\Managers\Garden_Patch.cs" />
 		<Compile Include="Patches\Managers\DrawCardManager_Patch.cs" />
 		<Compile Include="Patches\Managers\CanvasUpUI_Patch.cs" />
-		<Compile Include="Patches\Managers\TravelMgr_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelMgr_Patch.cs" />
 		<Compile Include="Patches\Managers\TreasureManager_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelBuffOptionButton_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />
@@ -518,10 +518,10 @@
 		<Compile Include="Patches\BaseTextObjects\TextMeshPro_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TextMeshProUGUI_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_InputField_Patch.cs" />
-		<Compile Include="Patches\Managers\TravelBuffMgr_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelBuff_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelRefresh_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TravelStore_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelBuffMgr_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelBuff_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelRefresh_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelStore_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIDifficulty_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIZombieNum_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\Plant_Patch.cs" />

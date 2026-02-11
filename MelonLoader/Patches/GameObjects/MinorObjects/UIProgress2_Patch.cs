@@ -12,6 +12,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		private static void Update(UIProgress2 __instance)
 		{
 			__instance.t.text = StringStore.TranslateText(__instance.t.text);
-        }
+		}
 	}
 }
