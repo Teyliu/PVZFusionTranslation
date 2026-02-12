@@ -1,102 +1,114 @@
-﻿//using Il2Cpp;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Text.Encodings.Web;
-//using System.Text.Json;
-//using System.Threading.Tasks;
-//using HarmonyLib;
+﻿using HarmonyLib;
+using Il2Cpp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Unity.Collections;
+using static PvZ_Fusion_Translator.FileLoader;
 
-//namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
-//{
-//    [HarmonyPatch(typeof(TravelMgr))]
-//    public static class TravelMgr_Patch
-//    {
-//        public static Dictionary<BuffType, string> buffLinks = new Dictionary<BuffType, string>()
-//        {
-//            { BuffType.AdvancedBuff, "advancedUpgrades" },
-//            { BuffType.UltimateBuff, "ultimateUpgrades" },
-//            { BuffType.UnlockPlant, "strongUltimates" },
-//            { BuffType.Debuff, "debuffs" },
-//        };
+namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
+{
+    [HarmonyPatch(typeof(TravelMgr))]
+    public static class TravelMgr_Patch
+    {
+        public static Dictionary<string, SortedDictionary<int, string>> dumpedTravelBuffs = new()
+        {
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
+        };
 
-//        public static Dictionary<string, List<string>> dumpedTravelBuffs = new Dictionary<string, List<string>>()
-//        {
-//            { "advancedUpgrades", [] },
-//            { "ultimateUpgrades", [] },
-//            { "strongUltimates", [] },
-//            { "debuffs", [] }
-//        };
+        public static Dictionary<string, SortedDictionary<int, string>> translatedTravelBuffs = new()
+        {
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
+        };
 
-//        public static Dictionary<string, List<string>> translatedTravelBuffs = new Dictionary<string, List<string>>();
+        public static Dictionary<BuffType, string> buffLinks = new()
+        {
+            { BuffType.AdvancedBuff, "advancedBuffs" },
+            { BuffType.UltimateBuff, "ultimateBuffs" },
+            { BuffType.Debuff, "debuffs" },
+            { BuffType.UnlockPlant, "unlocks" },
+            { BuffType.InvestmentBuff, "investmentBuffs" }
+        };
 
-//        public static void DumpTravelBuffs(Il2CppSystem.Collections.Generic.Dictionary<int, string> source, Dictionary<string, List<string>> dest, string index)
-//        {
-//            foreach (var i in source)
-//            {
-//                if (!Utils.CheckForUntranslatedText(i.Value))
-//                {
-//                    break;
-//                }
-//                dest[index].Add(i.Value);
-//            }
-//        }
+        public static void DumpTravelBuffs()
+        {
+            TravelMgr.Instance.GetPlantBuffUnlockCount(PlantType.DoomGatling);
 
-//        public static string MatchTravelBuff(string originalText)
-//        {
-//            string res = "";
+            foreach (var pair in TravelDictionary.advancedBuffsText)
+            {
+                dumpedTravelBuffs["advancedBuffs"].Add((int)pair.Key, pair.Value);
+            }
 
-//            foreach(var i in dumpedTravelBuffs)
-//            {
-//                if(i.Value.Contains(originalText))
-//                {
-//                    res = translatedTravelBuffs[i.Key][i.Value.IndexOf(originalText)];
-//                    break;
-//                }
-//            }
+            foreach (var pair in TravelDictionary.ultimateBuffsText)
+            {
+                dumpedTravelBuffs["ultimateBuffs"].Add((int)pair.Key, pair.Value);
+            }
 
-//            return res;
-//        }
+            foreach (var pair in TravelDictionary.debuffData)
+            {
+                dumpedTravelBuffs["debuffs"].Add((int)pair.Key, pair.Value.Item1);
+            }
 
-//        [HarmonyPatch(nameof(TravelMgr.Awake))]
-//        [HarmonyPrefix]
-//        private static void Pre_Awake(TravelMgr __instance)
-//        {
-//            // Dump buffs
+            foreach (var pair in TravelDictionary.unlocksText)
+            {
+                dumpedTravelBuffs["unlocks"].Add((int)pair.Key, pair.Value);
+            }
 
-//            dumpedTravelBuffs = new Dictionary<string, List<string>>() // reset dump
-//            {
-//                { "advancedUpgrades", [] },
-//                { "ultimateUpgrades", [] },
-//                { "strongUltimates", [] },
-//                { "debuffs", [] }
-//            };
+            foreach (var pair in TravelMgr.InvestBuffsData)
+            {
+                dumpedTravelBuffs["investmentBuffs"].Add((int)pair.Key, pair.Value.GetDescription());
+            }
 
-//            DumpTravelBuffs(TravelMgr.advancedBuffs, dumpedTravelBuffs, "advancedUpgrades");
-//            DumpTravelBuffs(TravelMgr.ultimateBuffs, dumpedTravelBuffs, "ultimateUpgrades");
-//            DumpTravelBuffs(TravelMgr.unlocks, dumpedTravelBuffs, "strongUltimates");
-//            DumpTravelBuffs(TravelMgr.debuffs, dumpedTravelBuffs, "debuffs");
+            File.WriteAllText(Path.Combine(GetAssetDir(AssetType.Dumps), "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
 
-//            string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
-//            var options = new JsonSerializerOptions
-//            {
-//                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-//                WriteIndented = true
-//            };
-//            File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
+            string translatedTravelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
 
-//            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
-//            string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
+            if (!File.Exists(translatedTravelBuffsPath))
+            {
+                File.WriteAllText(translatedTravelBuffsPath, JsonSerializer.Serialize(dumpedTravelBuffs, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                }));
+                translatedTravelBuffs = dumpedTravelBuffs;
+            }
+        }
 
-//            if(!File.Exists(travelBuffDir))
-//            {
-//                File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
-//            }
+        public static string MatchTravelBuff(string originalText)
+        {
+            string res = "";
 
-//            string travelBuffs = File.ReadAllText(Path.Combine(stringDir, "travel_buffs.json"));
+            foreach (var i in translatedTravelBuffs)
+            {
+                foreach (var j in translatedTravelBuffs[i.Key])
+                {
+                    if (j.Value == originalText)
+                    {
+                        res = j.Value;
+                        break;
+                    }
+                }
 
-//            translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(travelBuffs);
-//        }
-//    }
-//}
+                if (res != "") break;
+            }
+
+            return res;
+        }
+    }
+}

@@ -2,6 +2,8 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
+
 //using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -20,8 +22,8 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                string travelMatch = "";
                 string originalText = txt.text;
+                string travelMatch = TravelMgr_Patch.MatchTravelBuff(originalText);
 
                 if (txt.gameObject.name.Contains("shadow"))
                 {
@@ -41,7 +43,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                         }
                     }
                 }
-                else if(Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success)
+                else if((Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success) && !StringStore.translationString.ContainsKey(txt.text))
                 {
                     txt.text = StringStore.TranslateColorText(txt.text, true);
                     if (txt.gameObject.name.Contains("main"))

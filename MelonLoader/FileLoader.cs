@@ -2,11 +2,11 @@
 using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using PvZ_Fusion_Translator.Patches.OtherManagers;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace PvZ_Fusion_Translator
 {
@@ -81,7 +81,11 @@ namespace PvZ_Fusion_Translator
 						}
 						Zombie_Patch.LoadHPStrings();
 					}
-				}
+					else if(fileName.EndsWith("travel_buffs"))
+					{
+						TravelMgr_Patch.translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
+					}
+                }
 				SaveStrings();
 				DumpJson();
 			}
@@ -318,6 +322,68 @@ namespace PvZ_Fusion_Translator
 			File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
 			File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
+			// dump iz tips
+			var izLevelData = Resources.LoadAll<TextAsset>("izleveldata");
+			Dictionary<string, string> izLevelDataDump = new Dictionary<string, string>();
+
+            string izTranslatedPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "tips_iz.json");
+            if (!File.Exists(izTranslatedPath))
+            {
+                File.WriteAllText(izTranslatedPath, JsonSerializer.Serialize(izLevelDataDump));
+            }
+            var izTranslatedTips = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(izTranslatedPath));
+
+            foreach (var level in izLevelData) 
+			{
+				string data = level.text;
+				LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+				if(levelData.tips != null)
+				{
+					izLevelDataDump.Add(level.name, levelData.tips);
+					if(izTranslatedTips.ContainsKey(level.name) && !StringStore.translationString.ContainsKey(levelData.tips))
+					{
+                        StringStore.translationString.Add(levelData.tips, izTranslatedTips[level.name]);
+                    }
+                }
+            }
+
+            File.WriteAllText(Path.Combine(dumpDir, "tips_iz.json"), JsonSerializer.Serialize(izLevelDataDump, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
+
+            // dump fusion showcase tips
+            var fusionShowcaseData = Resources.LoadAll<TextAsset>("leveldata/explore");
+            Dictionary<string, string> fusionShowcaseDataDump = new Dictionary<string, string>();
+
+            string fsTranslatedPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "tips_fs.json");
+			if(!File.Exists(fsTranslatedPath))
+			{
+				File.WriteAllText(fsTranslatedPath, JsonSerializer.Serialize(fusionShowcaseDataDump));
+			}
+            var fsTranslatedTips = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(fsTranslatedPath));
+
+            foreach (var level in fusionShowcaseData)
+            {
+                string data = level.text;
+                LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+                if (levelData.tips != null)
+                {
+                    fusionShowcaseDataDump.Add(level.name, levelData.tips);
+                    if (fsTranslatedTips.ContainsKey(level.name) && !StringStore.translationString.ContainsKey(levelData.tips))
+                    {
+                        StringStore.translationString.Add(levelData.tips, fsTranslatedTips[level.name]);
+                    }
+                }
+            }
+
+            File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), JsonSerializer.Serialize(fusionShowcaseDataDump, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
+
             Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
 			foreach (Il2CppSystem.Collections.Generic.KeyValuePair<Achievement, Il2CppSystem.Tuple<string, string>> entry in AchievementClip.achievementsText)
 			{
@@ -328,7 +394,7 @@ namespace PvZ_Fusion_Translator
 				WriteIndented = true,
 				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
 			}));
-		}
+        }
 
 		#if DEBUG
 		public static void DumpUntranslatedStrings(string text)
@@ -361,6 +427,7 @@ namespace PvZ_Fusion_Translator
 			}
 		}
 		#endif
+		
 
 		#if MULTI_LANGUAGE
 		internal static void LoadLanguage()

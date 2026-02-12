@@ -2,7 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-//using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -11,11 +11,11 @@ namespace PvZ_Fusion_Translator.Patches.Managers
     [HarmonyPatch(typeof(OppositeBuffManager))]
     public static class OppositeBuffManager_Patch
     {
-        //public static Dictionary<BuffType, string> buffLinks = TravelMgr_Patch.buffLinks;
-        //public static Dictionary<string, List<string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
-        //public static string badPattern = @"^但(.*)";
-        //public static string badFormat = StringStore.translationStringRegex.ContainsKey(badPattern) ? StringStore.translationStringRegex[badPattern] : "But, {0}";
-        //public static TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+        public static Dictionary<BuffType, string> buffLinks = TravelMgr_Patch.buffLinks;
+        public static Dictionary<string, SortedDictionary<int, string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
+        public static string badPattern = @"^但(.*)";
+        public static string badFormat = StringStore.translationStringRegex.ContainsKey(badPattern) ? StringStore.translationStringRegex[badPattern] : "But, {0}";
+        public static TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
         [HarmonyPatch(nameof(OppositeBuffManager.Awake))]
         [HarmonyPostfix]
@@ -29,21 +29,21 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 
         public static void TranslateOppositeText(Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> textList, BuffType buffType, int buffIndex, bool isBad = false)
         {
-            //string buff = translatedTravelBuffs[buffLinks[buffType]][buffIndex];
+            string buff = translatedTravelBuffs[buffLinks[buffType]][buffIndex];
 
-            //foreach(var text in textList)
-            //{
-            //    if(isBad)
-            //    {
-            //        text.text = string.Format(badFormat, buff);
-            //    }
-            //    else
-            //    {
-            //        text.text = buff;
-            //    }
+            foreach (var text in textList)
+            {
+                if (isBad)
+                {
+                    text.text = string.Format(badFormat, buff);
+                }
+                else
+                {
+                    text.text = buff;
+                }
 
-            //    text.font = fontAsset;
-            //}
+                text.font = fontAsset;
+            }
         }
     }
 }
