@@ -1,10 +1,14 @@
-﻿using Il2CppTMPro;
+﻿using Il2Cpp;
+using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.Utils;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Managers;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using UnityEngine;
-using Il2Cpp;
+using static PvZ_Fusion_Translator.FileLoader;
 
 [assembly: MelonInfo(typeof(PvZ_Fusion_Translator.Core), "PvZ Fusion Translator", "231.0.0", "dynaslash / arifrios1st / lancerx0 / JustNull / Dakosha / Mamoru-kun / cassidy / Teyliu", null)]
 [assembly: MelonGame("LanPiaoPiao", "PlantsVsZombiesRH")]
@@ -42,7 +46,8 @@ namespace PvZ_Fusion_Translator
 		{
 			dtStart = DateTime.Now;
 			replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
-		}
+			TravelMgr_Patch.DumpTravelBuffs();
+        }
 
 		public override void OnDeinitializeMelon()
 		{

@@ -4,7 +4,7 @@ using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator.Patches.Managers
+namespace PvZ_Fusion_Translator.Patches.Modes.Harvest
 {
     [HarmonyPatch(typeof(TreasureManager))]
     public static class TreasureManager_Patch

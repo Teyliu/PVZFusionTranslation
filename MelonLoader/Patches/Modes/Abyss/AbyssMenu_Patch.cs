@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using MelonLoader.Utils;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
     [HarmonyPatch(typeof(AbyssMenu))]
     public static class AbyssMenu_Patch

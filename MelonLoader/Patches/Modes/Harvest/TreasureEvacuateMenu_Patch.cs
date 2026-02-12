@@ -5,7 +5,7 @@ using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Harvest
 {
     [HarmonyPatch(typeof(TreasureEvacuateMenu))]
     public static class TreasureEvacuateMenu_Patch

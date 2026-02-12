@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using UnityEngine.TextCore.Text;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
     [HarmonyPatch(typeof(AbyssBuffMenu))]
     public static class AbyssBuffMenu_Patch
@@ -98,7 +98,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         var regex = new Regex(pattern);
                         var match = regex.Match(originalText);
 
-                        return String.Format(x.Value.Replace("value", "0"), match.Groups[1].Value);
+                        return string.Format(x.Value.Replace("value", "0"), match.Groups[1].Value);
                     }
                 }
             }

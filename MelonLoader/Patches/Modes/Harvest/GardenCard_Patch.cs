@@ -2,7 +2,7 @@
 using Il2Cpp;
 using PvZ_Fusion_Translator.AssetStore;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Harvest
 {
     [HarmonyPatch(typeof(GardenCard))]
 	public static class GardenCard_Patch

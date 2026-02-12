@@ -2,11 +2,11 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using static PvZ_Fusion_Translator.Patches.Managers.TravelMgr_Patch;
+using static PvZ_Fusion_Translator.Patches.Modes.Odyssey.TravelMgr_Patch;
 using UnityEngine;
 using MelonLoader;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 {
     [HarmonyPatch(typeof(TravelLookBuff))]
     public static class TravelLookBuff_Patch
@@ -38,8 +38,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_SetBuff(TravelLookBuff __instance)
         {
-            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
-            string buffText = (__instance.buffIndex < buffSet.Count) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
+            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            string buffText = buffSet.ContainsKey(__instance.buffIndex) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
             __instance.introduce.text = buffText;
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())

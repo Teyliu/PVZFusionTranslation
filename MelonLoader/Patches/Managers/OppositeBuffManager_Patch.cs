@@ -2,6 +2,7 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
     public static class OppositeBuffManager_Patch
     {
         public static Dictionary<BuffType, string> buffLinks = TravelMgr_Patch.buffLinks;
-        public static Dictionary<string, List<string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
+        public static Dictionary<string, SortedDictionary<int, string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
         public static string badPattern = @"^但(.*)";
         public static string badFormat = StringStore.translationStringRegex.ContainsKey(badPattern) ? StringStore.translationStringRegex[badPattern] : "But, {0}";
         public static TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
@@ -30,9 +31,9 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         {
             string buff = translatedTravelBuffs[buffLinks[buffType]][buffIndex];
 
-            foreach(var text in textList)
+            foreach (var text in textList)
             {
-                if(isBad)
+                if (isBad)
                 {
                     text.text = string.Format(badFormat, buff);
                 }

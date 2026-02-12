@@ -4,7 +4,7 @@ using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
     [HarmonyPatch(typeof(AbyssGoods))]
     public static class AbyssGoods_Patch

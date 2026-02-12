@@ -4,9 +4,9 @@ using Il2CppTMPro;
 using MelonLoader;
 using PvZ_Fusion_Translator.AssetStore;
 using static MelonLoader.MelonLogger;
-using static PvZ_Fusion_Translator.Patches.Managers.TravelMgr_Patch;
+using static PvZ_Fusion_Translator.Patches.Modes.Odyssey.TravelMgr_Patch;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 {
     [HarmonyPatch(typeof(TravelBuffOptionButton))]
     public static class TravelBuffOptionButton_Patch
@@ -27,9 +27,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
         public static void TranslateOptionButton(TravelBuffOptionButton button)
         {
-            List<string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
+            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
 
-            string buff = (button.show != null && button.introduce.text != "词条已选完") ? buffSet[button.buffIndex] : StringStore.TranslateText("词条已选完");
+            string buff = button.show != null && button.introduce.text != "词条已选完" ? buffSet[button.buffIndex] : StringStore.TranslateText("词条已选完");
 
             button.introduce.text = buff;
         }

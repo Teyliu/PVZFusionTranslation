@@ -4,7 +4,7 @@ using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
     [HarmonyPatch(typeof(AbyssLevelEnter))]
     public static class AbyssLevelEnter_Patch

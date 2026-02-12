@@ -1,20 +1,17 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
-using Il2CppSystem;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Harvest
 {
-    [HarmonyPatch(typeof(TreasureUpgradeMenu))]
-    public static class TreasureUpgradeMenu_Patch
+    [HarmonyPatch(typeof(TreasureWarehouseMenu))]
+    public static class TreasureWarehouseMenu_Patch
     {
-        [HarmonyPatch(nameof(TreasureUpgradeMenu.Start))]
+        [HarmonyPatch(nameof(TreasureWarehouseMenu.InitCards))]
         [HarmonyPostfix]
-        private static void Start(TreasureUpgradeMenu __instance)
+        private static void InitCards(TreasureWarehouseMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
@@ -25,9 +22,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
         }
 
-        [HarmonyPatch(nameof(TreasureUpgradeMenu.UpgradeWareHouse))]
+        [HarmonyPatch(nameof(TreasureWarehouseMenu.QuickSell))]
         [HarmonyPostfix]
-        private static void UpgradeWareHouse(TreasureUpgradeMenu __instance)
+        private static void QuickSell(TreasureWarehouseMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
@@ -38,9 +35,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
         }
 
-        [HarmonyPatch(nameof(TreasureUpgradeMenu.InitWareHouseUpgrade))]
+        [HarmonyPatch(nameof(TreasureWarehouseMenu.FastSell))]
         [HarmonyPostfix]
-        private static void InitWareHouseUpgrade(TreasureUpgradeMenu __instance)
+        private static void FastSell(TreasureWarehouseMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
@@ -49,14 +46,18 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 txt.text = StringStore.TranslateText(txt.text);
                 txt.font = fontAsset;
             }
+        }
 
-            foreach (Text txt in __instance.GetComponentsInChildren<Text>())
+        [HarmonyPatch(nameof(TreasureWarehouseMenu.EnterStore))]
+        [HarmonyPostfix]
+        private static void EnterStore(TreasureWarehouseMenu __instance)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                GameObject newTxtObj = Utils.ConvertToTextMeshProUGUI(txt.gameObject, txt.transform.parent, "text");
-                TextMeshProUGUI newTxt = newTxtObj.GetComponent<TextMeshProUGUI>();
-                newTxt.text = StringStore.TranslateText("植物商店");
-                newTxt.autoSizeTextContainer = true;
-                newTxt.color = new Color(0, 0, 0.3922f, 1);
+                txt.text = StringStore.TranslateText(txt.text);
+                txt.font = fontAsset;
             }
         }
     }

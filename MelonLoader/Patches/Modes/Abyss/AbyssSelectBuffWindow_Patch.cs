@@ -5,7 +5,7 @@ using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-namespace PvZ_Fusion_Translator.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
     [HarmonyPatch(typeof(AbyssSelectBuffWindow))]
     public static class AbyssSelectBuffWindow_Patch
@@ -45,7 +45,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 titleText.font = fontAsset;
             }
 
-            string translatedIntroduceText = (AbyssBuffMenu_Patch.abyssBuffData.ContainsKey(__instance.introduce.text)) ? AbyssBuffMenu_Patch.abyssBuffData[__instance.introduce.text] : AbyssBuffMenu_Patch.TranslateAbyssBuffRegex(__instance.introduce.text);
+            string translatedIntroduceText = AbyssBuffMenu_Patch.abyssBuffData.ContainsKey(__instance.introduce.text) ? AbyssBuffMenu_Patch.abyssBuffData[__instance.introduce.text] : AbyssBuffMenu_Patch.TranslateAbyssBuffRegex(__instance.introduce.text);
 
             if (translatedIntroduceText != null)
             {
