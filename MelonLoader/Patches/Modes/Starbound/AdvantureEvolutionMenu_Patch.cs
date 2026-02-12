@@ -50,7 +50,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Starbound
         {
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                FileLoader.DumpUntranslatedStrings(text.text);
                 text.text = StringStore.TranslateColorText(text.text);
             }
         }
@@ -61,7 +60,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Starbound
         {
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                FileLoader.DumpUntranslatedStrings(text.text);
                 text.text = StringStore.TranslateColorText(text.text);
             }
         }
@@ -72,7 +70,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Starbound
         {
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                FileLoader.DumpUntranslatedStrings(text.text);
                 text.text = StringStore.TranslateColorText(text.text);
             }
         }

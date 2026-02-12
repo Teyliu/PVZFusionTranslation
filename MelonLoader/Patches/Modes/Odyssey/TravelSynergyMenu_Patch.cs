@@ -55,7 +55,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 }
                 else
                 {
-                    FileLoader.DumpUntranslatedStrings(match.Value);
                     translatedDescription += TranslateSegment(match.Value) + "\n";
                 }
             }
@@ -75,8 +74,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 string[] lines = part.Split('\n');
                 if(lines.Length > 1)
                 {
-                    FileLoader.DumpUntranslatedStrings(lines[0]);
-                    FileLoader.DumpUntranslatedStrings(lines[1]);
                     temp = StringStore.TranslateText(lines[0]) + "\n" + StringStore.TranslateText(lines[1]);
                 }
                 res += temp + "\n";

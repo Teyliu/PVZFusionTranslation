@@ -402,6 +402,7 @@
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelInvestMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\SynergyDisplay_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelStoreWindow_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelSynergyMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Starbound\AdvantureEvolutionMenu_Patch.cs" />

@@ -20,5 +20,16 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 TravelBuffOptionButton_Patch.TranslateOptionButton(button);
             }
         }
+
+        [HarmonyPatch(nameof(TravelBuffMenu.Awake))]
+        [HarmonyPostfix]
+        public static void Awake(TravelBuffMenu __instance)
+        {
+            Transform refreshTransform = __instance.transform.Find("Refresh");
+            foreach (TextMeshProUGUI text in refreshTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
+            }
+        }
     }
 }

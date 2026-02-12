@@ -21,5 +21,12 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 
             shadowText.text = Utils.RemoveColorTags(regularText.text);
         }
+
+        [HarmonyPatch(nameof(TravelInvestMenu.RefreshBuff))]
+        [HarmonyPostfix]
+        private static void RefreshBuff(TravelInvestMenu __instance, ref TravelBuffOptionButton option)
+        {
+            TravelBuffOptionButton_Patch.TranslateOptionButton(option);
+        }
     }
 }

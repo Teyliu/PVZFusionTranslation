@@ -240,7 +240,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 		public static string TranslateColorSegments(string input)
 		{
 			string result = "";
-            string pattern = @"<color=[^>]+>[\s\S]*?<\/color>|(?:<(?!color=)|[^<])+";
+            string pattern = @"<color=[^>]+>[\s\S]*?(?:<\/color>|$)|(?:<(?!color=)|[^<])+";
             string smallPattern = @"(<color=[^>]+>)(.*?)(</color>)";
             MatchCollection matches = Regex.Matches(input, pattern);
 
@@ -254,8 +254,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 				else
 				{
                     result += DoTranslateText(match.Value);
-				}
-			}
+                }
+            }
 
             return result;
 		}

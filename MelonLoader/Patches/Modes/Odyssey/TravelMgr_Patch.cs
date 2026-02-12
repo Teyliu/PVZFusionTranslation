@@ -8,6 +8,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Unity.Collections;
+using UnityEngine.Rendering;
 using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
@@ -94,13 +95,13 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         {
             string res = "";
 
-            foreach (var i in translatedTravelBuffs)
+            foreach (var i in dumpedTravelBuffs)
             {
-                foreach (var j in translatedTravelBuffs[i.Key])
+                foreach (var j in dumpedTravelBuffs[i.Key])
                 {
-                    if (j.Value == originalText)
+                    if (j.Value == originalText || j.Value == RemoveBuffName(originalText))
                     {
-                        res = j.Value;
+                        res = translatedTravelBuffs[i.Key][j.Key];
                         break;
                     }
                 }
@@ -108,6 +109,17 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 if (res != "") break;
             }
 
+            return res;
+        }
+
+        public static string RemoveBuffName(string buffText)
+        {
+            string res = buffText;
+            int firstColon = res.IndexOf("：");
+            if(firstColon > 0)
+            {
+                res = res.Substring(firstColon + 1);
+            }
             return res;
         }
     }
