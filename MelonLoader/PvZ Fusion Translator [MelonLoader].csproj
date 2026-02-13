@@ -422,7 +422,7 @@
 		<Compile Include="Patches\GameObjects\EveBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveOptionWindow_Patch.cs" />
 		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
-		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\BackToIndex_Patch.cs" />
