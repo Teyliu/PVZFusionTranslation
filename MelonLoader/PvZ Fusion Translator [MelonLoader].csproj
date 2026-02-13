@@ -402,6 +402,7 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelInvestMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\SynergyDisplay_Patch.cs" />
@@ -423,7 +424,7 @@
 		<Compile Include="Patches\GameObjects\EveBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveOptionWindow_Patch.cs" />
 		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
-		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\BackToIndex_Patch.cs" />

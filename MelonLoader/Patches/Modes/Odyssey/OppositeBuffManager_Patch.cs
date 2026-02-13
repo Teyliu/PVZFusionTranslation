@@ -2,11 +2,10 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator.Patches.Managers
+namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 {
     [HarmonyPatch(typeof(OppositeBuffManager))]
     public static class OppositeBuffManager_Patch
