@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -23,11 +23,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 			#else
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
 			#endif
-			
+
 			foreach (TextMeshProUGUI txt in __instance.textMeshes)
 			{
-				string travelMatch = "";
 				string originalText = txt.text;
+				string travelMatch = TravelMgr_Patch.MatchTravelBuff(originalText);
 
 				if (txt.gameObject.name.Contains("shadow"))
 				{
@@ -47,13 +47,31 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 						}
 					}
 				}
-				else if(System.Text.RegularExpressions.Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", System.Text.RegularExpressions.RegexOptions.Singleline).Success)
+				else if(System.Text.RegularExpressions.Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", System.Text.RegularExpressions.RegexOptions.Singleline).Success && !StringStore.translationString.ContainsKey(txt.text))
 				{
-					txt.text = StringStore.TranslateColorText(txt.text);
+					txt.text = StringStore.TranslateColorText(txt.text, true);
+					if (txt.gameObject.name.Contains("main"))
+					{
+						originalText = txt.text;
+						Transform shadowText = txt.transform.parent.Find("Text_shadow");
+						if (shadowText != null)
+						{
+							shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
+						}
+					}
 				}
 				else
 				{
 					txt.text = StringStore.TranslateText(txt.text, true);
+					if (txt.gameObject.name.Contains("main"))
+					{
+						originalText = txt.text;
+						Transform shadowText = txt.transform.parent.Find("Text_shadow");
+						if (shadowText != null)
+						{
+							shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
+						}
+					}
 				}
 				txt.font = fontAsset;
 			}

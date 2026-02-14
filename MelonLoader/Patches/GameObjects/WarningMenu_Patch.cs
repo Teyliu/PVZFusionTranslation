@@ -1,11 +1,9 @@
 using HarmonyLib;
-using Il2Cpp;
 using Il2CppTMPro;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System.Text.RegularExpressions;
+using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
-namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
+namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
     [HarmonyPatch(typeof(WarningMenu))]
     public static class WarningMenu_Patch

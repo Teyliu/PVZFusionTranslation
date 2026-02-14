@@ -1,4 +1,4 @@
-﻿using BepInEx.Configuration;
+using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers;
 using System;
@@ -295,6 +295,66 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
+
+            var izLevelData = Resources.LoadAll<TextAsset>("izleveldata");
+            Dictionary<string, string> izLevelDataDump = new Dictionary<string, string>();
+
+            string izTranslatedPath = Path.Combine(stringDir, "tips_iz.json");
+            if (!File.Exists(izTranslatedPath))
+            {
+                File.WriteAllText(izTranslatedPath, JsonSerializer.Serialize(izLevelDataDump, options));
+            }
+            var izTranslatedTips = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(izTranslatedPath));
+
+            foreach (var level in izLevelData)
+            {
+                string data = level.text;
+                LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+                if (levelData.tips != null)
+                {
+                    izLevelDataDump.Add(level.name, levelData.tips);
+                    if (izTranslatedTips.ContainsKey(level.name) && !StringStore.translationString.ContainsKey(levelData.tips))
+                    {
+                        StringStore.translationString.Add(levelData.tips, izTranslatedTips[level.name]);
+                    }
+                }
+            }
+
+            File.WriteAllText(Path.Combine(dumpDir, "tips_iz.json"), JsonSerializer.Serialize(izLevelDataDump, options));
+
+            var fusionShowcaseData = Resources.LoadAll<TextAsset>("leveldata/explore");
+            Dictionary<string, string> fusionShowcaseDataDump = new Dictionary<string, string>();
+
+            string fsTranslatedPath = Path.Combine(stringDir, "tips_fs.json");
+            if (!File.Exists(fsTranslatedPath))
+            {
+                File.WriteAllText(fsTranslatedPath, JsonSerializer.Serialize(fusionShowcaseDataDump, options));
+            }
+            var fsTranslatedTips = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(fsTranslatedPath));
+
+            foreach (var level in fusionShowcaseData)
+            {
+                string data = level.text;
+                LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+                if (levelData.tips != null)
+                {
+                    fusionShowcaseDataDump.Add(level.name, levelData.tips);
+                    if (fsTranslatedTips.ContainsKey(level.name) && !StringStore.translationString.ContainsKey(levelData.tips))
+                    {
+                        StringStore.translationString.Add(levelData.tips, fsTranslatedTips[level.name]);
+                    }
+                }
+            }
+
+            File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), JsonSerializer.Serialize(fusionShowcaseDataDump, options));
         }
 
 //#if DEBUG

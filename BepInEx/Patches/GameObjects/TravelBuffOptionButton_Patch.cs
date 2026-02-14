@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -11,31 +11,38 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     [HarmonyPatch(typeof(TravelBuffOptionButton))]
     public static class TravelBuffOptionButton_Patch
     {
-        [HarmonyPatch(nameof(TravelBuffOptionButton.SetBuff))]
-        [HarmonyPostfix]
-        private static void SetBuff(TravelBuffOptionButton __instance)
-        {
-            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
-            string buffText = (__instance.buffIndex < buffSet.Count && __instance.show != null) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
-            __instance.introduce.text = buffText;
-        }
-
         [HarmonyPatch(nameof(TravelBuffOptionButton.Awake))]
         [HarmonyPostfix]
-        private static void Awake(TravelBuffOptionButton __instance)
+        public static void Awake(TravelBuffOptionButton __instance)
         {
-            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
-            string buffText = (__instance.buffIndex < buffSet.Count && __instance.show != null) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
-            __instance.introduce.text = buffText;
+            TranslateOptionButton(__instance);
         }
 
         [HarmonyPatch(nameof(TravelBuffOptionButton.OnAnimOver))]
         [HarmonyPostfix]
-        private static void OnAnimOver(TravelBuffOptionButton __instance)
+        public static void OnAnimOver(TravelBuffOptionButton __instance)
         {
-            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
-            string buffText = (__instance.buffIndex < buffSet.Count && __instance.show != null) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
-            __instance.introduce.text = buffText;
+            TranslateOptionButton(__instance);
+        }
+
+        public static void TranslateOptionButton(TravelBuffOptionButton button)
+        {
+            if (button.introduce == null)
+                return;
+
+            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
+
+            string buffText = (button.show != null && buffSet.ContainsKey(button.buffIndex)) ? buffSet[button.buffIndex] : StringStore.TranslateText(button.introduce.text);
+
+            if (button.introduce.text == "词条已选完")
+            {
+                button.introduce.text = StringStore.TranslateText("词条已选完");
+            }
+            else
+            {
+                button.introduce.text = buffText;
+            }
         }
     }
 }
+
