@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Il2Cpp;
+using HarmonyLib;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Managers;
@@ -9,9 +8,9 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 {
-	[HarmonyPatch(typeof(InGameText))]
-	public static class InGameText_Patch
-	{
+    [HarmonyPatch(typeof(InGameText))]
+    public static class InGameText_Patch
+    {
         [HarmonyPatch(nameof(InGameText.ShowText))]
         [HarmonyPostfix]
         public static void ShowText(InGameText __instance)
@@ -41,7 +40,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                         }
                     }
                 }
-                else if(Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success)
+                else if(Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success && !StringStore.translationString.ContainsKey(txt.text))
                 {
                     txt.text = StringStore.TranslateColorText(txt.text, true);
                     if (txt.gameObject.name.Contains("main"))
@@ -75,5 +74,5 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 text.text = StringStore.TranslateText(text.text);
             }
         }
-	}
+    }
 }

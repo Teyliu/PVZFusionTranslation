@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -38,20 +38,19 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_SetBuff(TravelLookBuff __instance)
         {
-            List<string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
-            string buffText = (__instance.buffIndex < buffSet.Count) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
+            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            string buffText = buffSet.ContainsKey(__instance.buffIndex) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
             __instance.introduce.text = buffText;
 #if DEBUG
-            if (__instance.introduce.text != null)   
+            if (__instance.introduce.text != null)
             {
                 Log.LogInfo($"BuffType: {__instance.buffType}, BuffIndex: {__instance.buffIndex}, BuffIntroduce: {__instance.introduce.text}");
                 if (__instance.introduce.text != buffText)
                 {
                     FileLoader.DumpUntranslatedStrings(__instance.introduce.text);
-                    //Log.LogInfo($"Mapped BuffIntroduce: {buffText}");
                 }
             }
-            
+
 #endif
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())

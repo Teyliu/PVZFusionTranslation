@@ -11,7 +11,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
     public static class OppositeBuffManager_Patch
     {
         public static Dictionary<BuffType, string> buffLinks = TravelMgr_Patch.buffLinks;
-        public static Dictionary<string, List<string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
+        public static Dictionary<string, SortedDictionary<int, string>> translatedTravelBuffs = TravelMgr_Patch.translatedTravelBuffs;
         public static string badPattern = @"^但(.*)";
         public static string badFormat = StringStore.translationStringRegex != null && StringStore.translationStringRegex.ContainsKey(badPattern) ? StringStore.translationStringRegex[badPattern] : "But, {0}";
         public static TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
@@ -52,20 +52,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             try
             {
                 if (buffLinks != null && buffLinks.TryGetValue(buffType, out string category))
-                {
-                    if (translatedTravelBuffs != null && translatedTravelBuffs.TryGetValue(category, out List<string> buffList) && buffList != null)
                     {
-                        if (buffIndex >= 0 && buffIndex < buffList.Count)
+                    if (translatedTravelBuffs != null && translatedTravelBuffs.TryGetValue(category, out SortedDictionary<int, string> buffSet) && buffSet != null)
                         {
-                            buff = buffList[buffIndex];
-                            if (!string.IsNullOrEmpty(buff))
+                            if (buffSet.ContainsKey(buffIndex))
                             {
-                                translationFound = true;
+                                buff = buffSet[buffIndex];
+                                if (!string.IsNullOrEmpty(buff))
+                                {
+                                    translationFound = true;
+                                }
                             }
                         }
                     }
                 }
-            }
             catch
             {
             }

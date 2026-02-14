@@ -16,24 +16,30 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
     {
         public static Dictionary<BuffType, string> buffLinks = new Dictionary<BuffType, string>()
         {
-            { BuffType.AdvancedBuff, "advancedUpgrades" },
-            { BuffType.UltimateBuff, "ultimateUpgrades" },
-            { BuffType.UnlockPlant, "strongUltimates" },
+            { BuffType.AdvancedBuff, "advancedBuffs" },
+            { BuffType.UltimateBuff, "ultimateBuffs" },
+            { BuffType.UnlockPlant, "unlocks" },
             { BuffType.Debuff, "debuffs" },
             { BuffType.InvestmentBuff, "investmentBuffs" }
         };
 
-        public static Dictionary<string, List<string>> dumpedTravelBuffs = new Dictionary<string, List<string>>()
+        public static Dictionary<string, SortedDictionary<int, string>> dumpedTravelBuffs = new Dictionary<string, SortedDictionary<int, string>>()
         {
-            { "advancedUpgrades", [] },
-            { "ultimateUpgrades", [] },
-            { "strongUltimates", [] },
-            { "debuffs", [] },
-            { "investmentBuffs", [] },
-            { "synergies", [] }
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
         };
 
-        public static Dictionary<string, List<string>> translatedTravelBuffs = new Dictionary<string, List<string>>();
+        public static Dictionary<string, SortedDictionary<int, string>> translatedTravelBuffs = new Dictionary<string, SortedDictionary<int, string>>()
+        {
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
+        };
 
         public static string MatchTravelBuff(string originalText)
         {
@@ -41,167 +47,115 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
             foreach(var i in dumpedTravelBuffs)
             {
-                if(i.Value.Contains(originalText))
+                foreach(var j in dumpedTravelBuffs[i.Key])
                 {
-                    res = translatedTravelBuffs[i.Key][i.Value.IndexOf(originalText)];
-                    break;
+                    if(j.Value == originalText || j.Value == RemoveBuffName(originalText))
+                    {
+                        res = translatedTravelBuffs[i.Key][j.Key];
+                        break;
+                    }
                 }
+
+                if(res != "") break;
             }
 
             return res;
         }
 
-        [HarmonyPatch("get_Instance")]
-        [HarmonyPrefix]
-        private static void Pre_get_Instance()
+        public static string RemoveBuffName(string buffText)
         {
-            if (dumpedTravelBuffs["advancedUpgrades"].Count > 0)
-                return;
-
-            dumpedTravelBuffs = new Dictionary<string, List<string>>()
+            string res = buffText;
+            int firstColon = res.IndexOf("：");
+            if(firstColon > 0)
             {
-                { "advancedUpgrades", [] },
-                { "ultimateUpgrades", [] },
-                { "strongUltimates", [] },
-                { "debuffs", [] },
-                { "investmentBuffs", [] },
-                { "synergies", [] }
-            };
+                res = res.Substring(firstColon + 1);
+            }
+            return res;
+        }
+
+        public static void DumpTravelBuffs()
+        {
+            if (TravelMgr.Instance == null)
+                return;
 
             try
             {
+                TravelMgr.Instance.GetPlantBuffUnlockCount(PlantType.DoomGatling);
+
                 if (TravelDictionary.advancedBuffsText != null)
                 {
-                    foreach (var kvp in TravelDictionary.advancedBuffsText)
+                    foreach (var pair in TravelDictionary.advancedBuffsText)
                     {
-                        if (kvp.Value != null && Utils.CheckForUntranslatedText(kvp.Value))
-                            dumpedTravelBuffs["advancedUpgrades"].Add(kvp.Value);
+                        dumpedTravelBuffs["advancedBuffs"].Add((int)pair.Key, pair.Value);
                     }
                 }
 
                 if (TravelDictionary.ultimateBuffsText != null)
                 {
-                    foreach (var kvp in TravelDictionary.ultimateBuffsText)
+                    foreach (var pair in TravelDictionary.ultimateBuffsText)
                     {
-                        if (kvp.Value != null && Utils.CheckForUntranslatedText(kvp.Value))
-                            dumpedTravelBuffs["ultimateUpgrades"].Add(kvp.Value);
-                    }
-                }
-
-                if (TravelDictionary.unlocksText != null)
-                {
-                    foreach (var kvp in TravelDictionary.unlocksText)
-                    {
-                        if (kvp.Value != null && Utils.CheckForUntranslatedText(kvp.Value))
-                            dumpedTravelBuffs["strongUltimates"].Add(kvp.Value);
+                        dumpedTravelBuffs["ultimateBuffs"].Add((int)pair.Key, pair.Value);
                     }
                 }
 
                 if (TravelDictionary.debuffData != null)
                 {
-                    foreach (var kvp in TravelDictionary.debuffData)
+                    foreach (var pair in TravelDictionary.debuffData)
                     {
-                        if (kvp.Value.Item1 != null && Utils.CheckForUntranslatedText(kvp.Value.Item1))
-                            dumpedTravelBuffs["debuffs"].Add(kvp.Value.Item1);
+                        dumpedTravelBuffs["debuffs"].Add((int)pair.Key, pair.Value.Item1);
+                    }
+                }
+
+                if (TravelDictionary.unlocksText != null)
+                {
+                    foreach (var pair in TravelDictionary.unlocksText)
+                    {
+                        dumpedTravelBuffs["unlocks"].Add((int)pair.Key, pair.Value);
                     }
                 }
 
                 if (TravelMgr.InvestBuffsData != null)
                 {
-                    foreach (var kvp in TravelMgr.InvestBuffsData)
+                    foreach (var pair in TravelMgr.InvestBuffsData)
                     {
-                        var investBuff = kvp.Value;
-                        string description = GetInvestBuffDescription(kvp.Key);
-                        if (!string.IsNullOrEmpty(description) && Utils.CheckForUntranslatedText(description))
-                            dumpedTravelBuffs["investmentBuffs"].Add(description);
-                    }
-                }
-
-                if (TravelMgr.SynergysData != null)
-                {
-                    foreach (var kvp in TravelMgr.SynergysData)
-                    {
-                        var synergyData = kvp.Value;
-                        string synergyName = GetSynergyName(kvp.Key);
-                        string synergyDescription = GetSynergyDescription(synergyData);
-
-                        if (!string.IsNullOrEmpty(synergyName) && Utils.CheckForUntranslatedText(synergyName))
-                            dumpedTravelBuffs["synergies"].Add(synergyName);
-
-                        if (!string.IsNullOrEmpty(synergyDescription) && Utils.CheckForUntranslatedText(synergyDescription))
-                            dumpedTravelBuffs["synergies"].Add(synergyDescription);
+                        dumpedTravelBuffs["investmentBuffs"].Add((int)pair.Key, pair.Value.GetDescription());
                     }
                 }
 
                 string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
                 var options = new JsonSerializerOptions
                 {
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    WriteIndented = true
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                 };
                 File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
 
                 string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
                 string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
 
-                if(!File.Exists(travelBuffDir))
+                if (!File.Exists(travelBuffDir))
                 {
                     File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
+                    translatedTravelBuffs = dumpedTravelBuffs;
                 }
-
-                string travelBuffs = File.ReadAllText(travelBuffDir);
-
-                translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(travelBuffs);
+                else
+                {
+                    string travelBuffs = File.ReadAllText(travelBuffDir);
+                    try
+                    {
+                        translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffs);
+                    }
+                    catch
+                    {
+                        translatedTravelBuffs = dumpedTravelBuffs;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"[TravelMgr_Patch] Error loading travel buffs: {ex.Message}");
+                UnityEngine.Debug.LogError($"[TravelMgr_Patch] Error dumping travel buffs: {ex.Message}");
             }
         }
 
-        private static string GetInvestBuffDescription(InvestBuff buff)
-        {
-            try
-            {
-                return buff.ToString();
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        private static string GetSynergyName(SynergyType synergyType)
-        {
-            try
-            {
-                return synergyType.ToString();
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        private static string GetSynergyDescription(BaseSynergyData synergyData)
-        {
-            try
-            {
-                var allData = synergyData.GetAllData();
-                if (allData != null && allData.Count > 0)
-                {
-                    var lastLevel = allData[allData.Count - 1];
-                    if (lastLevel != null)
-                    {
-                        return lastLevel.Description;
-                    }
-                }
-                return "";
-            }
-            catch
-            {
-                return "";
-            }
-        }
     }
 }

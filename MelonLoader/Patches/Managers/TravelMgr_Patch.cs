@@ -1,4 +1,4 @@
-﻿using Il2Cpp;
+using Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,33 +15,30 @@ namespace PvZ_Fusion_Translator.Patches.Managers
     {
         public static Dictionary<BuffType, string> buffLinks = new Dictionary<BuffType, string>()
         {
-            { BuffType.AdvancedBuff, "advancedUpgrades" },
-            { BuffType.UltimateBuff, "ultimateUpgrades" },
-            { BuffType.UnlockPlant, "strongUltimates" },
+            { BuffType.AdvancedBuff, "advancedBuffs" },
+            { BuffType.UltimateBuff, "ultimateBuffs" },
+            { BuffType.UnlockPlant, "unlocks" },
             { BuffType.Debuff, "debuffs" },
+            { BuffType.InvestmentBuff, "investmentBuffs" }
         };
 
-        public static Dictionary<string, List<string>> dumpedTravelBuffs = new Dictionary<string, List<string>>()
+        public static Dictionary<string, SortedDictionary<int, string>> dumpedTravelBuffs = new Dictionary<string, SortedDictionary<int, string>>()
         {
-            { "advancedUpgrades", [] },
-            { "ultimateUpgrades", [] },
-            { "strongUltimates", [] },
-            { "debuffs", [] }
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
         };
 
-        public static Dictionary<string, List<string>> translatedTravelBuffs = new Dictionary<string, List<string>>();
-
-        public static void DumpTravelBuffs(Il2CppSystem.Collections.Generic.Dictionary<int, string> source, Dictionary<string, List<string>> dest, string index)
+        public static Dictionary<string, SortedDictionary<int, string>> translatedTravelBuffs = new Dictionary<string, SortedDictionary<int, string>>()
         {
-            foreach (var i in source)
-            {
-                if (!Utils.CheckForUntranslatedText(i.Value))
-                {
-                    break;
-                }
-                dest[index].Add(i.Value);
-            }
-        }
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
+        };
 
         public static string MatchTravelBuff(string originalText)
         {
@@ -49,54 +46,99 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 
             foreach(var i in dumpedTravelBuffs)
             {
-                if(i.Value.Contains(originalText))
+                foreach(var j in dumpedTravelBuffs[i.Key])
                 {
-                    res = translatedTravelBuffs[i.Key][i.Value.IndexOf(originalText)];
-                    break;
+                    if(j.Value == originalText || j.Value == RemoveBuffName(originalText))
+                    {
+                        res = translatedTravelBuffs[i.Key][j.Key];
+                        break;
+                    }
                 }
+
+                if(res != "") break;
             }
 
             return res;
         }
 
-        [HarmonyPatch(nameof(TravelMgr.Awake))]
-        [HarmonyPrefix]
-        private static void Pre_Awake(TravelMgr __instance)
+        public static string RemoveBuffName(string buffText)
         {
-            // Dump buffs
-
-            dumpedTravelBuffs = new Dictionary<string, List<string>>() // reset dump
+            string res = buffText;
+            int firstColon = res.IndexOf("：");
+            if(firstColon > 0)
             {
-                { "advancedUpgrades", [] },
-                { "ultimateUpgrades", [] },
-                { "strongUltimates", [] },
-                { "debuffs", [] }
-            };
-
-            DumpTravelBuffs(TravelMgr.advancedBuffs, dumpedTravelBuffs, "advancedUpgrades");
-            DumpTravelBuffs(TravelMgr.ultimateBuffs, dumpedTravelBuffs, "ultimateUpgrades");
-            DumpTravelBuffs(TravelMgr.unlocks, dumpedTravelBuffs, "strongUltimates");
-            DumpTravelBuffs(TravelMgr.debuffs, dumpedTravelBuffs, "debuffs");
-
-            string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
-            var options = new JsonSerializerOptions
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                WriteIndented = true
-            };
-            File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
-
-            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
-            string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
-
-            if(!File.Exists(travelBuffDir))
-            {
-                File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
+                res = res.Substring(firstColon + 1);
             }
+            return res;
+        }
 
-            string travelBuffs = File.ReadAllText(Path.Combine(stringDir, "travel_buffs.json"));
+        public static void DumpTravelBuffs()
+        {
+            if (TravelMgr.Instance == null)
+                return;
 
-            translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(travelBuffs);
+            try
+            {
+                TravelMgr.Instance.GetPlantBuffUnlockCount(PlantType.DoomGatling);
+
+                foreach (var pair in TravelMgr.advancedBuffsText)
+                {
+                    dumpedTravelBuffs["advancedBuffs"].Add((int)pair.Key, pair.Value);
+                }
+
+                foreach (var pair in TravelMgr.ultimateBuffsText)
+                {
+                    dumpedTravelBuffs["ultimateBuffs"].Add((int)pair.Key, pair.Value);
+                }
+
+                foreach (var pair in TravelMgr.debuffData)
+                {
+                    dumpedTravelBuffs["debuffs"].Add((int)pair.Key, pair.Value.Item1);
+                }
+
+                foreach (var pair in TravelMgr.unlocksText)
+                {
+                    dumpedTravelBuffs["unlocks"].Add((int)pair.Key, pair.Value);
+                }
+
+                foreach (var pair in TravelMgr.InvestBuffsData)
+                {
+                    dumpedTravelBuffs["investmentBuffs"].Add((int)pair.Key, pair.Value.GetDescription());
+                }
+
+                string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                File.WriteAllText(Path.Combine(dumpDir, "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, options));
+
+                string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+                string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
+
+                if (!File.Exists(travelBuffDir))
+                {
+                    File.WriteAllText(travelBuffDir, JsonSerializer.Serialize(dumpedTravelBuffs, options));
+                    translatedTravelBuffs = dumpedTravelBuffs;
+                }
+                else
+                {
+                    string travelBuffs = File.ReadAllText(travelBuffDir);
+                    try
+                    {
+                        translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffs);
+                    }
+                    catch
+                    {
+                        translatedTravelBuffs = dumpedTravelBuffs;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MelonLogger.Error($"[TravelMgr_Patch] Error dumping travel buffs: {ex.Message}");
+            }
         }
     }
 }
