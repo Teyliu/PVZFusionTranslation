@@ -7,12 +7,9 @@ using UnityEngine.UI;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(NoticeMenu))]
 	public class NoticePauseMenu_Patch
 	{
-		[HarmonyPrefix]
-		[HarmonyPatch(nameof(NoticeMenu.Awake))]
-		private static void Pre_Awake(NoticeMenu __instance)
+		public static void Pre_Awake(BaseMenu __instance)
 		{
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
@@ -27,10 +24,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 File.WriteAllText(changelogDir, contentText.text);
             }
         }
-	
-		[HarmonyPostfix]
-		[HarmonyPatch(nameof(NoticeMenu.Awake))]
-		private static void Post_Awake(NoticeMenu __instance)
+
+		public static void Post_Awake(BaseMenu __instance)
 		{
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
             string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);

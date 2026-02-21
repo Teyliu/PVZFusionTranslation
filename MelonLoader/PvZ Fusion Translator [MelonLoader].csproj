@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.4.1</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.4.2</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -400,6 +400,7 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelInvestMenu_Patch.cs" />
