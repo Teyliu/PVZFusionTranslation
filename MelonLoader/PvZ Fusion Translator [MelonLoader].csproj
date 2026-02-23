@@ -400,6 +400,9 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\GodShootingLevelButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
