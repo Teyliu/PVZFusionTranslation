@@ -128,25 +128,25 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Log.LogInfo("Textures loaded successfully.");
         }
 
-        internal static void LoadLocalizedTextures(Utils.LanguageEnum? language = null)
-        {
-            ConfigEntry<bool> defaultTextureEntry;
-            Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
+		internal static void LoadLocalizedTextures(Utils.LanguageEnum? language = null)
+		{
+			ConfigEntry<bool> defaultTextureEntry;
+			Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
 
-            string textureDir = GetAssetDir(AssetType.Textures, language);
+			string textureDir = GetAssetDir(AssetType.Textures, language);
 
-            if (!Directory.Exists(textureDir))
-            {
-                Directory.CreateDirectory(textureDir);
-            }
-            try
-            {
-                foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
-                {
-                    if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
-                    {
-                        continue;
-                    }
+			if (!Directory.Exists(textureDir))
+			{
+				Directory.CreateDirectory(textureDir);
+			}
+			try
+			{
+				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
+				{
+					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
+					{
+						continue;
+					}
 
 #if OBFUSCATE
 					if (CheckSumStore.IsModified(filepath))
@@ -160,31 +160,31 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     Log.LogDebug("Loading File : " + filepath);
 #endif
 
-                    Texture2D texture2D = Utils.LoadImage(filepath);
+                    // Only store filepath, load texture on-demand to save memory
                     TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                }
-            }
+				}
+			}
 
-            catch (Exception e)
-            {
-                Log.LogError("Error loading Texture.");
-                Log.LogError(e.GetType() + " " + e.Message);
-            }
-        }
+			catch (Exception e)
+			{
+				Log.LogError("Error loading Texture.");
+				Log.LogError(e.GetType() + " " + e.Message);
+			}
+		}
 
-        internal static void LoadDefaultTextures()
-        {
-            if (Core.Instance.configDefaultTextures.Value)
-            {
-                string textureDefaultDir = Path.Combine(Core.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
-                if (!Directory.Exists(textureDefaultDir))
-                {
-                    Directory.CreateDirectory(textureDefaultDir);
-                }
-                try
-                {
-                    foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
-                    {
+		internal static void LoadDefaultTextures()
+		{
+			if (Core.Instance.configDefaultTextures.Value)
+			{
+				string textureDefaultDir = Path.Combine(Core.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
+				if (!Directory.Exists(textureDefaultDir))
+				{
+					Directory.CreateDirectory(textureDefaultDir);
+				}
+				try
+				{
+					foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
+					{
 
 #if OBFUSCATE
 						if (CheckSumStore.IsModified(filepath))
@@ -194,31 +194,31 @@ namespace PvZ_Fusion_Translator__BepInEx_
 						}
 #endif
 
-                        Texture2D texture2D = Utils.LoadImage(filepath);
+                        // Only store filepath, load texture on-demand to save memory
                         TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                    }
-                }
+					}
+				}
 
-                catch (Exception e)
-                {
-                    Log.LogError("Error loading Texture.");
-                    Log.LogError(e.GetType() + " " + e.Message);
-                }
-            }
-        }
+				catch (Exception e)
+				{
+					Log.LogError("Error loading Texture.");
+					Log.LogError(e.GetType() + " " + e.Message);
+				}
+			}
+		}
 
-        internal static void LoadCustomTextures()
-        {
-            string texturePackDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
+		internal static void LoadCustomTextures()
+		{
+			string texturePackDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
 
-            if (!Directory.Exists(texturePackDir))
-            {
-                Directory.CreateDirectory(texturePackDir);
-            }
-            try
-            {
-                foreach (string filepath in Directory.EnumerateFiles(texturePackDir, "*.png", SearchOption.AllDirectories))
-                {
+			if (!Directory.Exists(texturePackDir))
+			{
+				Directory.CreateDirectory(texturePackDir);
+			}
+			try
+			{
+				foreach (string filepath in Directory.EnumerateFiles(texturePackDir, "*.png", SearchOption.AllDirectories))
+				{
 #if OBFUSCATE
 					if (CheckSumStore.IsModified(filepath))
 					{
@@ -227,17 +227,17 @@ namespace PvZ_Fusion_Translator__BepInEx_
 					}
 #endif
 
-                    Texture2D texture2D = Utils.LoadImage(filepath);
+                    // Only store filepath, load texture on-demand to save memory
                     TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                }
-            }
+				}
+			}
 
-            catch (Exception e)
-            {
-                Log.LogError("Error loading Texture.");
-                Log.LogError(e.GetType() + " " + e.Message);
-            }
-        }
+			catch (Exception e)
+			{
+				Log.LogError("Error loading Texture.");
+				Log.LogError(e.GetType() + " " + e.Message);
+			}
+		}
 
         internal static void SaveStrings()
         {

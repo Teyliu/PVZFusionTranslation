@@ -32,11 +32,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
             {
                 FileLoader.LoadDefaultTextures();
             }
-            while (true)
+
+			// Run texture replacement 3 times at startup, then stop
+			for (int i = 0; i < 3; i++)
 			{
 				ReplaceTextures();
-				yield return new WaitForSeconds(0.5f);  // Adjust this interval as needed
+				yield return new WaitForSeconds(1f);  // Wait 1 second between checks
 			}
+
+			Log.LogInfo("Texture replacement completed. Stopping periodic checks to save memory.");
 		}
 
 		public static void ReplaceTextures()

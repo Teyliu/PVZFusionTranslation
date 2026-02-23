@@ -73,14 +73,29 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             return res;
         }
 
+        private static TravelMgr GetTravelMgrInstance()
+        {
+            try
+            {
+                var field = typeof(TravelMgr).GetField("_instance", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                if (field != null)
+                {
+                    return (TravelMgr)field.GetValue(null);
+                }
+            }
+            catch { }
+            return null;
+        }
+
         public static void DumpTravelBuffs()
         {
-            if (TravelMgr.Instance == null)
+            TravelMgr instance = GetTravelMgrInstance();
+            if (instance == null)
                 return;
 
             try
             {
-                TravelMgr.Instance.GetPlantBuffUnlockCount(PlantType.DoomGatling);
+                instance.GetPlantBuffUnlockCount(PlantType.DoomGatling);
 
                 if (TravelDictionary.advancedBuffsText != null)
                 {
