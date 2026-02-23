@@ -1,18 +1,17 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using System;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(NoticeMenu))]
 	public class NoticePauseMenu_Patch
 	{
-		[HarmonyPrefix]
-		[HarmonyPatch(nameof(NoticeMenu.Awake))]
-		private static void Pre_Awake(NoticeMenu __instance)
+		public static void Pre_Awake(BaseMenu __instance)
 		{
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
@@ -27,10 +26,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 File.WriteAllText(changelogDir, contentText.text);
             }
         }
-	
-		[HarmonyPostfix]
-		[HarmonyPatch(nameof(NoticeMenu.Awake))]
-		private static void Post_Awake(NoticeMenu __instance)
+
+		public static void Post_Awake(BaseMenu __instance)
 		{
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
             string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
@@ -49,10 +46,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             Canvas.ForceUpdateCanvases();
             contentText.ForceMeshUpdate();
-
-            //float textHeight = contentText.preferredHeight;
-            //RectTransform contentRect = contentObject.GetComponent<RectTransform>();
-            //contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, textHeight);
 
             ContentSizeFitter sizeFitter = contentObject.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

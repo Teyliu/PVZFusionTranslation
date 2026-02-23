@@ -1,7 +1,9 @@
 using HarmonyLib;
+using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -39,8 +41,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 TextMeshProUGUI text = normalModeTransform.Find("text").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI textShadow = normalModeTransform.Find("text (1)").GetComponent<TextMeshProUGUI>();
 
-                text.text = Utils.RemoveColorTags(StringStore.TranslateText(text.text));
-                textShadow.text = Utils.RemoveColorTags(textShadow.text);
+                text.text = StringStore.translationString.ContainsKey("普通模式_IV") ? StringStore.TranslateText("普通模式_IV") : Utils.RemoveColorTags(StringStore.TranslateText(text.text));
+                text.alignment = TextAlignmentOptions.Center;
+                text.autoSizeTextContainer = true;
+                textShadow.text = Utils.RemoveColorTags(text.text);
+                textShadow.alignment = TextAlignmentOptions.Center;
+                textShadow.autoSizeTextContainer = true;
             }
 
             if (challengeModeTransform != null)
@@ -48,8 +54,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 TextMeshProUGUI text = challengeModeTransform.Find("text").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI textShadow = challengeModeTransform.Find("text (1)").GetComponent<TextMeshProUGUI>();
 
-                text.text = Utils.RemoveColorTags(StringStore.TranslateText(text.text));
-                textShadow.text = Utils.RemoveColorTags(textShadow.text);
+                text.text = StringStore.translationString.ContainsKey("诅咒模式_IV") ? StringStore.TranslateText("诅咒模式_IV") : Utils.RemoveColorTags(StringStore.TranslateText(text.text));
+                text.alignment = TextAlignmentOptions.Center;
+                text.autoSizeTextContainer = true;
+                textShadow.text = Utils.RemoveColorTags(text.text);
+                textShadow.alignment = TextAlignmentOptions.Center;
+                textShadow.autoSizeTextContainer = true;
             }
 
             if (__instance.tutor != null)

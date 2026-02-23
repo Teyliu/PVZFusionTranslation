@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
@@ -15,11 +15,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
-            {
-                txt.text = StringStore.TranslateText(txt.text);
-                txt.font = fontAsset;
-            }
+            //foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            //{
+            //    txt.text = StringStore.TranslateText(txt.text);
+            //    txt.font = fontAsset;
+            //}
 
             Transform safetyBoxButtonTransform = __instance.transform.FindChild("SafeBox").FindChild("StartSafeMode");
 

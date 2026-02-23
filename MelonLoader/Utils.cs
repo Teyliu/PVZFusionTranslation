@@ -373,7 +373,7 @@ namespace PvZ_Fusion_Translator
 				Log.LogError($"Invalid language string: {language}");
 			}
 			
-			WarningStore.isWarningMessageLoaded = false;
+			//WarningStore.isWarningMessageLoaded = false;
 			FontStore.Reload();
 			StringStore.Reload();
 			TextureStore.Reload();

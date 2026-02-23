@@ -384,7 +384,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 Log.LogError($"Invalid language string: {language}");
             }
 
-            WarningStore.isWarningMessageLoaded = false;
+            //WarningStore.isWarningMessageLoaded = false;
             FontStore.Reload();
             StringStore.Reload();
             TextureStore.Reload();
