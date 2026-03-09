@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
+using PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {
@@ -12,7 +14,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
 		{
 			ReloadStrings,
 			ReloadTextures,
-		}
+			DumpTravelBuffs,
+        }
 
 		private class ModFeature
 		{
@@ -44,14 +47,21 @@ namespace PvZ_Fusion_Translator__BepInEx_
 					Core.ShowToast("Textures Reloaded!");
 					return;
 				}
-			}
+				if (ModType == ModType.DumpTravelBuffs)
+				{
+					TravelMgr_Patch.DumpTravelBuffs();
+					Core.ShowToast("Travel Buffs Dumped!");
+					return;
+                }
+            }
 		}
 
 		private static readonly Dictionary<ModType, ModFeature> featureLists = new()
 		{
 			{ ModType.ReloadStrings, new ModFeature("Reload Strings", ModType.ReloadStrings, KeyCode.Home, true) },
 			{ ModType.ReloadTextures, new ModFeature("Reload Textures", ModType.ReloadTextures, KeyCode.End, true) },
-		};
+			{ ModType.DumpTravelBuffs, new ModFeature("Dump Travel Buffs", ModType.DumpTravelBuffs, KeyCode.Minus, true) },
+        };
 
 		public static void ToggleFeature(ModType modType)
 		{

@@ -30,18 +30,30 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             if (button.introduce == null)
                 return;
 
-            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
+            Log.LogInfo($"[TravelBuffOptionButton_Patch] TranslateOptionButton called. buffType: {button.buffType}, buffIndex: {button.buffIndex}");
+            Log.LogInfo($"[TravelBuffOptionButton_Patch] Original text: {button.introduce.text}");
 
-            string buffText = (button.show != null && buffSet.ContainsKey(button.buffIndex)) ? buffSet[button.buffIndex] : StringStore.TranslateText(button.introduce.text);
+            string originalText = button.introduce.text;
+            if (string.IsNullOrEmpty(originalText))
+                return;
 
             if (button.introduce.text == "词条已选完")
             {
                 button.introduce.text = StringStore.TranslateText("词条已选完");
+                return;
+            }
+
+            string resolved = ResolveBuffTranslation(button.buffType, button.buffIndex, originalText);
+            if (resolved != originalText)
+            {
+                Log.LogInfo($"[TravelBuffOptionButton_Patch] Resolved translation: '{resolved}'");
             }
             else
             {
-                button.introduce.text = buffText;
+                Log.LogWarning($"[TravelBuffOptionButton_Patch] Translation unchanged for ({button.buffType}, {button.buffIndex}).");
             }
+
+            button.introduce.text = resolved;
         }
     }
 }

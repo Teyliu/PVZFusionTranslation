@@ -15,7 +15,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_Clear(TravelLookBuff __instance)
         {
-             __instance.introduce.text = StringStore.TranslateText("无");
+            __instance.introduce.text = StringStore.TranslateText("无");
             __instance.set = false;
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
@@ -38,20 +38,24 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_SetBuff(TravelLookBuff __instance)
         {
-            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
-            string buffText = buffSet.ContainsKey(__instance.buffIndex) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
-            __instance.introduce.text = buffText;
-#if DEBUG
-            if (__instance.introduce.text != null)
+            // Log.LogInfo($"[TravelLookBuff_Patch] SetBuff called. buffType: {__instance.buffType}, buffIndex: {__instance.buffIndex}");
+            // Log.LogInfo($"[TravelLookBuff_Patch] Original introduce text: {__instance.introduce?.text}");
+
+            CaptureBuffFromLookMenu(__instance.buffType, __instance.buffIndex, __instance.introduce?.text);
+
+            if (buffLinks == null || !buffLinks.ContainsKey(__instance.buffType))
             {
-                Log.LogInfo($"BuffType: {__instance.buffType}, BuffIndex: {__instance.buffIndex}, BuffIntroduce: {__instance.introduce.text}");
-                if (__instance.introduce.text != buffText)
-                {
-                    FileLoader.DumpUntranslatedStrings(__instance.introduce.text);
-                }
+                Log.LogWarning($"[TravelLookBuff_Patch] buffType {__instance.buffType} not found in buffLinks!");
+                __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+                return;
             }
 
-#endif
+            string category = buffLinks[__instance.buffType];
+            // Log.LogInfo($"[TravelLookBuff_Patch] Category: {category}");
+
+            string buffText = ResolveBuffTranslation(__instance.buffType, __instance.buffIndex, __instance.introduce?.text);
+            // Log.LogInfo($"[TravelLookBuff_Patch] Resolved translation: '{buffText}'");
+            __instance.introduce.text = buffText;
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {
