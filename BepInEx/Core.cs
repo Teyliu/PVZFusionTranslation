@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
@@ -13,7 +13,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.4.2")]
+[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.5")]
 [BepInProcess("PlantsVsZombiesRH.exe")]
 public class Core : BasePlugin
 {

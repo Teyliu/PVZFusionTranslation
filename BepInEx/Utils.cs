@@ -110,40 +110,84 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             recipeLinks.Clear();
 
-            Il2CppSystem.Array mixData = MixData.data.Cast<Il2CppSystem.Array>();
-            int rows = mixData.GetLength(0);
-            int columns = mixData.GetLength(1);
-
-            foreach (PlantType plantType in Enum.GetValues(typeof(PlantType)))
+            // In 3.5, MixData uses _recipes dictionary instead of int[,] data
+            // The dictionary key is ValueTuple<PlantType, PlantType> and value is the resulting plant
+            try
             {
-                int seedType = (int)plantType;
-
-                recipeLinks.Add(seedType, new());
-
-                if (seedType > 0)
+                // Access the static _recipes field via reflection or direct access
+                var recipesField = typeof(MixData).GetField("_recipes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                if (recipesField == null)
                 {
-                    foreach (PlantType checkType in Enum.GetValues(typeof(PlantType)))
-                    {
-                        if (checkType > 0)
-                        {
-                            int[] checks = [mixData.GetValue(seedType, (int)checkType).Unbox<int>(), mixData.GetValue((int)checkType, seedType).Unbox<int>()];
+                    Log.LogWarning("[RegisterRecipeLinks] Could not find _recipes field in MixData");
+                    return;
+                }
 
-                            if (checks[0] != 0)
+                var recipes = recipesField.GetValue(null) as Dictionary<ValueTuple<PlantType, PlantType>, PlantType>;
+                if (recipes == null)
+                {
+                    Log.LogWarning("[RegisterRecipeLinks] _recipes field is null");
+                    return;
+                }
+
+                // Build recipe links from the dictionary
+                foreach (var kvp in recipes)
+                {
+                    int left = (int)kvp.Key.Item1;
+                    int right = (int)kvp.Key.Item2;
+                    int result = (int)kvp.Value;
+
+                    if (left > 0 && result > 0)
+                    {
+                        if (!recipeLinks.ContainsKey(left))
+                            recipeLinks[left] = new List<int>();
+                        recipeLinks[left].Add(result);
+                    }
+
+                    if (right > 0 && result > 0 && left != right)
+                    {
+                        if (!recipeLinks.ContainsKey(right))
+                            recipeLinks[right] = new List<int>();
+                        recipeLinks[right].Add(result);
+                    }
+                }
+
+                // Also check _recipes_random for random mix recipes
+                var randomRecipesField = typeof(MixData).GetField("_recipes_random", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                if (randomRecipesField != null)
+                {
+                    var randomRecipes = randomRecipesField.GetValue(null) as Dictionary<ValueTuple<PlantType, PlantType>, PlantType>;
+                    if (randomRecipes != null)
+                    {
+                        foreach (var kvp in randomRecipes)
+                        {
+                            int left = (int)kvp.Key.Item1;
+                            int right = (int)kvp.Key.Item2;
+                            int result = (int)kvp.Value;
+
+                            if (left > 0 && result > 0)
                             {
-                                recipeLinks[seedType].Add(checks[0]);
+                                if (!recipeLinks.ContainsKey(left))
+                                    recipeLinks[left] = new List<int>();
+                                if (!recipeLinks[left].Contains(result))
+                                    recipeLinks[left].Add(result);
                             }
 
-                            if (checks[1] != 0)
+                            if (right > 0 && result > 0 && left != right)
                             {
-                                recipeLinks[seedType].Add(checks[1]);
+                                if (!recipeLinks.ContainsKey(right))
+                                    recipeLinks[right] = new List<int>();
+                                if (!recipeLinks[right].Contains(result))
+                                    recipeLinks[right].Add(result);
                             }
                         }
                     }
                 }
-                if (recipeLinks[seedType].Count > 0)
-                {
-                    Log.LogDebug($"Found {recipeLinks[seedType].Count} fusions for {seedType}!");
-                }
+
+                Log.LogInfo($"[RegisterRecipeLinks] Loaded {recipes.Count} recipes from MixData");
+            }
+            catch (Exception ex)
+            {
+                Log.LogError($"[RegisterRecipeLinks] Error: {ex.Message}");
             }
         }
 
