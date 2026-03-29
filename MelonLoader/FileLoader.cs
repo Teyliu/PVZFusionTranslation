@@ -116,10 +116,6 @@ namespace PvZ_Fusion_Translator
 			}
 
 			#if MULTI_LANGUAGE
-			if (Utils.Language != Utils.LanguageEnum.English)
-			{
-				LoadLocalizedTextures(Utils.LanguageEnum.English);
-			}
 			LoadLocalizedTextures(Utils.Language);
 			LoadLocalizedSprites(Utils.Language);
             #else

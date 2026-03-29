@@ -167,7 +167,7 @@ namespace PvZ_Fusion_Translator
 			return thePlantName;
         }
 
-        public static string GetPlantNameFromAlmanac(string theOriginalPlantName)
+        public static string GetPlantNameFromAlmanac(string theOriginalPlantName, bool log = false)
 		{
 			string originalJson;
             string translatedJson;
@@ -181,8 +181,11 @@ namespace PvZ_Fusion_Translator
 
             if ((!File.Exists(path)) || (!File.Exists(originalPath)))
             {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-                Log.LogError("Plant name could not be found!");
+				if(log)
+				{
+					Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
+					Log.LogError("Plant name could not be found!");
+				}
                 thePlantName = "";
             }
             else
@@ -208,7 +211,10 @@ namespace PvZ_Fusion_Translator
 
                 if (!foundPlantName)
                 {
-                    Log.LogInfo("Couldn't find plant name!");
+					if(log)
+					{
+						Log.LogInfo("Couldn't find plant name!");
+					}
                     thePlantName = "";
                 }
             }
@@ -300,7 +306,7 @@ namespace PvZ_Fusion_Translator
 			}
 		}
 
-		public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
+		/*public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
 
 		public static void RegisterRecipeLinks()
 		{
@@ -316,32 +322,32 @@ namespace PvZ_Fusion_Translator
 
 				recipeLinks.Add(seedType, new());
 
-				if(seedType > 0)
+				if (seedType > 0)
 				{
-                    foreach (PlantType checkType in Enum.GetValues(typeof(PlantType)))
-                    {
-						if(checkType > 0)
+					foreach (PlantType checkType in Enum.GetValues(typeof(PlantType)))
+					{
+						if (checkType > 0)
 						{
-                            int[] checks = [mixData.GetValue(seedType, (int)checkType).Unbox<int>(), mixData.GetValue((int)checkType, seedType).Unbox<int>()];
+							int[] checks = [mixData.GetValue(seedType, (int)checkType).Unbox<int>(), mixData.GetValue((int)checkType, seedType).Unbox<int>()];
 
-                            if (checks[0] != 0)
-                            {
-                                recipeLinks[seedType].Add(checks[0]);
-                            }
+							if (checks[0] != 0)
+							{
+								recipeLinks[seedType].Add(checks[0]);
+							}
 
-                            if (checks[1] != 0)
-                            {
-                                recipeLinks[seedType].Add(checks[1]);
-                            }
-                        }
-                    }
-                }
+							if (checks[1] != 0)
+							{
+								recipeLinks[seedType].Add(checks[1]);
+							}
+						}
+					}
+				}
 				if (recipeLinks[seedType].Count > 0)
 				{
 					Log.LogDebug($"Found {recipeLinks[seedType].Count} fusions for {seedType}!");
 				}
-            }
-        }
+			}
+		}*/
 
 		public static bool CheckForUntranslatedText(string text)
 		{
@@ -373,7 +379,7 @@ namespace PvZ_Fusion_Translator
 				Log.LogError($"Invalid language string: {language}");
 			}
 			
-			WarningStore.isWarningMessageLoaded = false;
+			//WarningStore.isWarningMessageLoaded = false;
 			FontStore.Reload();
 			StringStore.Reload();
 			TextureStore.Reload();
@@ -396,30 +402,47 @@ namespace PvZ_Fusion_Translator
 		{
 			// first column
 			English,
+			Chinese_cn,
 			French,
-			Italian,
-			German,
+			//Italian,
+			//German,
 			Spanish,
-			Portuguese,
+			
 
 			// second column
-			Javanese, //Filipino,
+			//Portuguese,
+			//Javanese, 
+			//Filipino,
 			Vietnamese,
-			Indonesian,
-			Russian, //NOTE: legacy language
+			//Indonesian,
+			//Russian, //NOTE: legacy language
 			Japanese,
-			Korean,
+			
 
 			// third column
-			 Ukrainian,
+			Korean,
+			Ukrainian,
 			// Slovak,
 			//Polish,
-			Turkish,
+			//Turkish,
             //Arabic,
             Romanian,
 
             LANG_END
 		}
+
+		public static Dictionary<LanguageEnum, string> LanguageNames = new Dictionary<LanguageEnum, string>()
+		{
+			{ LanguageEnum.English, "English"},
+			{ LanguageEnum.Chinese_cn, "简体中文"},
+			{ LanguageEnum.French, "Français"},
+			{ LanguageEnum.Spanish, "Español"},
+			{ LanguageEnum.Vietnamese, "Tiếng Việt"},
+			{ LanguageEnum.Japanese, "日本語"},
+			{ LanguageEnum.Korean, "한국어"},
+			{ LanguageEnum.Ukrainian, "українська"},
+			{ LanguageEnum.Romanian, "Română"}
+		};
 
 		public enum ToggleEnum
 		{

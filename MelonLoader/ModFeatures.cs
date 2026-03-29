@@ -1,5 +1,6 @@
 ﻿//#if DEBUG
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator
@@ -10,6 +11,7 @@ namespace PvZ_Fusion_Translator
 		{
 			ReloadStrings,
 			ReloadTextures,
+			SwapLevelData
 		}
 
 		private class ModFeature
@@ -42,6 +44,14 @@ namespace PvZ_Fusion_Translator
 					Core.ShowToast("Textures Reloaded!");
 					return;
 				}
+
+				if(this.ModType == ModType.SwapLevelData)
+				{
+					CustomLevelMenu_Patch.SwapLevelData();
+					string toast = (CustomLevelMenu_Patch.useLocal) ? "Using Local Data..." : "Using Online Data...";
+					Core.ShowToast(toast);
+					return;
+				}
 			}
 		}
 
@@ -49,6 +59,7 @@ namespace PvZ_Fusion_Translator
 		{
 			{ModType.ReloadStrings,new ModFeature("Reload Strings",ModType.ReloadStrings,KeyCode.Home, true)},
 			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)},
+			{ModType.SwapLevelData,new ModFeature("Swap Level Data Type",ModType.SwapLevelData,KeyCode.PageUp, true)},
 		};
 
 

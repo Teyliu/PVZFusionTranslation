@@ -15,37 +15,30 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         [HarmonyPostfix]
         private static void Start(InGameUI __instance)
         {
-            TextMeshProUGUI[] array = new TextMeshProUGUI[]
+            foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                __instance.transform.GetChild(4).GetComponent<TextMeshProUGUI>(),
-                __instance.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>(),
-                __instance.transform.GetChild(5).GetComponent<TextMeshProUGUI>(),
-                __instance.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>(),
-                __instance.transform.GetChild(6).GetComponent<TextMeshProUGUI>(),
-                __instance.transform.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>()};
-            TextMeshProUGUI[] array2 = array;
-            for (int i = 0; i < array2.Length; i++)
-            {
-                string originalText = array2[i].text;
-                array2[i].text = array2[i].text.Replace("\n", " ");
+                if (text.text == null) continue;
+                
+                string originalText = text.text;
+                text.text = text.text.Replace("\n", " ");
                 Regex checkFusionChallenge = new Regex("^超级([^\\s：]+)(：?挑战1?)");
 
-                if (array2[i].text.Contains("配方：") && !checkFusionChallenge.IsMatch(array2[i].text))
+                if (text.text.Contains("配方：") && !checkFusionChallenge.IsMatch(text.text))
                 {
-                    string[] lines = array2[i].text.Split("：");
+                    string[] lines = text.text.Split("：");
                     lines[1] = Utils.GetPlantNameFromAlmanac(lines[1]);
                     if (lines[1] == "")
                     {
                         Log.LogError("Couldn't find plant! (Fusion Showcase)");
                         lines[1] = StringStore.TranslateText(lines[1]);
                     }
-                    array2[i].text = StringStore.TranslateText("配方：") + lines[1];
-                    array2[i].autoSizeTextContainer = true;
+                    text.text = StringStore.TranslateText("配方：") + lines[1];
+                    text.autoSizeTextContainer = true;
                 }
                 else
                 {
-                    array2[i].text = (StringStore.translationString.ContainsKey(array2[i].text + "_MG")) ? StringStore.TranslateText(array2[i].text + "_MG") : StringStore.TranslateText(array2[i].text);
-                    array2[i].text = array2[i].text.Replace("\n", " ");
+                    text.text = (StringStore.translationString.ContainsKey(text.text + "_MG")) ? StringStore.TranslateText(text.text + "_MG") : StringStore.TranslateText(text.text);
+                    text.text = text.text.Replace("\n", " ");
                 }
             }
         }

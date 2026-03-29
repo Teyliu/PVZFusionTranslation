@@ -402,6 +402,13 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlayerSaveMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\GodShootingLevelButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelInvestMenu_Patch.cs" />
@@ -500,6 +507,11 @@
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelBuffOptionButton_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomOnlineMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_shooting_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />

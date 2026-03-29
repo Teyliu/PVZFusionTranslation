@@ -53,7 +53,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
 
                     string spawnInfo = "";
-                    string spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\n出怪权重: (\\d+)"];
+                    string spawnInfoFormat = StringStore.translationStringRegex.ContainsKey("出怪等级: (\\d+)\n出怪权重: (\\d+)") ? StringStore.translationStringRegex["出怪等级: (\\d+)\n出怪权重: (\\d+)"] : null;
                     if(spawnInfoFormat != null)
                     {
                         spawnInfo = string.Format(spawnInfoFormat, [zombieData.summonLevel, zombieData.summonWeight]) + "\n\n";
