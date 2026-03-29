@@ -13,7 +13,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Configurations>Debug;DebugEnglish;ReleaseMulti;ReleaseEnglish;DebugTesting;ReleaseOther;DebugObfuscate;ReleaseObfuscate</Configurations>
-		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.4.2</GamePath>
+		<GamePath>C:\Users\rainb\Desktop\PC_PVZ-Fusion_3.5</GamePath>
 		<Platforms>AnyCPU;ARM64;x64</Platforms>
 	</PropertyGroup>
 	
@@ -400,6 +400,9 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\GodShootingLevelButton_Patch.cs" />
@@ -502,6 +505,11 @@
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelBuffOptionButton_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomOnlineMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_shooting_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />

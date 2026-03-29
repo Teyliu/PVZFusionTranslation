@@ -9,9 +9,9 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
     [HarmonyPatch(typeof(TravelRefresh))]
     public static class TravelRefresh_Patch
     {
-        [HarmonyPatch(nameof(TravelRefresh.Start))]
+        [HarmonyPatch(nameof(TravelRefresh.Awake))]
         [HarmonyPostfix]
-        private static void Start(TravelRefresh __instance)
+        private static void Awake(TravelRefresh __instance)
         {
             __instance.text = StringStore.TranslateText(__instance.text);
             __instance.text_shadow = StringStore.TranslateText(__instance.text_shadow);

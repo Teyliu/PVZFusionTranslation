@@ -52,7 +52,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 {
                     startColorTag = match.Groups[1].Value;
                     toTranslate = match.Groups[2].Value;
-                    Log.LogDebug(toTranslate);
                 }
 
                 string[] parts = toTranslate.Split("\n");

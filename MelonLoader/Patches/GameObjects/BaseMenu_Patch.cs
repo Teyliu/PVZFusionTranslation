@@ -29,6 +29,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 NoticePauseMenu_Patch.Post_Awake(__instance);
             }
 
+            if(__instance.name.StartsWith("MainMenu(Clone)"))
+            {
+                MainMenu_Patch.AnimOver(__instance);
+            }
+
             TranslateBaseMenu(__instance, "Level");
             TranslateBaseMenu(__instance, "Levels");
             TranslateBaseMenu(__instance, "CustomLevel");

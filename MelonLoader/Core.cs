@@ -5,6 +5,7 @@ using MelonLoader.Utils;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Managers;
 using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
+using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using UnityEngine;
@@ -82,10 +83,16 @@ namespace PvZ_Fusion_Translator
 				Utils.OpenTrello();
 			}
 
-			if(TowerManager.Instance != null)
+			TowerManager_Patch.UpdateText();
+
+			if (CustomLevelMenu_Patch.requestTimer > 0)
 			{
-                TowerManager_Patch.UpdateText();
-            }
+				CustomLevelMenu_Patch.requestTimer -= Time.deltaTime;
+				if(CustomLevelMenu_Patch.requestTimer < 0)
+				{
+					CustomLevelMenu_Patch.requestTimer = 0;
+				}
+			}
         }
 
 		public override void OnGUI()

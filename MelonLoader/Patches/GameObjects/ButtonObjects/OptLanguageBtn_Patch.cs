@@ -7,6 +7,7 @@ using PvZ_Fusion_Translator;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static MelonLoader.MelonLogger;
 using Object = UnityEngine.Object;
 
 public class OptionButtonData
@@ -58,6 +59,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 			for (int i = 0; i < 6; i++)
 			{
 				var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
+				newButton.tag = "LangOpt";
+				foreach(Transform child in newButton.GetComponentsInChildren<Transform>())
+				{
+					child.tag = "LangOpt";
+				}
 				newButton.optionType = 80 + i;
 
 				float yPos = startY - i * ySpacing;
@@ -90,6 +96,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
             for (int i = 0; i < 2; i++)
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
+				newButton.tag = "LangOpt";
+				foreach(Transform child in newButton.GetComponentsInChildren<Transform>())
+				{
+					child.tag = "LangOpt";
+				}
                 newButton.optionType = 100 + i;
 
                 float yPos = toggleStartY - i * ySpacing;
@@ -125,7 +136,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 					data.Language = lang;
 					data.IsNextButton = false;
 					btn.gameObject.SetActive(true);
-					UpdateButtonText(btn, lang.ToString());
+
+					UpdateButtonText(btn, Utils.LanguageNames[lang], FontStore.LoadTMPFont(lang.ToString()));
 				}
 				else
 				{
@@ -148,7 +160,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						UpdateButtonText(btn, toggle.ToString());
+						UpdateButtonText(btn, StringStore.TranslateText(toggle.ToString()), FontStore.LoadTMPFont(Utils.Language.ToString()));
 					}
 					else
 					{
@@ -168,7 +180,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 			UpdateButtonText(nextBtn, "Next");
 		}
 
-		public static void UpdateButtonText(OptionBtn button, string languageName)
+		public static void UpdateButtonText(OptionBtn button, string languageName, TMP_FontAsset fontAsset = null)
 		{
 			TMP_FontAsset defaultAsset = FontStore.LoadTMPFont("English");
 
@@ -192,7 +204,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 							text.text = languageName;
 						}
 						text.fontSize = 16;
-						text.font = defaultAsset;
+						text.font = (fontAsset != null) ? fontAsset : defaultAsset;
 						text.autoSizeTextContainer = false;
 					}
 				}
@@ -257,17 +269,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 		[HarmonyPatch(typeof(OptionBtn))]
 		public static class OptLangBtn_Patch
 		{
-			[HarmonyPatch(nameof(OptionBtn.Awake))]
-			[HarmonyPostfix]
-			private static void Awake(OptionBtn __instance)
+			public static void Awake(OptionBtn __instance)
 			{
 				if (!buttonsCreated || cachedTemplateButton == null)
 				{
 					buttonsCreated = false;
 					togglesCreated = false;
-                    CreateLanguageButtons(__instance);
+					CreateLanguageButtons(__instance);
 					CreateToggleButtons(__instance);
-                }
+				}
 			}
 
 			[HarmonyPatch("OnMouseUpAsButton")]
