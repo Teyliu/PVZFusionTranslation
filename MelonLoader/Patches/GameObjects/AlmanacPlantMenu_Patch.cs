@@ -16,6 +16,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(AlmanacPlantMenu))]
     public static class AlmanacPlantMenu_Patch
     {
+        public static string almanacJson = "";
+
         [HarmonyPatch(nameof(AlmanacPlantMenu.Awake))]
         [HarmonyPostfix]
         private static void Awake(AlmanacPlantMenu __instance)
@@ -56,10 +58,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 string currentLanguage = Utils.Language.ToString();
                 string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
                 string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-                string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
 
-                string json;
-                json = File.ReadAllText(path);
+                string json = AlmanacPlantMenu_Patch.almanacJson;
 
                 TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
 

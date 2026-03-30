@@ -115,6 +115,7 @@ namespace PvZ_Fusion_Translator
 
 		public MelonPreferences_Entry<bool> configDefaultTextures;
 		public MelonPreferences_Entry<bool> configDefaultAudio;
+		public MelonPreferences_Entry<bool> configUseLocal;
 		public MelonPreferences_Entry<string> configLanguage;
 
 		private void Config()
@@ -123,6 +124,7 @@ namespace PvZ_Fusion_Translator
 
 			configDefaultTextures = category.CreateEntry("DefaultTextures", false);
 			configDefaultAudio = category.CreateEntry("DefaultAudio", false);
+			configUseLocal = category.CreateEntry("UseLocal", false);
 			configLanguage = category.CreateEntry("Language", "English");
 
 			MelonPreferences.Save();

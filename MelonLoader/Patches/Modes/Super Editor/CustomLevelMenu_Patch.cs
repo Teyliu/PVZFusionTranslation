@@ -21,15 +21,12 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
     {
         public static Dictionary<string, TranslatedLevelData> translatedLevelData = new Dictionary<string, TranslatedLevelData>();
         public static float requestTimer = 0f;
-        public static bool useLocal = false;
 
         [HarmonyPatch(nameof(CustomLevelMenu.LoadOnlineFiles))]
         [HarmonyPostfix]
         public static void LoadOnlineFiles(CustomLevelMenu __instance)
         {
-            translatedLevelData = new Dictionary<string, TranslatedLevelData>();
-
-            if (!useLocal)
+            if (!Utils.useLocal)
             {
                 LoadOnlineData();
             }
@@ -91,10 +88,9 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
 
         public static async System.Threading.Tasks.Task<Dictionary<string, TranslatedLevelData>> GetTranslatedLevelData()
         {
-            var levelDataRequest = await new HttpClient().GetAsync($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/custom_level_data.json");
-            if(levelDataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+            string levelDataString = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/custom_level_data.json").Result;
+            if(levelDataString != null)
             {
-                string levelDataString = await levelDataRequest.Content.ReadAsStringAsync();
                 Dictionary<string, TranslatedLevelData> levelDataJson = JsonConvert.DeserializeObject<Dictionary<string, TranslatedLevelData>>(levelDataString);
                 return levelDataJson;
             }
@@ -110,6 +106,8 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
             if (requestTimer <= 0)
                 {
                     requestTimer = 5f; // 5 seconds in between request attempts to prevent any issues with github
+
+                    translatedLevelData = new Dictionary<string, TranslatedLevelData>();
 
                     var translatedLevelDataRequest = System.Threading.Tasks.Task.Run(() => GetTranslatedLevelData());
 
@@ -131,6 +129,7 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
 
         public static void LoadLocalData()
         {
+            translatedLevelData = new Dictionary<string, TranslatedLevelData>();
             string assetDir = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "custom_level_data.json");
             if (!File.Exists(assetDir))
             {
@@ -140,11 +139,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
             string levelDataString = File.ReadAllText(assetDir);
             Dictionary<string, TranslatedLevelData> levelDataJson = JsonConvert.DeserializeObject<Dictionary<string, TranslatedLevelData>>(levelDataString);
             translatedLevelData = levelDataJson;
-        }
-
-        public static void SwapLevelData()
-        {
-            useLocal = !useLocal;
         }
     }
 

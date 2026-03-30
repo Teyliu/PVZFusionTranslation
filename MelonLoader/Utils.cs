@@ -3,8 +3,11 @@ using Il2Cpp;
 using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.TinyJSON;
+using Newtonsoft.Json;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
+using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Unity.Burst.Intrinsics;
@@ -140,27 +143,14 @@ namespace PvZ_Fusion_Translator
             string json;
             string thePlantName = "";
 
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+			json = AlmanacPlantMenu_Patch.almanacJson;
+            AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
 
-            if (!File.Exists(path))
+            foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
             {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-                Log.LogError("Plant name could not be found!");
-                thePlantName = "";
-            }
-            else
-            {
-                json = File.ReadAllText(path);
-                AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
-
-                foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+                if (plantInfo.seedType == (int)thePlantType)
                 {
-                    if (plantInfo.seedType == (int)thePlantType)
-                    {
-                        thePlantName = plantInfo.name;
-                    }
+                    thePlantName = plantInfo.name;
                 }
             }
 
@@ -179,7 +169,7 @@ namespace PvZ_Fusion_Translator
 			string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 
-            if ((!File.Exists(path)) || (!File.Exists(originalPath)))
+            if ((!File.Exists(originalPath)))
             {
 				if(log)
 				{
@@ -193,7 +183,7 @@ namespace PvZ_Fusion_Translator
 				bool foundPlantName = false;
 
 				originalJson = File.ReadAllText(originalPath);
-                translatedJson = File.ReadAllText(path);
+				translatedJson = AlmanacPlantMenu_Patch.almanacJson;
                 AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
                 AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
 
@@ -228,26 +218,15 @@ namespace PvZ_Fusion_Translator
 			string theZombieName = "";
 
 			string currentLanguage = Utils.Language.ToString();
-			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
 
-			if (!File.Exists(path))
-			{
-				Log.LogError($"ZombieStringsTranslate.json file not found at path: {path}");
-				Log.LogError("Zombie name could not be found!");
-				theZombieName = "";
-			}
-			else
-			{
-				json = File.ReadAllText(path);
-                ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+			json = AlmanacZombieMenu_Patch.almanacJson;
+            ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
 
-				foreach (ZombieInfo zombieInfo in zombieData.zombies)
+			foreach (ZombieInfo zombieInfo in zombieData.zombies)
+			{
+				if ((int)zombieInfo.theZombieType == (int)theZombieType)
 				{
-					if ((int)zombieInfo.theZombieType == (int)theZombieType)
-					{
-						theZombieName = zombieInfo.name;
-					}
+					theZombieName = zombieInfo.name;
 				}
 			}
 
@@ -268,19 +247,14 @@ namespace PvZ_Fusion_Translator
             string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 
-            if ((!File.Exists(path)))
-            {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-            } 
-			else if ((!File.Exists(originalPath)))
+            if ((!File.Exists(originalPath)))
 			{
                 Log.LogError($"LawnStrings.json file not found at path: {originalPath}");
             }
-
             else
 			{
 				originalJson = File.ReadAllText(originalPath);
-				translatedJson = File.ReadAllText(path);
+				translatedJson = AlmanacPlantMenu_Patch.almanacJson;
 				AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
 				AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
 
@@ -363,8 +337,46 @@ namespace PvZ_Fusion_Translator
 			}
 			return false;
         }
+		
+		public static bool useLocal = MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "UseLocal");
+		
+		public static void SwapLocalData()
+        {
+            Utils.useLocal = (Utils.useLocal) ? false : true;
+            MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "UseLocal", Utils.useLocal);
+			StringStore.Reload();
+        }
 
-#if MULTI_LANGUAGE
+		public static async Task<string> GetDataFromWeb(string url, bool isLog = true)
+		{
+			if (isLog)
+			{
+				Log.LogInfo($"Attempting to read {url}");
+			}
+			var dataRequest = await new HttpClient().GetAsync(url);
+            if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+				if (isLog)
+				{
+					Log.LogInfo($"Successfully loaded data from {url}!");
+				}
+				
+                string content = await dataRequest.Content.ReadAsStringAsync();
+                return content;
+            }
+            else
+            {
+				if (isLog)
+				{
+					Log.LogError($"Failed to load data from {url}! Falling back...");
+					Log.LogError($"Status code: {dataRequest.StatusCode}");
+				}
+                new CancellationTokenSource().Cancel();
+                return null;
+            }
+		}
+
+		#if MULTI_LANGUAGE
         internal static void ChangeLanguage(string language)
 		{
 			OldLanguage = Language;
@@ -444,10 +456,18 @@ namespace PvZ_Fusion_Translator
 			{ LanguageEnum.Romanian, "Română"}
 		};
 
+		public static Dictionary<ToggleEnum, string> ToggleNames = new Dictionary<ToggleEnum, string>()
+		{
+			{ ToggleEnum.Textures, "Textures"},
+			{ ToggleEnum.Audio, "Audio"},
+			{ ToggleEnum.SwapLocal, "<size=85%>Swap Local\nTranslations"}
+		};
+
 		public enum ToggleEnum
 		{
 			Textures,
 			Audio,
+			SwapLocal,
 			TOGGLE_END
 		}
 	}

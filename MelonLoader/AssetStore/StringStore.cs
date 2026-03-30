@@ -12,6 +12,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static Dictionary<string, string> translationString = new();
 
+		public static Dictionary<string, string> izTipCollectionString = new();
+
+		public static Dictionary<string, string> fsTipCollectionString = new();
+
 		public static Dictionary<string, Dictionary<string, string>> patchesStore = new()
 		{
 			{ "Difficulty", new Dictionary<string, string>
@@ -70,6 +74,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 		{
 			translationString.Clear();
 			translationStringRegex.Clear();
+			izTipCollectionString.Clear();
+			fsTipCollectionString.Clear();
 			FileLoader.LoadStrings();
 		}
 
@@ -176,6 +182,24 @@ namespace PvZ_Fusion_Translator.AssetStore
 				if (isLog)
 					Log.LogDebug($"Text '{originalText} found in translationString");
 				return translationString[originalText];
+			}
+
+			if(izTipCollectionString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in izTipCollectionString");
+				}
+				return izTipCollectionString[originalText];
+			}
+
+			if(fsTipCollectionString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in fsTipCollectionString");
+				}
+				return fsTipCollectionString[originalText];
 			}
 
 			// Regex-based dynamic translation
