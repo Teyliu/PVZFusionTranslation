@@ -11,7 +11,7 @@ namespace PvZ_Fusion_Translator
 		{
 			ReloadStrings,
 			ReloadTextures,
-			SwapLevelData
+			SwapLocalData
 		}
 
 		private class ModFeature
@@ -45,10 +45,10 @@ namespace PvZ_Fusion_Translator
 					return;
 				}
 
-				if(this.ModType == ModType.SwapLevelData)
+				if(this.ModType == ModType.SwapLocalData)
 				{
-					CustomLevelMenu_Patch.SwapLevelData();
-					string toast = (CustomLevelMenu_Patch.useLocal) ? "Using Local Data..." : "Using Online Data...";
+					Utils.SwapLocalData();
+					string toast = (Utils.useLocal) ? "Using Local Data..." : "Using Online Data...";
 					Core.ShowToast(toast);
 					return;
 				}
@@ -59,7 +59,7 @@ namespace PvZ_Fusion_Translator
 		{
 			{ModType.ReloadStrings,new ModFeature("Reload Strings",ModType.ReloadStrings,KeyCode.Home, true)},
 			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)},
-			{ModType.SwapLevelData,new ModFeature("Swap Level Data Type",ModType.SwapLevelData,KeyCode.PageUp, true)},
+			{ModType.SwapLocalData,new ModFeature("Swap Level Data Type",ModType.SwapLocalData,KeyCode.PageUp, true)},
 		};
 
 

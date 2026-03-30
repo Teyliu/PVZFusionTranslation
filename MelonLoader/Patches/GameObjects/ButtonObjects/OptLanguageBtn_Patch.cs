@@ -36,14 +36,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 		private const float ySpacing = 1.2505f;
 
 		private const float toggleStartX = 4.3241f;
-		private const float toggleStartY = -2.2251f;
+		private const float toggleStartY = -0.9746f;
 
         private static List<Utils.LanguageEnum> AvailableLanguages;
         private static List<Utils.ToggleEnum> AvailableToggles;
         private const int LanguagesPerPage = 5;
 		private static int currentPage = 0;
 		private static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
-		private static OptionBtn[] toggleSlots = new OptionBtn[2];
+		private static OptionBtn[] toggleSlots = new OptionBtn[3];
 
         public static void CreateLanguageButtons(OptionBtn templateButton)
 		{
@@ -93,7 +93,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
                 .Where(lang => lang != Utils.ToggleEnum.TOGGLE_END)
                 .ToList();
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
 				newButton.tag = "LangOpt";
@@ -149,7 +149,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
 			if (togglesCreated)
 			{
-				for (int i = 0; i < 2; i++)
+				for (int i = 0; i < 3; i++)
 				{
 					var btn = toggleSlots[i];
 					var data = ToggleBtnDict[btn.GetInstanceID()];
@@ -160,7 +160,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						UpdateButtonText(btn, StringStore.TranslateText(toggle.ToString()), FontStore.LoadTMPFont(Utils.Language.ToString()));
+						UpdateButtonText(btn, StringStore.TranslateText(Utils.ToggleNames[toggle]), FontStore.LoadTMPFont(Utils.Language.ToString()));
 					}
 					else
 					{
@@ -248,7 +248,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
 		private static void ToggleCustomAssets(string type)
 		{
-			if (type != "Textures" && type != "Audio") return;
+			if (type != "Textures" && type != "Audio" && type != "SwapLocal") return;
 
 			if(type == "Textures")
 			{
@@ -263,6 +263,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
                 Utils.customAudio = (Utils.customAudio) ? false : true;
                 MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultAudio", !Utils.customAudio);
             }
+
+			if (type == "SwapLocal")
+			{
+                Utils.SwapLocalData();
+            }
+
 			MelonPreferences.Save();
         }
 
@@ -321,6 +327,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
                     else if (toggleType == "Audio")
                     {
                         FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
+                    }
+					else if (toggleType == "SwapLocal")
+                    {
+						string message = (Utils.useLocal) ? "<size=10>Switched to local translations!" : "<size=10>Switched to online translations!";
+                        FlashMessage(toggleData.Button, message, 0.1f);
                     }
 				}
             }

@@ -4,11 +4,14 @@ using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using UnityEngine.UI;
+using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
 	public class NoticePauseMenu_Patch
 	{
+        public static string changelogText = "";
+
 		public static void Pre_Awake(BaseMenu __instance)
 		{
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
@@ -28,11 +31,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		public static void Post_Awake(BaseMenu __instance)
 		{
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
-            string changelogDir = Path.Combine(stringDir, "changelog.txt");
-
-            string changelogText = File.ReadAllText(changelogDir);
-
+            FileLoader.LoadChangelogText();
+            
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
             TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();

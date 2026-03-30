@@ -20,10 +20,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             string currentLanguage = Utils.Language.ToString();
             string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
             string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
-            string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
 
-            string json;
-            json = File.ReadAllText(path);
+            string json = AlmanacZombieMenu_Patch.almanacJson;
 
             bool hasAlmanacFont = false;
             TMP_FontAsset almanacFontAsset = null;

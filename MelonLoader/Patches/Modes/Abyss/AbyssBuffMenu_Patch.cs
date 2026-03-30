@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UnityEngine.TextCore.Text;
+using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
@@ -82,7 +83,30 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
         {
             abyssBuffData.Clear();
 
-            string abyssBuffText = File.ReadAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "abyss_buffs.json"));
+            string abyssBuffText = "{}";
+
+            if(!Utils.useLocal)
+            {
+                string abyssBuffsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/abyss_buffs.json").Result;
+			
+				if(abyssBuffsContent != null)
+				{
+					abyssBuffText = abyssBuffsContent;
+				}
+				else
+				{
+					string abyssBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "abyss_buffs.json");
+					if(File.Exists(abyssBuffsPath))
+					{
+						abyssBuffText = File.ReadAllText(abyssBuffsPath);
+					}
+				}
+            }
+            else
+            {
+                abyssBuffText = File.ReadAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "abyss_buffs.json"));
+            }
+
             abyssBuffData = JsonSerializer.Deserialize<Dictionary<string, string>>(abyssBuffText);
         }
 

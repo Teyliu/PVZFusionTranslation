@@ -21,12 +21,5 @@ namespace PvZ_Fusion_Translator.Patches.Managers
                 }
             }
         }
-
-        [HarmonyPatch(nameof(TowerManager.Update))]
-        [HarmonyPostfix]
-        public static void Update(TowerManager __instance)
-        {
-            
-        }
     }
 }
