@@ -33,8 +33,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
         }
 
-
-
         [HarmonyPatch(nameof(DrawCardManager.Update))]
         [HarmonyPostfix]
         private static void Postfix_Update(DrawCardManager __instance)
@@ -55,7 +53,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     }
                 }
             }
-
         }
     }
 }
