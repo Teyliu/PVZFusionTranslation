@@ -3,11 +3,14 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using JetBrains.Annotations;
 using MelonLoader;
 using MelonLoader.TinyJSON;
+using Newtonsoft.Json;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using PvZ_Fusion_Translator.Patches.OtherManagers;
+using System.CodeDom.Compiler;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
@@ -77,16 +80,20 @@ namespace PvZ_Fusion_Translator
 			
 				if(travelBuffsContent != null)
 				{
-					TravelMgr_Patch.translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
+					TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
 				}
 				else
 				{
 					string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
 					if(File.Exists(travelBuffsPath))
 					{
-						TravelMgr_Patch.translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+						TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
 					}
 				}
+
+				// load changelog
+
+				LoadChangelogText();
 
 				// load tips
 				string izTipsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/tips_iz.json").Result;
@@ -152,6 +159,8 @@ namespace PvZ_Fusion_Translator
 					}
 				}
 
+				// load abyss buffs
+
 				Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
 
 				SaveStrings();
@@ -192,7 +201,7 @@ namespace PvZ_Fusion_Translator
 						}
 						else if(fileName.EndsWith("travel_buffs"))
 						{
-							TravelMgr_Patch.translatedTravelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
+							TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
 						}
 						else if(fileName.EndsWith("tips_iz"))
 						{
@@ -201,6 +210,10 @@ namespace PvZ_Fusion_Translator
 						else if(fileName.EndsWith("tips_fs"))
 						{
 							LoadFSStrings(jsonString);
+						}
+						else if(fileName.EndsWith("abyss_buffs"))
+						{
+							Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
 						}
 					}
 
@@ -255,7 +268,7 @@ namespace PvZ_Fusion_Translator
 			var izLevelData = izDump.Item1;
 			var izLevelDataDump = izDump.Item2;
 
-			var izTranslatedTips = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+			var izTranslatedTips = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
 
             foreach (var level in izLevelData) 
 			{
@@ -265,6 +278,7 @@ namespace PvZ_Fusion_Translator
 				{
 					if(izTranslatedTips.ContainsKey(level.name) && !StringStore.izTipCollectionString.ContainsKey(levelData.tips))
 					{
+						StringStore.izLevelTipDictionary.Add(level.name, izTranslatedTips[level.name]);
                         StringStore.izTipCollectionString.Add(levelData.tips, izTranslatedTips[level.name]);
                     }
                 }
@@ -277,7 +291,7 @@ namespace PvZ_Fusion_Translator
 			var fusionShowcaseData = fusionShowcaseDump.Item1;
 			var fusionShowcaseDataDump = fusionShowcaseDump.Item2;
 
-            var fsTranslatedTips = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+            var fsTranslatedTips = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
 
             foreach (var level in fusionShowcaseData)
             {
@@ -287,6 +301,7 @@ namespace PvZ_Fusion_Translator
                 {
                     if (fsTranslatedTips.ContainsKey(level.name) && !StringStore.fsTipCollectionString.ContainsKey(levelData.tips))
                     {
+						StringStore.fsLevelTipDictionary.Add(level.name, fsTranslatedTips[level.name]);
                         StringStore.fsTipCollectionString.Add(levelData.tips, fsTranslatedTips[level.name]);
                     }
                 }
@@ -503,51 +518,31 @@ namespace PvZ_Fusion_Translator
 
 			// save regexs
 
-			string translationStringRegex = System.Text.Json.JsonSerializer.Serialize(StringStore.translationStringRegex, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			string translationStringRegex = SerializeWithIndentation(StringStore.translationStringRegex, 2);
 
 			File.WriteAllText(Path.Combine(stringDir, "translation_regexs.json"), translationStringRegex);
 
 			// save strings
 
-			string translationString = System.Text.Json.JsonSerializer.Serialize(StringStore.translationString, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			string translationString = SerializeWithIndentation(StringStore.translationString, 2);
 
 			File.WriteAllText(Path.Combine(stringDir, "translation_strings.json"), translationString);
 
 			// save iz tips
 
-			string izTipCollectionString = System.Text.Json.JsonSerializer.Serialize(StringStore.izTipCollectionString, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			string izTipCollectionString = SerializeWithIndentation(StringStore.izLevelTipDictionary, 1, '	');
 
 			File.WriteAllText(Path.Combine(stringDir, "tips_iz.json"), izTipCollectionString);
 
 			// save fs tips
 
-			string fsTipCollectionString = System.Text.Json.JsonSerializer.Serialize(StringStore.fsTipCollectionString, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			string fsLevelTipDictionary = SerializeWithIndentation(StringStore.fsLevelTipDictionary);
 
-			File.WriteAllText(Path.Combine(stringDir, "tips_fs.json"), fsTipCollectionString);
+			File.WriteAllText(Path.Combine(stringDir, "tips_fs.json"), fsLevelTipDictionary);
 
 			// save travel buffs
 
-			string travelBuffs = System.Text.Json.JsonSerializer.Serialize(TravelMgr_Patch.translatedTravelBuffs, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			string travelBuffs = SerializeWithIndentation(TravelMgr_Patch.translatedTravelBuffs);
 
 			File.WriteAllText(Path.Combine(stringDir, "travel_buffs.json"), travelBuffs);
 
@@ -562,11 +557,7 @@ namespace PvZ_Fusion_Translator
 
 			if(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData != new Dictionary<string, string>())
 			{
-				string abyssBuffData = System.Text.Json.JsonSerializer.Serialize(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData, new JsonSerializerOptions
-				{
-					WriteIndented = true,
-					Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-				});
+				string abyssBuffData = SerializeWithIndentation(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData, 2);
 				File.WriteAllText(Path.Combine(stringDir, "abyss_buffs.json"), abyssBuffData);
 			}
 
@@ -576,25 +567,34 @@ namespace PvZ_Fusion_Translator
 
 			if(AlmanacPlantMenu_Patch.almanacJson != "")
 			{
-				string plantAlmanac = System.Text.Json.JsonSerializer.Serialize(AlmanacPlantMenu_Patch.almanacJson, new JsonSerializerOptions
-				{
-					WriteIndented = true,
-					Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-				});
+				string plantAlmanac = SerializeWithIndentation(AlmanacPlantMenu_Patch.almanacJson);
 
 				File.WriteAllText(Path.Combine(almanacDir, "LawnStringsTranslate.json"), AlmanacPlantMenu_Patch.almanacJson);
 			}
 
 			if(AlmanacZombieMenu_Patch.almanacJson != "")
 			{
-				string zombieAlmanac = System.Text.Json.JsonSerializer.Serialize(AlmanacZombieMenu_Patch.almanacJson, new JsonSerializerOptions
-				{
-					WriteIndented = true,
-					Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-				});
+				string zombieAlmanac = SerializeWithIndentation(AlmanacZombieMenu_Patch.almanacJson);
 
 				File.WriteAllText(Path.Combine(almanacDir, "ZombieStringsTranslate.json"), AlmanacZombieMenu_Patch.almanacJson);
 			}
+		}
+
+		public static string SerializeWithIndentation<T>(T value, int size = 4, char indentChar = ' ')
+		{
+			var stringBuilder = new StringBuilder();
+			var stringWriter = new StringWriter();
+			using (JsonTextWriter writer = new JsonTextWriter(stringWriter))
+			{
+				writer.Formatting = Formatting.Indented;
+				writer.Indentation = size;
+				writer.IndentChar = indentChar;
+
+				Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+				serializer.Serialize(writer, value, typeof(T));
+			}
+
+			return stringWriter.ToString();
 		}
 
 		public static void DumpJson()
@@ -617,18 +617,18 @@ namespace PvZ_Fusion_Translator
 			var izLevelData = izDump.Item1;
 			var izLevelDataDump = izDump.Item2;
 
-            File.WriteAllText(Path.Combine(dumpDir, "tips_iz.json"), JsonSerializer.Serialize(izLevelDataDump, new JsonSerializerOptions
+            File.WriteAllText(Path.Combine(dumpDir, "tips_iz.json"), System.Text.Json.JsonSerializer.Serialize(izLevelDataDump, new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
 
             // dump fusion showcase tips
-            var fusionShowcaseDump = DumpIZStrings();
-			var fusionShowcaseData = izDump.Item1;
-			var fusionShowcaseDataDump = izDump.Item2;
+            var fusionShowcaseDump = DumpFSStrings();
+			var fusionShowcaseData = fusionShowcaseDump.Item1;
+			var fusionShowcaseDataDump = fusionShowcaseDump.Item2;
 
-            File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), JsonSerializer.Serialize(fusionShowcaseDataDump, new JsonSerializerOptions
+            File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), System.Text.Json.JsonSerializer.Serialize(fusionShowcaseDataDump, new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -639,7 +639,7 @@ namespace PvZ_Fusion_Translator
 			{
 				achievementsList.Add(entry.Key, new AchievementObject(entry.Key, entry.Value.Item1, entry.Value.Item2));
 			}
-			File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
+			File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), System.Text.Json.JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
 			{
 				WriteIndented = true,
 				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -695,7 +695,7 @@ namespace PvZ_Fusion_Translator
 			}
 
 			string json = File.ReadAllText(jsonFile);
-			var untranslatedStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+			var untranslatedStrings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 
 			if (!untranslatedStrings.ContainsKey(text))
 			{
@@ -705,7 +705,7 @@ namespace PvZ_Fusion_Translator
 					Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                     WriteIndented = true
 				};
-				File.WriteAllText(jsonFile, JsonSerializer.Serialize(untranslatedStrings, options));
+				File.WriteAllText(jsonFile, System.Text.Json.JsonSerializer.Serialize(untranslatedStrings, options));
 			}
 		}
 		#endif

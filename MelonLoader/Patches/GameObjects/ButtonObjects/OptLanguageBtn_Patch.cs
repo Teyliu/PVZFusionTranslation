@@ -42,8 +42,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
         private static List<Utils.ToggleEnum> AvailableToggles;
         private const int LanguagesPerPage = 5;
 		private static int currentPage = 0;
-		private static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
-		private static OptionBtn[] toggleSlots = new OptionBtn[3];
+		public static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
+		public static OptionBtn[] toggleSlots = new OptionBtn[3];
 
         public static void CreateLanguageButtons(OptionBtn templateButton)
 		{
@@ -160,7 +160,13 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						UpdateButtonText(btn, StringStore.TranslateText(Utils.ToggleNames[toggle]), FontStore.LoadTMPFont(Utils.Language.ToString()));
+						string buttonText = Utils.ToggleNames[toggle];
+						UpdateButtonText(btn, StringStore.TranslateText(buttonText), FontStore.LoadTMPFont(Utils.Language.ToString()));
+						if(i == 2)
+						{
+							string sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
+							FlashMessage(btn, sourceMsg, 0.1f, false);
+						}
 					}
 					else
 					{
@@ -211,7 +217,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 			}
 		}
 
-		private static void FlashMessage(OptionBtn button, string message, float yShift = 0.0f)
+		public static void FlashMessage(OptionBtn button, string message, float yShift = 0.0f, bool useTimer = true)
 		{
 			var child = button.transform.GetChild(0);
 			if (child != null)
@@ -236,13 +242,16 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 				}
 				child.gameObject.SetActive(true);
 
-				System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
+				if(useTimer)
 				{
-					if (button != null && child != null && child.gameObject.activeSelf)
+					System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
 					{
-						child.gameObject.SetActive(false);
-					}
-				});
+						if (button != null && child != null && child.gameObject.activeSelf)
+						{
+							child.gameObject.SetActive(false);
+						}
+					});
+				}
 			}
 		}
 
@@ -266,7 +275,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
 			if (type == "SwapLocal")
 			{
-                Utils.SwapLocalData();
+                Utils.WarnLocalData();
             }
 
 			MelonPreferences.Save();
@@ -327,11 +336,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
                     else if (toggleType == "Audio")
                     {
                         FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
-                    }
-					else if (toggleType == "SwapLocal")
-                    {
-						string message = (Utils.useLocal) ? "<size=10>Switched to local translations!" : "<size=10>Switched to online translations!";
-                        FlashMessage(toggleData.Button, message, 0.1f);
                     }
 				}
             }

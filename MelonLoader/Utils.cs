@@ -6,12 +6,14 @@ using MelonLoader.TinyJSON;
 using Newtonsoft.Json;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects;
+using PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
 using static Il2Cpp.AlmanacPlantBank;
@@ -340,11 +342,29 @@ namespace PvZ_Fusion_Translator
 		
 		public static bool useLocal = MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "UseLocal");
 		
+		public static void WarnLocalData()
+		{
+			BaseMenu newMenu = GameAPP.UIManager.Push(UIType.ConfirmMenu, GameAPP.canvasUp);
+			ConfirmMenu confirmMenu = newMenu.gameObject.GetComponent<ConfirmMenu>();
+
+			string modeTo = (Utils.useLocal) ? "online mode" : "local mode";
+			confirmMenu.SetTitle($"<size=40%>WARNING: This button is meant for translator testing and can overwrite/interfere with the translation files saved in your installation. Proceed with caution. <color=red>You are switching to {modeTo}.</color>\nOnline Mode: Default, strings will auto-sync with the latest version when opening the game\nLocal Mode: Strings are only loaded from your installaion and do not update (meant for translators)");
+			confirmMenu.transform.Find("window/text").GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(confirmMenu.transform.Find("window/text").GetComponent<TextMeshProUGUI>().text);
+			UIButton confirmButton = confirmMenu.transform.Find("Image").GetComponent<UIButton>();
+			UIButton cancelButton = confirmMenu.transform.Find("Image2").GetComponent<UIButton>();
+
+			confirmButton.clickEvent = new UnityEvent();
+			confirmButton.clickEvent.AddListener(new Action(() => SwapLocalData()));
+			confirmButton.clickEvent.AddListener(new Action(() => GameAPP.UIManager.Pop()));
+		}
+
 		public static void SwapLocalData()
         {
             Utils.useLocal = (Utils.useLocal) ? false : true;
             MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "UseLocal", Utils.useLocal);
 			StringStore.Reload();
+			string sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
+			OptLanguageBtn_Patch.FlashMessage(OptLanguageBtn_Patch.toggleSlots[2], sourceMsg, 0.1f, false);
         }
 
 		public static async Task<string> GetDataFromWeb(string url, bool isLog = true)
@@ -460,7 +480,7 @@ namespace PvZ_Fusion_Translator
 		{
 			{ ToggleEnum.Textures, "Textures"},
 			{ ToggleEnum.Audio, "Audio"},
-			{ ToggleEnum.SwapLocal, "<size=85%>Swap Local\nTranslations"}
+			{ ToggleEnum.SwapLocal, "<size=85%>Change Translation\nSource"}
 		};
 
 		public enum ToggleEnum

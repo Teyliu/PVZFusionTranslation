@@ -10,8 +10,7 @@ namespace PvZ_Fusion_Translator
 		public enum ModType
 		{
 			ReloadStrings,
-			ReloadTextures,
-			SwapLocalData
+			ReloadTextures
 		}
 
 		private class ModFeature
@@ -44,22 +43,13 @@ namespace PvZ_Fusion_Translator
 					Core.ShowToast("Textures Reloaded!");
 					return;
 				}
-
-				if(this.ModType == ModType.SwapLocalData)
-				{
-					Utils.SwapLocalData();
-					string toast = (Utils.useLocal) ? "Using Local Data..." : "Using Online Data...";
-					Core.ShowToast(toast);
-					return;
-				}
 			}
 		}
 
 		private static Dictionary<ModType, ModFeature> featureLists = new()
 		{
 			{ModType.ReloadStrings,new ModFeature("Reload Strings",ModType.ReloadStrings,KeyCode.Home, true)},
-			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)},
-			{ModType.SwapLocalData,new ModFeature("Swap Level Data Type",ModType.SwapLocalData,KeyCode.PageUp, true)},
+			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)}
 		};
 
 

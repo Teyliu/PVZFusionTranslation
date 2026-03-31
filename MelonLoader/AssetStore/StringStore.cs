@@ -12,7 +12,11 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static Dictionary<string, string> translationString = new();
 
+		public static Dictionary<string, string> izLevelTipDictionary = new();
+
 		public static Dictionary<string, string> izTipCollectionString = new();
+
+		public static Dictionary<string, string> fsLevelTipDictionary = new();
 
 		public static Dictionary<string, string> fsTipCollectionString = new();
 
@@ -74,7 +78,9 @@ namespace PvZ_Fusion_Translator.AssetStore
 		{
 			translationString.Clear();
 			translationStringRegex.Clear();
+			izLevelTipDictionary.Clear();
 			izTipCollectionString.Clear();
+			fsLevelTipDictionary.Clear();
 			fsTipCollectionString.Clear();
 			FileLoader.LoadStrings();
 		}

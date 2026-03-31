@@ -20,6 +20,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         [HarmonyPostfix]
         public static void ShowText(InGameText __instance)
         {
+            if(__instance.textHead == null) return;
+            
+            if(!__instance.textHead.active) return;
+
             TranslateInGameText(__instance);
         }
 
@@ -27,6 +31,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         [HarmonyPostfix]
         public static void DebugWarning(InGameText __instance)
         {
+            if(__instance.textHead == null) return;
+            
+            if(!__instance.textHead.active) return;
+
             TranslateInGameText(__instance);
         }
 
@@ -34,12 +42,18 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         [HarmonyPostfix]
         public static void Update(InGameText __instance)
         {
+            if(__instance.textHead == null) return;
+            
+            if(!__instance.textHead.active) return;
+
             TranslateInGameText(__instance);
         }
 
         public static void TranslateInGameText(InGameText __instance)
         {
             if (__instance.textMesh == null) return;
+
+            if(!__instance.textHead.active) return;
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 

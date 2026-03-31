@@ -15,7 +15,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         [HarmonyPostfix]
         private static void Start(InGameUI __instance)
         {
-            foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            foreach(TextMeshProUGUI text in __instance.T)
             {
                 if (text.text == null) continue;
                 
