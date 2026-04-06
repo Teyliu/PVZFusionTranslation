@@ -151,7 +151,8 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\InGameBtn_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ButtonObjects\MainMenu_Btn_Patch.cs" />
+		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MainMenu_Btn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptLanguageBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptionBtn_Patch.cs" />
@@ -160,6 +161,9 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\SaveMenuBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Close_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\CreatePlayerSaveMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\CreatePlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CrisisZombieWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CustomSettings_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CustomSun_Patch.cs" />
@@ -230,6 +234,12 @@
 		<Compile Include="Patches\Managers\CanvasUpUI_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
 		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_shooting_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomOnlineMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\LevelManager_Patch.cs" />
 		<Compile Include="Patches\Managers\DifficultyMgr_Patch.cs" />
 		<Compile Include="Patches\Managers\DrawCardManager_Patch.cs" />
 		<Compile Include="Patches\Managers\EndlessMgr_Patch.cs" />
@@ -239,6 +249,7 @@
 		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
+		<Compile Include="Patches\Managers\Screen_Patch.cs" />
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\TravelBuffMgr_Patch.cs" />
 		<Compile Include="Patches\Managers\TravelMgr_Patch.cs" />

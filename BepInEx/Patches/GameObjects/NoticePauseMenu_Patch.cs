@@ -10,6 +10,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
 	public class NoticePauseMenu_Patch
 	{
+        public static string changelogText = "";
+
 		public static void Pre_Awake(BaseMenu __instance)
 		{
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
@@ -29,17 +31,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 		public static void Post_Awake(BaseMenu __instance)
 		{
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-            string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
-            string changelogDir = Path.Combine(stringDir, "changelog.txt");
-
-            string changelogText = File.ReadAllText(changelogDir);
-
-            // Highlight "JustNull" with purple bold color
-            if (!string.IsNullOrEmpty(changelogText))
-            {
-                changelogText = changelogText.Replace("JustNull", "<b><color=#FF6B6B>JustNull</color></b>");
-            }
-
+            FileLoader.LoadChangelogText();
+            
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
             TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
@@ -51,10 +44,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
             Canvas.ForceUpdateCanvases();
             contentText.ForceMeshUpdate();
-
-            //float textHeight = contentText.preferredHeight;
-            //RectTransform contentRect = contentObject.GetComponent<RectTransform>();
-            //contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, textHeight);
 
             ContentSizeFitter sizeFitter = contentObject.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

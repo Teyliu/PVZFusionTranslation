@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.Burst.Intrinsics;
@@ -482,7 +483,104 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             Textures,
             Audio,
+            SwapLocal,
             TOGGLE_END
+        }
+
+        public static bool useLocal = false;
+
+        public static Dictionary<ToggleEnum, string> ToggleNames = new Dictionary<ToggleEnum, string>()
+        {
+            { ToggleEnum.Textures, "Textures" },
+            { ToggleEnum.Audio, "Audio" },
+            { ToggleEnum.SwapLocal, "SwapLocal" }
+        };
+
+        public static void WarnLocalData()
+        {
+            string modeTo = (Utils.useLocal) ? "online mode" : "local mode";
+            Log.LogWarning($"Switching to {modeTo}");
+            Utils.useLocal = (Utils.useLocal) ? false : true;
+        }
+
+        public static async Task<string> GetDataFromWeb(string url, bool isLog = true)
+        {
+            if (isLog)
+            {
+                Log.LogInfo($"Attempting to read {url}");
+            }
+            HttpClient client = new HttpClient();
+            try
+            {
+                var dataRequest = await client.GetAsync(url);
+                if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    if (isLog)
+                    {
+                        Log.LogInfo($"Successfully loaded data from {url}!");
+                    }
+                
+                    string content = await dataRequest.Content.ReadAsStringAsync();
+                    return content;
+                }
+                else
+                {
+                    if (isLog)
+                    {
+                        Log.LogError($"Failed to load data from {url}! Falling back...");
+                        Log.LogError($"Status code: {dataRequest.StatusCode}");
+                    }
+                    new CancellationTokenSource().Cancel();
+                    return null;
+                }
+            }
+            catch(Exception ex)
+            {
+                Log.LogError($"Failed to load data from {url}! Falling back...");
+                Log.LogError(ex);
+                new CancellationTokenSource().Cancel();
+                return null;
+            }
+        }
+
+        public static async Task<byte[]> GetImageDataFromWeb(string url, bool isLog = true)
+        {
+            if (isLog)
+            {
+                Log.LogInfo($"Attempting to read {url}");
+            }
+            HttpClient client = new HttpClient();
+            try
+            {
+                var dataRequest = await client.GetAsync(url);
+                if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    if (isLog)
+                    {
+                        Log.LogInfo($"Successfully loaded image data from {url}!");
+                    }
+                
+                    byte[] content = await dataRequest.Content.ReadAsByteArrayAsync();
+                    return content;
+                }
+                else
+                {
+                    if (isLog)
+                    {
+                        Log.LogError($"Failed to load image data from {url}! Falling back...");
+                        Log.LogError($"Status code: {dataRequest.StatusCode}");
+                    }
+                    new CancellationTokenSource().Cancel();
+                    return null;
+                }
+            }
+            catch(Exception ex)
+            {
+                Log.LogError($"Failed to load image data from {url}! Falling back...");
+                Log.LogError(ex);
+                new CancellationTokenSource().Cancel();
+                return null;
+            }
         }
     }
 

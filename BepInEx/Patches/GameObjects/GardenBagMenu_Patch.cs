@@ -8,43 +8,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     [HarmonyPatch(typeof(GardenBagMenu))]
     public static class GardenBagMenu_Patch
     {
-        [HarmonyPatch(nameof(GardenBagMenu.SetTreasureCards))]
+        [HarmonyPatch(nameof(GardenBagMenu.Awake))]
         [HarmonyPostfix]
-        private static void SetTreasureCards(GardenBagMenu __instance)
+        private static void Awake(GardenBagMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+            Transform closeButtonTransform = __instance.transform.Find("Close");
+            foreach(TextMeshProUGUI text in closeButtonTransform.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                if(txt.transform.parent.name.Contains("Close"))
-                {
-                    txt.text = StringStore.TranslateText("合上");
-                }
-                else
-                {
-                    txt.text = StringStore.TranslateText(txt.text);
-                }
-                txt.font = fontAsset;
-            }
-        }
-
-        [HarmonyPatch(nameof(GardenBagMenu.SetTreasureCard))]
-        [HarmonyPostfix]
-        private static void SetTreasureCard(GardenBagMenu __instance)
-        {
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
-            {
-                if (txt.transform.parent.name.Contains("Close"))
-                {
-                    txt.text = StringStore.TranslateText("合上");
-                }
-                else
-                {
-                    txt.text = StringStore.TranslateText(txt.text);
-                }
-                txt.font = fontAsset;
+                text.text = StringStore.TranslateText("合上");
             }
         }
     }

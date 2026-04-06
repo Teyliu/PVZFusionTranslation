@@ -15,6 +15,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
 		public static Dictionary<string, string> translationString = new();
 
+		public static Dictionary<string, string> izLevelTipDictionary = new();
+
+		public static Dictionary<string, string> izTipCollectionString = new();
+
+		public static Dictionary<string, string> fsLevelTipDictionary = new();
+
+		public static Dictionary<string, string> fsTipCollectionString = new();
+
 		private static Dictionary<string, Regex> compiledRegexCache = new();
 
 		private static Dictionary<string, string> translationResultCache = new Dictionary<string, string>();
@@ -104,6 +112,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			translationString.Clear();
 			translationStringRegex.Clear();
 			compiledRegexCache.Clear();
+			izLevelTipDictionary.Clear();
+			izTipCollectionString.Clear();
+			fsLevelTipDictionary.Clear();
+			fsTipCollectionString.Clear();
 			FileLoader.LoadStrings();
 			CompileRegexCache();
 		}
@@ -260,6 +272,24 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 				if (isLog)
 					Log.LogDebug($"Text '{originalText} found in translationString");
 				return translationString[originalText];
+			}
+
+			if(izTipCollectionString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in izTipCollectionString");
+				}
+				return izTipCollectionString[originalText];
+			}
+
+			if(fsTipCollectionString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in fsTipCollectionString");
+				}
+				return fsTipCollectionString[originalText];
 			}
 
 			// Regex-based dynamic translation

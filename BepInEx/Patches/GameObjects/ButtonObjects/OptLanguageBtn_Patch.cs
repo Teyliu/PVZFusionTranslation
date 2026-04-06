@@ -43,14 +43,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 		private const float ySpacing = 1.2505f;
 
 		private const float toggleStartX = 4.3241f;
-		private const float toggleStartY = -2.2251f;
+		private const float toggleStartY = -0.9746f;
 
         private static List<Utils.LanguageEnum> AvailableLanguages;
         private static List<Utils.ToggleEnum> AvailableToggles;
         private const int LanguagesPerPage = 5;
 		private static int currentPage = 0;
 		private static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
-		private static OptionBtn[] toggleSlots = new OptionBtn[2];
+		private static OptionBtn[] toggleSlots = new OptionBtn[3];
 
         public static void CreateLanguageButtons(OptionBtn templateButton)
 		{
@@ -95,7 +95,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
                 .Where(lang => lang != Utils.ToggleEnum.TOGGLE_END)
                 .ToList();
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
                 newButton.optionType = 100 + i;
@@ -145,7 +145,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 
 			if (togglesCreated)
 			{
-				for (int i = 0; i < 2; i++)
+				for (int i = 0; i < 3; i++)
 				{
 					var btn = toggleSlots[i];
 					var data = ToggleBtnDict[btn.GetInstanceID()];
@@ -156,7 +156,23 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						UpdateButtonText(btn, toggle.ToString());
+						string buttonText = Utils.ToggleNames[toggle];
+						UpdateButtonText(btn, buttonText);
+						string sourceMsg = "";
+						switch(i)
+						{
+							case 0:
+								sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
+								break;
+							case 1:
+								sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
+								break;
+							case 2:
+								sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
+								break;
+							default:
+								break;
+						}
 					}
 					else
 					{
@@ -244,7 +260,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 
 		private static void ToggleCustomAssets(string type)
 		{
-			if (type != "Textures" && type != "Audio") return;
+			if (type != "Textures" && type != "Audio" && type != "SwapLocal") return;
 
             if (type == "Textures")
             {
@@ -261,6 +277,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
                 Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out customAudioEntry);
                 customAudioEntry.BoxedValue = !customAudioEntry.Value; // Toggle the config value
             }
+
+			if (type == "SwapLocal")
+			{
+                Utils.WarnLocalData();
+            }
+
             Core.Instance.Config.Save();
         }
 
@@ -310,19 +332,19 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					}
 				}
 
-				if (ToggleBtnDict.TryGetValue(__instance.GetInstanceID(), out var toggleData))
-				{
-					string toggleType = toggleData.Toggle.ToString();
-					ToggleCustomAssets(toggleType);
-                    if (toggleType == "Textures")
-                    {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!", 0.1f);
-                    }
-                    else if (toggleType == "Audio")
-                    {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
-                    }
-				}
+			if (ToggleBtnDict.TryGetValue(__instance.GetInstanceID(), out var toggleData))
+			{
+				string toggleType = toggleData.Toggle.ToString();
+				ToggleCustomAssets(toggleType);
+                if (toggleType == "Textures")
+                {
+                    FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\n(Restart Required)", 0.1f);
+                }
+                else if (toggleType == "Audio")
+                {
+                    FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
+                }
+			}
             }
 
 			[HarmonyPatch(nameof(OptionBtn.Update))]

@@ -1,10 +1,15 @@
-﻿using Il2CppTMPro;
+﻿using Il2Cpp;
+using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.Utils;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Managers;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
+using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using UnityEngine;
-using Il2Cpp;
+using static PvZ_Fusion_Translator.FileLoader;
 
 [assembly: MelonInfo(typeof(PvZ_Fusion_Translator.Core), "PvZ Fusion Translator", "231.0.0", "dynaslash / arifrios1st / lancerx0 / JustNull / Dakosha / Mamoru-kun / cassidy / Teyliu", null)]
 [assembly: MelonGame("LanPiaoPiao", "PlantsVsZombiesRH")]
@@ -42,7 +47,8 @@ namespace PvZ_Fusion_Translator
 		{
 			dtStart = DateTime.Now;
 			replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
-		}
+			TravelMgr_Patch.DumpTravelBuffs();
+        }
 
 		public override void OnDeinitializeMelon()
 		{
@@ -77,10 +83,16 @@ namespace PvZ_Fusion_Translator
 				Utils.OpenTrello();
 			}
 
-			if(TowerManager.Instance != null)
+			TowerManager_Patch.UpdateText();
+
+			if (CustomLevelMenu_Patch.requestTimer > 0)
 			{
-                TowerManager_Patch.UpdateText();
-            }
+				CustomLevelMenu_Patch.requestTimer -= Time.deltaTime;
+				if(CustomLevelMenu_Patch.requestTimer < 0)
+				{
+					CustomLevelMenu_Patch.requestTimer = 0;
+				}
+			}
         }
 
 		public override void OnGUI()
@@ -103,6 +115,7 @@ namespace PvZ_Fusion_Translator
 
 		public MelonPreferences_Entry<bool> configDefaultTextures;
 		public MelonPreferences_Entry<bool> configDefaultAudio;
+		public MelonPreferences_Entry<bool> configUseLocal;
 		public MelonPreferences_Entry<string> configLanguage;
 
 		private void Config()
@@ -111,6 +124,7 @@ namespace PvZ_Fusion_Translator
 
 			configDefaultTextures = category.CreateEntry("DefaultTextures", false);
 			configDefaultAudio = category.CreateEntry("DefaultAudio", false);
+			configUseLocal = category.CreateEntry("UseLocal", false);
 			configLanguage = category.CreateEntry("Language", "English");
 
 			MelonPreferences.Save();

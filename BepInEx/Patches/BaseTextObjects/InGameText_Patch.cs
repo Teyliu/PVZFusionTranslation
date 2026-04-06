@@ -18,6 +18,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		[HarmonyPostfix]
 		private static void ShowText_Post(InGameText __instance)
 		{
+			if(__instance.textHead == null) return;
+			
+			if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
+
 			#if MULTI_LANGUAGE
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 			#else

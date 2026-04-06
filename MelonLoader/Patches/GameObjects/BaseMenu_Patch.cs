@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
@@ -27,6 +27,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             if(__instance.name.Contains("NoticePauseMenu"))
             {
                 NoticePauseMenu_Patch.Post_Awake(__instance);
+            }
+
+            if(__instance.name.StartsWith("MainMenu(Clone)"))
+            {
+                MainMenu_Patch.AnimOver(__instance);
             }
 
             TranslateBaseMenu(__instance, "Level");

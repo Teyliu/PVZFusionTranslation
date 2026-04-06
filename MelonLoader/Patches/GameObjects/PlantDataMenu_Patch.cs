@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
@@ -28,6 +28,13 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             TranslatePlantDataMenu(__instance);
         }
 
+        [HarmonyPatch(nameof(PlantDataMenu.InitDataFromPlant))]
+        [HarmonyPostfix]
+        public static void Post_InitDataFromPlant(PlantDataMenu __instance)
+        {
+            TranslatePlantDataMenu(__instance);
+        }
+
         public static void TranslatePlantDataMenu(PlantDataMenu __instance)
         {
             PlantType thePlantType = __instance.plant.thePlantType;
@@ -52,7 +59,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 {
                     startColorTag = match.Groups[1].Value;
                     toTranslate = match.Groups[2].Value;
-                    MelonLogger.LogDebug(toTranslate);
                 }
 
                 string[] parts = toTranslate.Split("\n");
@@ -75,6 +81,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 }
 
                 text.font = fontAsset;
+            }
+
+            foreach(TextMeshProUGUI text in __instance.toggles.transform.Find("Viewport/Content/Toggles").GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
             }
         }
     }

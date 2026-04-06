@@ -1,9 +1,9 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {

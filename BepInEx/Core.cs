@@ -32,6 +32,7 @@ public class Core : BasePlugin
 	public ConfigEntry<bool> configDefaultTextures;
 	public ConfigEntry<bool> configDefaultAudio;
 	public ConfigEntry<string> configLanguage;
+	public ConfigEntry<bool> configUseLocal;
 
     private static float lastCheck = 0f;
 	private static float checkTime = 0f;
@@ -174,7 +175,13 @@ public class Core : BasePlugin
             configLanguage = Config.Bind(new ConfigDefinition(mainCategory, "Language"), "English", new ConfigDescription("Load the Game in this Language", new AcceptableValueList<string>("English", "French", "Italian", "German", "Spanish", "Portuguese", "Indonesian", "Vietnamese", "Javanese", "Russian", "Japanese", "Korean")));
         }
 		bool language = Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out configLanguage);
-    }
+
+		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "UseLocal"), out configUseLocal) == false)
+		{
+			configUseLocal = Config.Bind(new ConfigDefinition(mainCategory, "UseLocal"), false, new ConfigDescription("Use Local Translation Data", new AcceptableValueList<bool>(true, false)));
+		}
+		bool useLocal = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "UseLocal"), out configUseLocal);
+	}
 }
 
 public class UnityCoroutineHelper : MonoBehaviour

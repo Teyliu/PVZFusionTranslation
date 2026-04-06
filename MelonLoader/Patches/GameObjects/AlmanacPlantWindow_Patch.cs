@@ -22,8 +22,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
             string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
 
-            string json;
-            json = File.ReadAllText(path);
+            string json = AlmanacPlantMenu_Patch.almanacJson;
 
             bool hasAlmanacFont = false;
             TMP_FontAsset almanacFontAsset = null;

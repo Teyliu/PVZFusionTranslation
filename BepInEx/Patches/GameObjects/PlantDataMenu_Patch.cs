@@ -28,6 +28,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             TranslatePlantDataMenu(__instance);
         }
 
+        [HarmonyPatch(nameof(PlantDataMenu.InitDataFromPlant))]
+        [HarmonyPostfix]
+        public static void Post_InitDataFromPlant(PlantDataMenu __instance)
+        {
+            TranslatePlantDataMenu(__instance);
+        }
+
         public static void TranslatePlantDataMenu(PlantDataMenu __instance)
         {
             PlantType thePlantType = __instance.plant.thePlantType;
@@ -75,6 +82,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 text.font = fontAsset;
+            }
+
+            foreach(TextMeshProUGUI text in __instance.toggles.transform.Find("Viewport/Content/Toggles").GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                text.text = StringStore.TranslateText(text.text);
             }
         }
     }

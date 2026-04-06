@@ -1,12 +1,20 @@
 ﻿using Il2Cpp;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using JetBrains.Annotations;
 using MelonLoader;
+using MelonLoader.TinyJSON;
+using Newtonsoft.Json;
+using NVorbis.Contracts;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
+using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using PvZ_Fusion_Translator.Patches.OtherManagers;
+using System.CodeDom.Compiler;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace PvZ_Fusion_Translator
 {
@@ -28,69 +36,302 @@ namespace PvZ_Fusion_Translator
 		}
 		// private static string GetAssetDir(AssetType assetType) => Path.Combine(Core.Instance.modsDirectory, assetType.ToString());
 
-		#if MULTI_LANGUAGE
 		internal static void LoadStrings() => LoadStrings(Utils.Language);
 
 		internal static void LoadStrings(Utils.LanguageEnum language)
-		#else
-		internal static void LoadStrings(bool isLog = false)
-		#endif
 		{
-			#if MULTI_LANGUAGE
 			string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
-			#else
-			string stringDir = GetAssetDir(AssetType.Strings);
-			#endif
-			if (!Directory.Exists(stringDir))
+
+			if(!Utils.useLocal)
 			{
-				Directory.CreateDirectory(stringDir);
-			}
-			try
-			{
-				foreach (string filepath in Directory.EnumerateFiles(stringDir, "*.json", SearchOption.AllDirectories))
+				// load translationStrings
+				string translationStringsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/translation_strings.json").Result;
+			
+				if(translationStringsContent != null)
 				{
-
-					#if OBFUSCATE
-					if (CheckSumStore.IsModified(filepath))
+					LoadTranslationStrings(translationStringsContent);
+				}
+				else
+				{
+					string translationStringsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "translation_strings.json");
+					if(File.Exists(translationStringsPath))
 					{
-						Log.LogError("File {0} was modified!" , filepath);
-						continue;
-					}
-					#endif
-
-					string fileName = Path.GetFileNameWithoutExtension(filepath);
-					StringStore.stringsDict[fileName] = filepath;
-					#if DEBUG
-					Log.LogInfo("Loading File : " + filepath);
-					#endif
-					string jsonString = File.ReadAllText(filepath);
-					if (fileName.EndsWith("_strings"))
-					{
-						Dictionary<string, string> dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
-						foreach (var (key, value) in dictionary)
-						{
-							StringStore.translationString[key] = value;
-						}
-					}
-					else if (fileName.EndsWith("_regexs"))
-					{
-						Dictionary<string, string> dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
-						foreach (var (key, value) in dictionary)
-						{
-							StringStore.translationStringRegex[key] = value;
-						}
-						Zombie_Patch.LoadHPStrings();
+						LoadTranslationStrings(File.ReadAllText(translationStringsPath));
 					}
 				}
+
+				// load translationRegexs
+				string translationRegexsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/translation_regexs.json").Result;
+			
+				if(translationRegexsContent != null)
+				{
+					LoadTranslationRegexs(translationRegexsContent);
+				}
+				else
+				{
+					string translationRegexsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "translation_regexs.json");
+					if(File.Exists(translationRegexsPath))
+					{
+						LoadTranslationRegexs(File.ReadAllText(translationRegexsPath));
+					}
+				}
+
+				// load travel_buffs
+				string travelBuffsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/travel_buffs.json").Result;
+			
+				if(travelBuffsContent != null)
+				{
+					TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
+				}
+				else
+				{
+					string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
+					if(File.Exists(travelBuffsPath))
+					{
+						TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+					}
+				}
+
+				// load changelog
+
+				LoadChangelogText();
+
+				// load tips
+				string izTipsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/tips_iz.json").Result;
+			
+				if(izTipsContent != null)
+				{
+					LoadIZStrings(izTipsContent);
+				}
+				else
+				{
+					string izTipsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "tips_iz.json");
+					if(File.Exists(izTipsPath))
+					{
+						LoadIZStrings(File.ReadAllText(izTipsPath));
+					}
+				}
+
+				string fsTipsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/tips_fs.json").Result;
+			
+				if(fsTipsContent != null)
+				{
+					LoadFSStrings(fsTipsContent);
+				}
+				else
+				{
+					string fsTipsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "tips_fs.json");
+					if(File.Exists(fsTipsPath))
+					{
+						LoadFSStrings(File.ReadAllText(fsTipsPath));
+					}
+				}
+
+				// load almanacs
+				string plantAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/LawnStringsTranslate.json").Result;
+			
+				if(plantAlmanacContent != null)
+				{
+					AlmanacPlantMenu_Patch.almanacJson = plantAlmanacContent;
+				}
+				else
+				{
+					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+					string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+					if(File.Exists(path))
+					{
+						AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(path);
+					}
+				}
+
+				string zombieAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/ZombieStringsTranslate.json").Result;
+			
+				if(zombieAlmanacContent != null)
+				{
+					AlmanacZombieMenu_Patch.almanacJson = zombieAlmanacContent;
+				}
+				else
+				{
+					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+					string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+					if(File.Exists(path))
+					{
+						AlmanacZombieMenu_Patch.almanacJson = File.ReadAllText(path);
+					}
+				}
+
+				// load abyss buffs
+
+				Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
+
 				SaveStrings();
 				DumpJson();
 			}
-			catch (Exception e)
+			else
 			{
-				Log.LogError("Error loading string.");
-				Log.LogError(e.GetType() + " " + e.Message);
+				if (!Directory.Exists(stringDir))
+				{
+					Directory.CreateDirectory(stringDir);
+				}
+				try
+				{
+					foreach (string filepath in Directory.EnumerateFiles(stringDir, "*.json", SearchOption.AllDirectories))
+					{
+
+						#if OBFUSCATE
+						if (CheckSumStore.IsModified(filepath))
+						{
+							Log.LogError("File {0} was modified!" , filepath);
+							continue;
+						}
+						#endif
+
+						string fileName = Path.GetFileNameWithoutExtension(filepath);
+						StringStore.stringsDict[fileName] = filepath;
+						#if DEBUG
+						Log.LogInfo("Loading File : " + filepath);
+						#endif
+						string jsonString = File.ReadAllText(filepath);
+						if (fileName.EndsWith("_strings"))
+						{
+							LoadTranslationStrings(jsonString);
+						}
+						else if (fileName.EndsWith("_regexs"))
+						{
+							LoadTranslationRegexs(jsonString);
+						}
+						else if(fileName.EndsWith("travel_buffs"))
+						{
+							TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
+						}
+						else if(fileName.EndsWith("tips_iz"))
+						{
+							LoadIZStrings(jsonString);
+						}
+						else if(fileName.EndsWith("tips_fs"))
+						{
+							LoadFSStrings(jsonString);
+						}
+						else if(fileName.EndsWith("abyss_buffs"))
+						{
+							Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
+						}
+					}
+
+					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+					string plantAlmanacPath = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+					if(File.Exists(plantAlmanacPath))
+					{
+						AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(plantAlmanacPath);
+					}
+
+					string zombieAlmanacPlant = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+					if(File.Exists(zombieAlmanacPlant))
+					{
+						AlmanacZombieMenu_Patch.almanacJson = File.ReadAllText(zombieAlmanacPlant);
+					}
+
+					SaveStrings();
+					DumpJson();
+				}
+				catch (Exception e)
+				{
+					Log.LogError("Error loading string.");
+					Log.LogError(e.GetType() + " " + e.Message);
+				}
 			}
+			
 			Log.LogInfo("Strings loaded successfully.");
+		}
+
+		internal static void LoadTranslationStrings(string content)
+		{
+			Dictionary<string, string> dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+			foreach (var (key, value) in dictionary)
+			{
+				StringStore.translationString[key] = value;
+			}
+		}
+
+		internal static void LoadTranslationRegexs(string content)
+		{
+			Dictionary<string, string> dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+			foreach (var (key, value) in dictionary)
+			{
+				StringStore.translationStringRegex[key] = value;
+			}
+			Zombie_Patch.LoadHPStrings();
+		}
+
+		internal static void LoadIZStrings(string content)
+		{
+			var izDump = DumpIZStrings();
+			var izLevelData = izDump.Item1;
+			var izLevelDataDump = izDump.Item2;
+
+			var izTranslatedTips = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+
+            foreach (var level in izLevelData) 
+			{
+				string data = level.text;
+				LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+				if(levelData.tips != null)
+				{
+					if(izTranslatedTips.ContainsKey(level.name) && !StringStore.izTipCollectionString.ContainsKey(levelData.tips))
+					{
+						StringStore.izLevelTipDictionary.Add(level.name, izTranslatedTips[level.name]);
+                        StringStore.izTipCollectionString.Add(levelData.tips, izTranslatedTips[level.name]);
+                    }
+                }
+            }
+		}
+
+		internal static void LoadFSStrings(string content)
+		{
+			var fusionShowcaseDump = DumpFSStrings();
+			var fusionShowcaseData = fusionShowcaseDump.Item1;
+			var fusionShowcaseDataDump = fusionShowcaseDump.Item2;
+
+            var fsTranslatedTips = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+
+            foreach (var level in fusionShowcaseData)
+            {
+                string data = level.text;
+                LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+                if (levelData.tips != null)
+                {
+                    if (fsTranslatedTips.ContainsKey(level.name) && !StringStore.fsTipCollectionString.ContainsKey(levelData.tips))
+                    {
+						StringStore.fsLevelTipDictionary.Add(level.name, fsTranslatedTips[level.name]);
+                        StringStore.fsTipCollectionString.Add(levelData.tips, fsTranslatedTips[level.name]);
+                    }
+                }
+            }
+		}
+
+		internal static void LoadChangelogText()
+		{
+			string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+            string changelogDir = Path.Combine(stringDir, "changelog.txt");
+			string changelogText = "";
+			if (!File.Exists(changelogDir))
+			{
+				File.WriteAllText(changelogDir, "");
+			}
+
+			changelogText = File.ReadAllText(changelogDir);
+
+            if(!Utils.useLocal)
+            {
+                string changelogContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/changelog.txt").Result;
+			
+				if(changelogContent != null)
+				{
+					changelogText = changelogContent;
+				}
+            }
+
+			NoticePauseMenu_Patch.changelogText = changelogText;
 		}
 
 		public static bool loadDefaultTextures = MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultTextures");
@@ -99,7 +340,6 @@ namespace PvZ_Fusion_Translator
 			// Default or Custom Texturse -> English Textures -> Localized Textures
 			try
 			{
-				
 				if (Utils.customTextures)
 				{
                     LoadCustomTextures();
@@ -112,15 +352,11 @@ namespace PvZ_Fusion_Translator
 			}
 
 			#if MULTI_LANGUAGE
-			if (Utils.Language != Utils.LanguageEnum.English)
-			{
-				LoadLocalizedTextures(Utils.LanguageEnum.English);
-			}
 			LoadLocalizedTextures(Utils.Language);
 			LoadLocalizedSprites(Utils.Language);
             #else
 			LoadLocalizedTextures();
-#endif
+			#endif
 
             Log.LogInfo("Textures loaded successfully.");
 		}
@@ -135,12 +371,78 @@ namespace PvZ_Fusion_Translator
 			}
 			try
 			{
+				Dictionary<string, string> localTOC = new Dictionary<string, string>();
+				string localTOCDir = Path.Combine(textureDir, "Texture_TOC.json");
+				if (!File.Exists(localTOCDir))
+				{
+					File.WriteAllText(localTOCDir, "{}");
+				}
+
+				string localTOCContent = File.ReadAllText(localTOCDir);
+				localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+				string basePath = Core.Instance.modsDirectory;
+
+				if (!Utils.useLocal)
+				{
+					string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Textures/Texture_TOC.json").Result;
+					if (textureTOCRequest != null)
+					{
+						Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+						List<string> toDownload = new();
+
+						foreach(var pair in textureTOC)
+						{
+							if(!localTOC.ContainsKey(pair.Key))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if(pair.Value != localTOC[pair.Key])
+							{
+								toDownload.Add(pair.Key);
+							}
+
+							if(!File.Exists(Path.Combine(basePath, pair.Key)))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+						}
+
+						string toWriteText = SerializeWithIndentation(textureTOC);
+						File.WriteAllText(localTOCDir, toWriteText);
+
+						foreach(string path in toDownload)
+						{
+							string downloadPath = Path.Combine(basePath, path);
+
+							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+							string url = baseUrl + path;
+
+							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							if(imageData != null)
+							{
+								string fileName = Path.GetFileName(downloadPath);
+								Texture2D texture2D = Utils.LoadImage(imageData);
+								TextureStore.textureDict[fileName] = imageData;
+								File.WriteAllBytes(downloadPath, imageData);
+							}
+						}
+					}
+				}
+
 				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
 				{
 					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
 					{
 						continue;
 					}
+
+					if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 					#if OBFUSCATE
 					if (CheckSumStore.IsModified(filepath))
@@ -154,8 +456,9 @@ namespace PvZ_Fusion_Translator
 					Log.LogDebug("Loading File : " + filepath);
 					#endif
 
-					Texture2D texture2D = Utils.LoadImage(filepath);
-					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+					byte[] imageData = File.ReadAllBytes(filepath);
+					Texture2D texture2D = Utils.LoadImage(imageData);
+					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
 			}
 
@@ -176,12 +479,79 @@ namespace PvZ_Fusion_Translator
             }
             try
             {
-                foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
-                {
-                    if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
-                    {
-                        continue;
-                    }
+				string trueTextureDir = GetAssetDir(AssetType.Textures, language);
+				Dictionary<string, string> localTOC = new Dictionary<string, string>();
+				string localTOCDir = Path.Combine(trueTextureDir, "Texture_TOC.json");
+				if (!File.Exists(localTOCDir))
+				{
+					File.WriteAllText(localTOCDir, "{}");
+				}
+
+				string localTOCContent = File.ReadAllText(localTOCDir);
+				localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+				string basePath = Core.Instance.modsDirectory;
+
+				if(!Utils.useLocal)
+				{
+					string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Textures/Texture_TOC.json").Result;
+					if (textureTOCRequest != null)
+					{
+						Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+						List<string> toDownload = new();
+
+						foreach(var pair in textureTOC)
+						{
+							if(!localTOC.ContainsKey(pair.Key))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if(pair.Value != localTOC[pair.Key])
+							{
+								toDownload.Add(pair.Key);
+							}
+
+							if(!File.Exists(Path.Combine(basePath, pair.Key)))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+						}
+
+						string toWriteText = SerializeWithIndentation(textureTOC);
+						File.WriteAllText(localTOCDir, toWriteText);
+
+						foreach(string path in toDownload)
+						{
+							string downloadPath = Path.Combine(basePath, path);
+
+							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+							string url = baseUrl + path;
+
+							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							if(imageData != null)
+							{
+								string fileName = Path.GetFileName(downloadPath);
+								Texture2D texture2D = Utils.LoadImage(imageData);
+								TextureStore.spriteDict[fileName] = imageData;
+								File.WriteAllBytes(downloadPath, imageData);
+							}
+						}
+					}
+				}
+
+				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
+				{
+					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
+					{
+						continue;
+					}
+					
+					if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 					#if OBFUSCATE
 					if (CheckSumStore.IsModified(filepath))
@@ -192,12 +562,13 @@ namespace PvZ_Fusion_Translator
 					#endif
 
 					#if DEBUG
-                    Log.LogDebug("Loading File (Sprite): " + filepath);
+					Log.LogDebug("Loading File (Sprite): " + filepath);
 					#endif
 
-                    Texture2D texture2D = Utils.LoadImage(filepath);
-                    TextureStore.spriteDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                }
+					byte[] imageData = File.ReadAllBytes(filepath);
+					Texture2D texture2D = Utils.LoadImage(imageData);
+					TextureStore.spriteDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
+				}
             }
 
             catch (Exception e)
@@ -218,8 +589,74 @@ namespace PvZ_Fusion_Translator
                 }
                 try
                 {
-                    foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
-                    {
+					string trueTextureDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
+					Dictionary<string, string> localTOC = new Dictionary<string, string>();
+					string localTOCDir = Path.Combine(trueTextureDir, "Default_TOC.json");
+					if (!File.Exists(localTOCDir))
+					{
+						File.WriteAllText(localTOCDir, "{}");
+					}
+
+					string localTOCContent = File.ReadAllText(localTOCDir);
+					localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+					string basePath = Core.Instance.modsDirectory;
+
+					if (!Utils.useLocal)
+					{
+						string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/{Uri.EscapeDataString("[Custom Textures]")}/Default_TOC.json").Result;
+						if (textureTOCRequest != null)
+						{
+							Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+							List<string> toDownload = new();
+
+							foreach (var pair in textureTOC)
+							{
+								if (!localTOC.ContainsKey(pair.Key))
+								{
+									toDownload.Add(pair.Key);
+									continue;
+								}
+
+								if (pair.Value != localTOC[pair.Key])
+								{
+									toDownload.Add(pair.Key);
+								}
+
+								if(!File.Exists(Path.Combine(basePath, pair.Key)))
+								{
+									toDownload.Add(pair.Key);
+									continue;
+								}
+							}
+
+							string toWriteText = SerializeWithIndentation(textureTOC);
+							File.WriteAllText(localTOCDir, toWriteText);
+
+							foreach (string path in toDownload)
+							{
+								string downloadPath = Path.Combine(basePath, path);
+
+								string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+								string url = baseUrl + path;
+
+								byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+								if (imageData != null)
+								{
+									string fileName = Path.GetFileName(downloadPath);
+									Texture2D texture2D = Utils.LoadImage(imageData);
+									TextureStore.textureDict[fileName] = imageData;
+									File.WriteAllBytes(downloadPath, imageData);
+								}
+							}
+						}
+					}
+					
+					foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
+					{
+						if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+							&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 						#if OBFUSCATE
 						if (CheckSumStore.IsModified(filepath))
@@ -229,9 +666,10 @@ namespace PvZ_Fusion_Translator
 						}
 						#endif
 
-                        Texture2D texture2D = Utils.LoadImage(filepath);
-                        TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                    }
+						byte[] imageData = File.ReadAllBytes(filepath);
+						Texture2D texture2D = Utils.LoadImage(imageData);
+						TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
+					}
                 }
 
                 catch (Exception e)
@@ -252,18 +690,87 @@ namespace PvZ_Fusion_Translator
 			}
 			try
 			{
+				string trueTextureDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
+				Dictionary<string, string> localTOC = new Dictionary<string, string>();
+				string localTOCDir = Path.Combine(trueTextureDir, "Custom_TOC.json");
+				if (!File.Exists(localTOCDir))
+				{
+					File.WriteAllText(localTOCDir, "{}");
+				}
+
+				string localTOCContent = File.ReadAllText(localTOCDir);
+				localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+				string basePath = Core.Instance.modsDirectory;
+
+				if (!Utils.useLocal)
+				{
+					string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/{Uri.EscapeDataString("[Custom Textures]")}/Custom_TOC.json").Result;
+					if (textureTOCRequest != null)
+					{
+						Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+						List<string> toDownload = new();
+
+						foreach (var pair in textureTOC)
+						{
+							if (!localTOC.ContainsKey(pair.Key))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if (pair.Value != localTOC[pair.Key])
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if(!File.Exists(Path.Combine(basePath, pair.Key)))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+						}
+
+						string toWriteText = SerializeWithIndentation(textureTOC);
+						File.WriteAllText(localTOCDir, toWriteText);
+
+						foreach (string path in toDownload)
+						{
+							string downloadPath = Path.Combine(basePath, path);
+
+							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+							string url = baseUrl + path;
+
+							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							if (imageData != null)
+							{
+								string fileName = Path.GetFileName(downloadPath);
+								Texture2D texture2D = Utils.LoadImage(imageData);
+								TextureStore.textureDict[fileName] = imageData;
+								File.WriteAllBytes(downloadPath, imageData);
+							}
+						}
+					}
+				}
+				
 				foreach (string filepath in Directory.EnumerateFiles(texturePackDir, "*.png", SearchOption.AllDirectories))
 				{
-					#if OBFUSCATE
-					if (CheckSumStore.IsModified(filepath))
-					{
-						Log.LogError("File {0} was modified!" , filepath);
-						continue;
-					}
-					#endif
+				#if OBFUSCATE
+				if (CheckSumStore.IsModified(filepath))
+				{
+					Log.LogError("File {0} was modified!" , filepath);
+					continue;
+				}
+				#endif
 
-					Texture2D texture2D = Utils.LoadImage(filepath);
-					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+					if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
+
+					byte[] imageData = File.ReadAllBytes(filepath);
+					Texture2D texture2D = Utils.LoadImage(imageData);
+					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
 			}
 
@@ -286,21 +793,85 @@ namespace PvZ_Fusion_Translator
 				Directory.CreateDirectory(stringDir);
 			}
 
-			string translationStringRegex = System.Text.Json.JsonSerializer.Serialize(StringStore.translationStringRegex, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			// save regexs
+
+			string translationStringRegex = SerializeWithIndentation(StringStore.translationStringRegex, 2);
 
 			File.WriteAllText(Path.Combine(stringDir, "translation_regexs.json"), translationStringRegex);
 
-			string translationString = System.Text.Json.JsonSerializer.Serialize(StringStore.translationString, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			});
+			// save strings
+
+			string translationString = SerializeWithIndentation(StringStore.translationString, 2);
 
 			File.WriteAllText(Path.Combine(stringDir, "translation_strings.json"), translationString);
+
+			// save iz tips
+
+			string izTipCollectionString = SerializeWithIndentation(StringStore.izLevelTipDictionary, 1, '	');
+
+			File.WriteAllText(Path.Combine(stringDir, "tips_iz.json"), izTipCollectionString);
+
+			// save fs tips
+
+			string fsLevelTipDictionary = SerializeWithIndentation(StringStore.fsLevelTipDictionary);
+
+			File.WriteAllText(Path.Combine(stringDir, "tips_fs.json"), fsLevelTipDictionary);
+
+			// save travel buffs
+
+			string travelBuffs = SerializeWithIndentation(TravelMgr_Patch.translatedTravelBuffs);
+
+			File.WriteAllText(Path.Combine(stringDir, "travel_buffs.json"), travelBuffs);
+
+			// save changelog
+
+			if(NoticePauseMenu_Patch.changelogText != "")
+			{
+				File.WriteAllText(Path.Combine(stringDir, "changelog.txt"), NoticePauseMenu_Patch.changelogText);
+			}
+
+			// save abyss buffs
+
+			if(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData != new Dictionary<string, string>())
+			{
+				string abyssBuffData = SerializeWithIndentation(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData, 2);
+				File.WriteAllText(Path.Combine(stringDir, "abyss_buffs.json"), abyssBuffData);
+			}
+
+			// save almanacs
+
+			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+
+			if(AlmanacPlantMenu_Patch.almanacJson != "")
+			{
+				string plantAlmanac = SerializeWithIndentation(AlmanacPlantMenu_Patch.almanacJson);
+
+				File.WriteAllText(Path.Combine(almanacDir, "LawnStringsTranslate.json"), AlmanacPlantMenu_Patch.almanacJson);
+			}
+
+			if(AlmanacZombieMenu_Patch.almanacJson != "")
+			{
+				string zombieAlmanac = SerializeWithIndentation(AlmanacZombieMenu_Patch.almanacJson);
+
+				File.WriteAllText(Path.Combine(almanacDir, "ZombieStringsTranslate.json"), AlmanacZombieMenu_Patch.almanacJson);
+			}
+		}
+
+		public static string SerializeWithIndentation<T>(T value, int size = 4, char indentChar = ' ')
+		{
+			var stringBuilder = new StringBuilder();
+			var stringWriter = new StringWriter();
+			using (JsonTextWriter writer = new JsonTextWriter(stringWriter))
+			{
+				writer.Formatting = Formatting.Indented;
+				writer.Indentation = size;
+				writer.IndentChar = indentChar;
+
+				Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+				serializer.Serialize(writer, value, typeof(T));
+			}
+
+			return stringWriter.ToString();
 		}
 
 		public static void DumpJson()
@@ -318,16 +889,70 @@ namespace PvZ_Fusion_Translator
 			File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
 			File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
+			// dump iz tips
+			var izDump = DumpIZStrings();
+			var izLevelData = izDump.Item1;
+			var izLevelDataDump = izDump.Item2;
+
+            File.WriteAllText(Path.Combine(dumpDir, "tips_iz.json"), System.Text.Json.JsonSerializer.Serialize(izLevelDataDump, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
+
+            // dump fusion showcase tips
+            var fusionShowcaseDump = DumpFSStrings();
+			var fusionShowcaseData = fusionShowcaseDump.Item1;
+			var fusionShowcaseDataDump = fusionShowcaseDump.Item2;
+
+            File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), System.Text.Json.JsonSerializer.Serialize(fusionShowcaseDataDump, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
+
             Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
 			foreach (Il2CppSystem.Collections.Generic.KeyValuePair<Achievement, Il2CppSystem.Tuple<string, string>> entry in AchievementClip.achievementsText)
 			{
 				achievementsList.Add(entry.Key, new AchievementObject(entry.Key, entry.Value.Item1, entry.Value.Item2));
 			}
-			File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
+			File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), System.Text.Json.JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
 			{
 				WriteIndented = true,
 				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
 			}));
+        }
+
+		public static ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>> DumpIZStrings()
+		{
+			var izLevelData = Resources.LoadAll<TextAsset>("izleveldata");
+			Dictionary<string, string> izLevelDataDump = new Dictionary<string, string>();
+			foreach (var level in izLevelData) 
+			{
+				string data = level.text;
+				LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+				if(levelData.tips != null)
+				{
+					izLevelDataDump.Add(level.name, levelData.tips);
+                }
+            }
+			return new ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>>(izLevelData, izLevelDataDump);
+		}
+
+		public static ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>> DumpFSStrings()
+		{
+			var fusionShowcaseData = Resources.LoadAll<TextAsset>("leveldata/explore");
+            Dictionary<string, string> fusionShowcaseDataDump = new Dictionary<string, string>();
+			foreach (var level in fusionShowcaseData)
+            {
+                string data = level.text;
+                LevelData levelData = JsonUtility.FromJson<LevelData>(data);
+                if (levelData.tips != null)
+                {
+                    fusionShowcaseDataDump.Add(level.name, levelData.tips);
+                }
+            }
+			return new ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>>(fusionShowcaseData, fusionShowcaseDataDump);
 		}
 
 		#if DEBUG
@@ -347,7 +972,7 @@ namespace PvZ_Fusion_Translator
 			}
 
 			string json = File.ReadAllText(jsonFile);
-			var untranslatedStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+			var untranslatedStrings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 
 			if (!untranslatedStrings.ContainsKey(text))
 			{
@@ -357,10 +982,11 @@ namespace PvZ_Fusion_Translator
 					Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                     WriteIndented = true
 				};
-				File.WriteAllText(jsonFile, JsonSerializer.Serialize(untranslatedStrings, options));
+				File.WriteAllText(jsonFile, System.Text.Json.JsonSerializer.Serialize(untranslatedStrings, options));
 			}
 		}
 		#endif
+		
 
 		#if MULTI_LANGUAGE
 		internal static void LoadLanguage()

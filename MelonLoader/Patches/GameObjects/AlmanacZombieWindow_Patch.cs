@@ -20,10 +20,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             string currentLanguage = Utils.Language.ToString();
             string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
             string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
-            string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
 
-            string json;
-            json = File.ReadAllText(path);
+            string json = AlmanacZombieMenu_Patch.almanacJson;
 
             bool hasAlmanacFont = false;
             TMP_FontAsset almanacFontAsset = null;
@@ -53,7 +51,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
 
                     string spawnInfo = "";
-                    string spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\n出怪权重: (\\d+)"];
+                    string spawnInfoFormat = StringStore.translationStringRegex.ContainsKey("出怪等级: (\\d+)\n出怪权重: (\\d+)") ? StringStore.translationStringRegex["出怪等级: (\\d+)\n出怪权重: (\\d+)"] : null;
                     if(spawnInfoFormat != null)
                     {
                         spawnInfo = string.Format(spawnInfoFormat, [zombieData.summonLevel, zombieData.summonWeight]) + "\n\n";

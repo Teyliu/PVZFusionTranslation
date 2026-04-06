@@ -14,6 +14,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(AlmanacZombieMenu))]
     public static class AlmanacZombieMenu_Patch
     {
+        public static string almanacJson = "";
+
         [HarmonyPatch(nameof(AlmanacZombieMenu.Awake))]
         [HarmonyPostfix]
         private static void Awake(AlmanacZombieMenu __instance)

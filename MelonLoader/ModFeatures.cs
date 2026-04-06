@@ -1,5 +1,6 @@
 ﻿//#if DEBUG
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator
@@ -9,7 +10,7 @@ namespace PvZ_Fusion_Translator
 		public enum ModType
 		{
 			ReloadStrings,
-			ReloadTextures,
+			ReloadTextures
 		}
 
 		private class ModFeature
@@ -48,7 +49,7 @@ namespace PvZ_Fusion_Translator
 		private static Dictionary<ModType, ModFeature> featureLists = new()
 		{
 			{ModType.ReloadStrings,new ModFeature("Reload Strings",ModType.ReloadStrings,KeyCode.Home, true)},
-			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)},
+			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)}
 		};
 
 

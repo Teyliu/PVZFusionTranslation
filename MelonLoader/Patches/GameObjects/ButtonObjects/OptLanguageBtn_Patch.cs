@@ -7,6 +7,7 @@ using PvZ_Fusion_Translator;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static MelonLoader.MelonLogger;
 using Object = UnityEngine.Object;
 
 public class OptionButtonData
@@ -35,14 +36,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 		private const float ySpacing = 1.2505f;
 
 		private const float toggleStartX = 4.3241f;
-		private const float toggleStartY = -2.2251f;
+		private const float toggleStartY = -0.9746f;
 
         private static List<Utils.LanguageEnum> AvailableLanguages;
         private static List<Utils.ToggleEnum> AvailableToggles;
         private const int LanguagesPerPage = 5;
 		private static int currentPage = 0;
-		private static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
-		private static OptionBtn[] toggleSlots = new OptionBtn[2];
+		public static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
+		public static OptionBtn[] toggleSlots = new OptionBtn[3];
 
         public static void CreateLanguageButtons(OptionBtn templateButton)
 		{
@@ -58,6 +59,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 			for (int i = 0; i < 6; i++)
 			{
 				var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
+				newButton.tag = "LangOpt";
+				foreach(Transform child in newButton.GetComponentsInChildren<Transform>())
+				{
+					child.tag = "LangOpt";
+				}
 				newButton.optionType = 80 + i;
 
 				float yPos = startY - i * ySpacing;
@@ -87,9 +93,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
                 .Where(lang => lang != Utils.ToggleEnum.TOGGLE_END)
                 .ToList();
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
+				newButton.tag = "LangOpt";
+				foreach(Transform child in newButton.GetComponentsInChildren<Transform>())
+				{
+					child.tag = "LangOpt";
+				}
                 newButton.optionType = 100 + i;
 
                 float yPos = toggleStartY - i * ySpacing;
@@ -125,7 +136,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 					data.Language = lang;
 					data.IsNextButton = false;
 					btn.gameObject.SetActive(true);
-					UpdateButtonText(btn, lang.ToString());
+
+					UpdateButtonText(btn, Utils.LanguageNames[lang], FontStore.LoadTMPFont(lang.ToString()));
 				}
 				else
 				{
@@ -137,7 +149,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
 			if (togglesCreated)
 			{
-				for (int i = 0; i < 2; i++)
+				for (int i = 0; i < 3; i++)
 				{
 					var btn = toggleSlots[i];
 					var data = ToggleBtnDict[btn.GetInstanceID()];
@@ -148,7 +160,26 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						UpdateButtonText(btn, toggle.ToString());
+						string buttonText = Utils.ToggleNames[toggle];
+						UpdateButtonText(btn, StringStore.TranslateText(buttonText), FontStore.LoadTMPFont(Utils.Language.ToString()));
+						string sourceMsg = "";
+						switch(i)
+						{
+							case 0:
+								sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
+								FlashMessage(btn, sourceMsg, 0.1f, false);
+								break;
+							case 1:
+								sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
+								FlashMessage(btn, sourceMsg, 0.1f, false);
+								break;
+							case 2:
+								sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
+								FlashMessage(btn, sourceMsg, 0.1f, false);
+								break;
+							default:
+								break;
+						}
 					}
 					else
 					{
@@ -168,7 +199,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 			UpdateButtonText(nextBtn, "Next");
 		}
 
-		public static void UpdateButtonText(OptionBtn button, string languageName)
+		public static void UpdateButtonText(OptionBtn button, string languageName, TMP_FontAsset fontAsset = null)
 		{
 			TMP_FontAsset defaultAsset = FontStore.LoadTMPFont("English");
 
@@ -192,21 +223,23 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 							text.text = languageName;
 						}
 						text.fontSize = 16;
-						text.font = defaultAsset;
+						text.font = (fontAsset != null) ? fontAsset : defaultAsset;
 						text.autoSizeTextContainer = false;
 					}
 				}
 			}
 		}
 
-		private static void FlashMessage(OptionBtn button, string message, float yShift = 0.0f)
+		public static void FlashMessage(OptionBtn button, string message, float yShift = 0.0f, bool useTimer = true)
 		{
 			var child = button.transform.GetChild(0);
 			if (child != null)
 			{
 				var text = child.GetComponent<TextMeshProUGUI>();
+				string originalMsg = "";
 				if (text != null)
                 {
+					originalMsg = text.text;
                     text.text = message;
 					OptionButtonData data;
                     bool isToggle = ToggleBtnDict.TryGetValue(button.GetInstanceID(), out data);
@@ -224,19 +257,39 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 				}
 				child.gameObject.SetActive(true);
 
-				System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
+				if(useTimer)
 				{
-					if (button != null && child != null && child.gameObject.activeSelf)
+					System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
 					{
-						child.gameObject.SetActive(false);
-					}
-				});
+						if (button != null && child != null && child.gameObject.activeSelf)
+						{
+							OptionButtonData buttonData = ToggleBtnDict[button.GetInstanceID()];
+							if(buttonData.Toggle != null)
+							{
+								string sourceMsg = originalMsg;
+								switch(buttonData.Toggle)
+								{
+									case Utils.ToggleEnum.Textures:
+										sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
+										break;
+									case Utils.ToggleEnum.Audio:
+										sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
+										break;
+									default:
+										break;
+								}
+								text.text = sourceMsg;
+							}
+							
+						}
+					});
+				}
 			}
 		}
 
 		private static void ToggleCustomAssets(string type)
 		{
-			if (type != "Textures" && type != "Audio") return;
+			if (type != "Textures" && type != "Audio" && type != "SwapLocal") return;
 
 			if(type == "Textures")
 			{
@@ -251,23 +304,27 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
                 Utils.customAudio = (Utils.customAudio) ? false : true;
                 MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultAudio", !Utils.customAudio);
             }
+
+			if (type == "SwapLocal")
+			{
+                Utils.WarnLocalData();
+            }
+
 			MelonPreferences.Save();
         }
 
 		[HarmonyPatch(typeof(OptionBtn))]
 		public static class OptLangBtn_Patch
 		{
-			[HarmonyPatch(nameof(OptionBtn.Awake))]
-			[HarmonyPostfix]
-			private static void Awake(OptionBtn __instance)
+			public static void Awake(OptionBtn __instance)
 			{
 				if (!buttonsCreated || cachedTemplateButton == null)
 				{
 					buttonsCreated = false;
 					togglesCreated = false;
-                    CreateLanguageButtons(__instance);
+					CreateLanguageButtons(__instance);
 					CreateToggleButtons(__instance);
-                }
+				}
 			}
 
 			[HarmonyPatch("OnMouseUpAsButton")]
@@ -304,14 +361,14 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 				{
 					string toggleType = toggleData.Toggle.ToString();
 					ToggleCustomAssets(toggleType);
-                    if (toggleType == "Textures")
-                    {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!", 0.1f);
-                    }
-                    else if (toggleType == "Audio")
-                    {
-                        FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
-                    }
+					if (toggleType == "Textures")
+					{
+						FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\n(Restart Required)", 0.1f);
+					}
+					else if (toggleType == "Audio")
+					{
+						FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
+					}
 				}
             }
 
