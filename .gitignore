@@ -135,3 +135,4 @@ MelonLoader/bin/x64/Debug/net6.0/WebSocketDotNet.dll
 /MelonLoader/bin/ReleaseMulti/net6.0
 BepInEx/Patches/GameObjects/changes.txt
 /Assembly-CSharp
+.cursorrules
