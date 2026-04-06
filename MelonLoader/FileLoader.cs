@@ -41,6 +41,10 @@ namespace PvZ_Fusion_Translator
 		internal static void LoadStrings(Utils.LanguageEnum language)
 		{
 			string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
+			if (!Directory.Exists(stringDir))
+			{
+				Directory.CreateDirectory(stringDir);
+			}
 
 			if(!Utils.useLocal)
 			{
@@ -128,6 +132,14 @@ namespace PvZ_Fusion_Translator
 				}
 
 				// load almanacs
+				
+				string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+
+				if(!Directory.Exists(almanacDir))
+				{
+					Directory.CreateDirectory(almanacDir);
+				}
+				
 				string plantAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/LawnStringsTranslate.json").Result;
 			
 				if(plantAlmanacContent != null)
@@ -136,7 +148,6 @@ namespace PvZ_Fusion_Translator
 				}
 				else
 				{
-					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 					string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 					if(File.Exists(path))
 					{
@@ -152,7 +163,6 @@ namespace PvZ_Fusion_Translator
 				}
 				else
 				{
-					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 					string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
 					if(File.Exists(path))
 					{
@@ -219,7 +229,14 @@ namespace PvZ_Fusion_Translator
 					}
 
 					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+					
+					if(!Directory.Exists(almanacDir))
+					{
+						Directory.CreateDirectory(almanacDir);
+					}
+
 					string plantAlmanacPath = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+					
 					if(File.Exists(plantAlmanacPath))
 					{
 						AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(plantAlmanacPath);
@@ -422,12 +439,16 @@ namespace PvZ_Fusion_Translator
 							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 							string url = baseUrl + path;
 
-							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 							if(imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
 								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.textureDict[fileName] = imageData;
+								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+								{
+									Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+								}
 								File.WriteAllBytes(downloadPath, imageData);
 							}
 						}
@@ -531,12 +552,16 @@ namespace PvZ_Fusion_Translator
 							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 							string url = baseUrl + path;
 
-							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 							if(imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
 								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.spriteDict[fileName] = imageData;
+								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+								{
+									Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+								}
 								File.WriteAllBytes(downloadPath, imageData);
 							}
 						}
@@ -641,12 +666,16 @@ namespace PvZ_Fusion_Translator
 								string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 								string url = baseUrl + path;
 
-								byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+								byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 								if (imageData != null)
 								{
 									string fileName = Path.GetFileName(downloadPath);
 									Texture2D texture2D = Utils.LoadImage(imageData);
 									TextureStore.textureDict[fileName] = imageData;
+									if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+									{
+										Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+									}
 									File.WriteAllBytes(downloadPath, imageData);
 								}
 							}
@@ -743,12 +772,16 @@ namespace PvZ_Fusion_Translator
 							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 							string url = baseUrl + path;
 
-							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 							if (imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
 								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.textureDict[fileName] = imageData;
+								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+								{
+									Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+								}
 								File.WriteAllBytes(downloadPath, imageData);
 							}
 						}

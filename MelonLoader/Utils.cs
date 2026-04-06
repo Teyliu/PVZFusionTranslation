@@ -93,9 +93,9 @@ namespace PvZ_Fusion_Translator
 			Process.Start("explorer.exe", saveDirectory);
 		}
 
-		public static void OpenTrello()
+		public static void OpenOnlineAlmanac()
 		{
-			string website = "https://trello.com/b/DcdT1kUp";
+			string website = "https://carroti4ch.itch.io/almanac";
 			Process.Start(new ProcessStartInfo(website) { UseShellExecute = true });
 		}
 
@@ -420,7 +420,7 @@ namespace PvZ_Fusion_Translator
 			}
 		}
 
-		public static async Task<byte[]> GetImageDataFromWeb(string url, bool isLog = true)
+		public static async Task<byte[]> GetByteDataFromWeb(string url, bool isLog = true)
 		{
 			if (isLog)
 			{
@@ -499,6 +499,26 @@ namespace PvZ_Fusion_Translator
                 new CancellationTokenSource().Cancel();
                 return null;
             }
+		}
+
+		public static int CalculateGameVersion(string gameVersion)
+		{
+			int res = 0;
+			string[] gameVersionParts = gameVersion.Split('.');
+
+			int startingPower = (int)Math.Max(gameVersionParts.Length, 3);
+			for (int i = 0; i < startingPower; i++)
+			{
+				int factor = 0;
+				if (i < gameVersionParts.Length)
+				{
+					factor = int.Parse(gameVersionParts[i]);
+				}
+				int power = startingPower - i;
+				res += factor * (int)Math.Pow(10, power - 1);
+			}
+
+			return res;
 		}
 
 		#if MULTI_LANGUAGE

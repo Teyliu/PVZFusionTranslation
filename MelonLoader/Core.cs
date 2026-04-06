@@ -31,6 +31,9 @@ namespace PvZ_Fusion_Translator
 		{
 			base.OnInitializeMelon();
 			Instance = this;
+			
+			DllStore.Init(MelonLoader.InternalUtils.UnityInformationHandler.GameVersion);
+
 			Config();
 			#if MULTI_LANGUAGE
 			FileLoader.LoadLanguage();
@@ -40,6 +43,7 @@ namespace PvZ_Fusion_Translator
 			AudioStore.Init();
 			FontStore.Init();
 			Utils.RegisterPlantIndices();
+
 			//Utils.RegisterRecipeLinks();
         }
 
@@ -56,6 +60,7 @@ namespace PvZ_Fusion_Translator
 			#if MULTI_LANGUAGE
 			FileLoader.SaveLanguage();
 			#endif
+			DllStore.UpdateNewDll();
 			#if OBFUSCATE && !RELEASE
 			CheckSumStore.ConvertMD5Json();
 			#endif
@@ -80,7 +85,7 @@ namespace PvZ_Fusion_Translator
 
 			if (Input.GetKeyDown(KeyCode.Delete))
 			{
-				Utils.OpenTrello();
+				Utils.OpenOnlineAlmanac();
 			}
 
 			TowerManager_Patch.UpdateText();

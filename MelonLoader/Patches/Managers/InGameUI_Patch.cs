@@ -15,10 +15,10 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         [HarmonyPostfix]
         private static void Start(InGameUI __instance)
         {
-            foreach(TextMeshProUGUI text in __instance.T)
+            foreach (TextMeshProUGUI text in __instance.T)
             {
                 if (text.text == null) continue;
-                
+
                 string originalText = text.text;
                 text.text = text.text.Replace("\n", " ");
                 Regex checkFusionChallenge = new Regex("^超级([^\\s：]+)(：?挑战1?)");
@@ -47,10 +47,10 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         [HarmonyPostfix]
         private static void SetUniqueText(InGameUI __instance)
         {
-            foreach(TextMeshProUGUI text in __instance.T)
+            foreach (TextMeshProUGUI text in __instance.T)
             {
                 if (text.text == null) continue;
-                
+
                 string originalText = text.text;
                 text.text = text.text.Replace("\n", " ");
                 Regex checkFusionChallenge = new Regex("^超级([^\\s：]+)(：?挑战1?)");
@@ -79,10 +79,10 @@ namespace PvZ_Fusion_Translator.Patches.Managers
         [HarmonyPostfix]
         private static void SetLevelName(InGameUI __instance)
         {
-            foreach(TextMeshProUGUI text in __instance.T)
+            foreach (TextMeshProUGUI text in __instance.T)
             {
                 if (text.text == null) continue;
-                
+
                 string originalText = text.text;
                 text.text = text.text.Replace("\n", " ");
                 Regex checkFusionChallenge = new Regex("^超级([^\\s：]+)(：?挑战1?)");

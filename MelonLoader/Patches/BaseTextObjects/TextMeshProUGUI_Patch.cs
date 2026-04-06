@@ -32,7 +32,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
                     
-                    if (__instance.name == "LevelName2" || __instance.name == "LevelName3")
+                    if ((__instance.name == "LevelName2" || __instance.name == "LevelName3") && !(__instance.gameObject.transform.parent.name.Contains("Difficulty") || __instance.gameObject.name.Contains("Difficulty")))
                     {
                         TowerManager_Patch.updatedText.Add(__instance.transform);
                     }
