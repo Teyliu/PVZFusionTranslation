@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using MelonLoader;
 using MelonLoader.TinyJSON;
 using Newtonsoft.Json;
+using NVorbis.Contracts;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
@@ -312,7 +313,13 @@ namespace PvZ_Fusion_Translator
 		{
 			string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
             string changelogDir = Path.Combine(stringDir, "changelog.txt");
-            string changelogText = File.ReadAllText(changelogDir);
+			string changelogText = "";
+			if (!File.Exists(changelogDir))
+			{
+				File.WriteAllText(changelogDir, "");
+			}
+
+			changelogText = File.ReadAllText(changelogDir);
 
             if(!Utils.useLocal)
             {
@@ -333,7 +340,6 @@ namespace PvZ_Fusion_Translator
 			// Default or Custom Texturse -> English Textures -> Localized Textures
 			try
 			{
-				
 				if (Utils.customTextures)
 				{
                     LoadCustomTextures();
@@ -365,12 +371,78 @@ namespace PvZ_Fusion_Translator
 			}
 			try
 			{
+				Dictionary<string, string> localTOC = new Dictionary<string, string>();
+				string localTOCDir = Path.Combine(textureDir, "Texture_TOC.json");
+				if (!File.Exists(localTOCDir))
+				{
+					File.WriteAllText(localTOCDir, "{}");
+				}
+
+				string localTOCContent = File.ReadAllText(localTOCDir);
+				localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+				string basePath = Core.Instance.modsDirectory;
+
+				if (!Utils.useLocal)
+				{
+					string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Textures/Texture_TOC.json").Result;
+					if (textureTOCRequest != null)
+					{
+						Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+						List<string> toDownload = new();
+
+						foreach(var pair in textureTOC)
+						{
+							if(!localTOC.ContainsKey(pair.Key))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if(pair.Value != localTOC[pair.Key])
+							{
+								toDownload.Add(pair.Key);
+							}
+
+							if(!File.Exists(Path.Combine(basePath, pair.Key)))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+						}
+
+						string toWriteText = SerializeWithIndentation(textureTOC);
+						File.WriteAllText(localTOCDir, toWriteText);
+
+						foreach(string path in toDownload)
+						{
+							string downloadPath = Path.Combine(basePath, path);
+
+							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+							string url = baseUrl + path;
+
+							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							if(imageData != null)
+							{
+								string fileName = Path.GetFileName(downloadPath);
+								Texture2D texture2D = Utils.LoadImage(imageData);
+								TextureStore.textureDict[fileName] = imageData;
+								File.WriteAllBytes(downloadPath, imageData);
+							}
+						}
+					}
+				}
+
 				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
 				{
 					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
 					{
 						continue;
 					}
+
+					if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 					#if OBFUSCATE
 					if (CheckSumStore.IsModified(filepath))
@@ -384,8 +456,9 @@ namespace PvZ_Fusion_Translator
 					Log.LogDebug("Loading File : " + filepath);
 					#endif
 
-					Texture2D texture2D = Utils.LoadImage(filepath);
-					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+					byte[] imageData = File.ReadAllBytes(filepath);
+					Texture2D texture2D = Utils.LoadImage(imageData);
+					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
 			}
 
@@ -406,12 +479,79 @@ namespace PvZ_Fusion_Translator
             }
             try
             {
-                foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
-                {
-                    if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
-                    {
-                        continue;
-                    }
+				string trueTextureDir = GetAssetDir(AssetType.Textures, language);
+				Dictionary<string, string> localTOC = new Dictionary<string, string>();
+				string localTOCDir = Path.Combine(trueTextureDir, "Texture_TOC.json");
+				if (!File.Exists(localTOCDir))
+				{
+					File.WriteAllText(localTOCDir, "{}");
+				}
+
+				string localTOCContent = File.ReadAllText(localTOCDir);
+				localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+				string basePath = Core.Instance.modsDirectory;
+
+				if(!Utils.useLocal)
+				{
+					string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Textures/Texture_TOC.json").Result;
+					if (textureTOCRequest != null)
+					{
+						Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+						List<string> toDownload = new();
+
+						foreach(var pair in textureTOC)
+						{
+							if(!localTOC.ContainsKey(pair.Key))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if(pair.Value != localTOC[pair.Key])
+							{
+								toDownload.Add(pair.Key);
+							}
+
+							if(!File.Exists(Path.Combine(basePath, pair.Key)))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+						}
+
+						string toWriteText = SerializeWithIndentation(textureTOC);
+						File.WriteAllText(localTOCDir, toWriteText);
+
+						foreach(string path in toDownload)
+						{
+							string downloadPath = Path.Combine(basePath, path);
+
+							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+							string url = baseUrl + path;
+
+							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							if(imageData != null)
+							{
+								string fileName = Path.GetFileName(downloadPath);
+								Texture2D texture2D = Utils.LoadImage(imageData);
+								TextureStore.spriteDict[fileName] = imageData;
+								File.WriteAllBytes(downloadPath, imageData);
+							}
+						}
+					}
+				}
+
+				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
+				{
+					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && loadDefaultTextures)
+					{
+						continue;
+					}
+					
+					if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 					#if OBFUSCATE
 					if (CheckSumStore.IsModified(filepath))
@@ -422,12 +562,13 @@ namespace PvZ_Fusion_Translator
 					#endif
 
 					#if DEBUG
-                    Log.LogDebug("Loading File (Sprite): " + filepath);
+					Log.LogDebug("Loading File (Sprite): " + filepath);
 					#endif
 
-                    Texture2D texture2D = Utils.LoadImage(filepath);
-                    TextureStore.spriteDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                }
+					byte[] imageData = File.ReadAllBytes(filepath);
+					Texture2D texture2D = Utils.LoadImage(imageData);
+					TextureStore.spriteDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
+				}
             }
 
             catch (Exception e)
@@ -448,8 +589,74 @@ namespace PvZ_Fusion_Translator
                 }
                 try
                 {
-                    foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
-                    {
+					string trueTextureDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
+					Dictionary<string, string> localTOC = new Dictionary<string, string>();
+					string localTOCDir = Path.Combine(trueTextureDir, "Default_TOC.json");
+					if (!File.Exists(localTOCDir))
+					{
+						File.WriteAllText(localTOCDir, "{}");
+					}
+
+					string localTOCContent = File.ReadAllText(localTOCDir);
+					localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+					string basePath = Core.Instance.modsDirectory;
+
+					if (!Utils.useLocal)
+					{
+						string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/{Uri.EscapeDataString("[Custom Textures]")}/Default_TOC.json").Result;
+						if (textureTOCRequest != null)
+						{
+							Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+							List<string> toDownload = new();
+
+							foreach (var pair in textureTOC)
+							{
+								if (!localTOC.ContainsKey(pair.Key))
+								{
+									toDownload.Add(pair.Key);
+									continue;
+								}
+
+								if (pair.Value != localTOC[pair.Key])
+								{
+									toDownload.Add(pair.Key);
+								}
+
+								if(!File.Exists(Path.Combine(basePath, pair.Key)))
+								{
+									toDownload.Add(pair.Key);
+									continue;
+								}
+							}
+
+							string toWriteText = SerializeWithIndentation(textureTOC);
+							File.WriteAllText(localTOCDir, toWriteText);
+
+							foreach (string path in toDownload)
+							{
+								string downloadPath = Path.Combine(basePath, path);
+
+								string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+								string url = baseUrl + path;
+
+								byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+								if (imageData != null)
+								{
+									string fileName = Path.GetFileName(downloadPath);
+									Texture2D texture2D = Utils.LoadImage(imageData);
+									TextureStore.textureDict[fileName] = imageData;
+									File.WriteAllBytes(downloadPath, imageData);
+								}
+							}
+						}
+					}
+					
+					foreach (string filepath in Directory.EnumerateFiles(textureDefaultDir, "*.png", SearchOption.AllDirectories))
+					{
+						if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+							&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 						#if OBFUSCATE
 						if (CheckSumStore.IsModified(filepath))
@@ -459,9 +666,10 @@ namespace PvZ_Fusion_Translator
 						}
 						#endif
 
-                        Texture2D texture2D = Utils.LoadImage(filepath);
-                        TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
-                    }
+						byte[] imageData = File.ReadAllBytes(filepath);
+						Texture2D texture2D = Utils.LoadImage(imageData);
+						TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
+					}
                 }
 
                 catch (Exception e)
@@ -482,18 +690,87 @@ namespace PvZ_Fusion_Translator
 			}
 			try
 			{
+				string trueTextureDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
+				Dictionary<string, string> localTOC = new Dictionary<string, string>();
+				string localTOCDir = Path.Combine(trueTextureDir, "Custom_TOC.json");
+				if (!File.Exists(localTOCDir))
+				{
+					File.WriteAllText(localTOCDir, "{}");
+				}
+
+				string localTOCContent = File.ReadAllText(localTOCDir);
+				localTOC = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTOCContent);
+
+				string basePath = Core.Instance.modsDirectory;
+
+				if (!Utils.useLocal)
+				{
+					string textureTOCRequest = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/{Uri.EscapeDataString("[Custom Textures]")}/Custom_TOC.json").Result;
+					if (textureTOCRequest != null)
+					{
+						Dictionary<string, string> textureTOC = JsonConvert.DeserializeObject<Dictionary<string, string>>(textureTOCRequest);
+
+						List<string> toDownload = new();
+
+						foreach (var pair in textureTOC)
+						{
+							if (!localTOC.ContainsKey(pair.Key))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if (pair.Value != localTOC[pair.Key])
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+
+							if(!File.Exists(Path.Combine(basePath, pair.Key)))
+							{
+								toDownload.Add(pair.Key);
+								continue;
+							}
+						}
+
+						string toWriteText = SerializeWithIndentation(textureTOC);
+						File.WriteAllText(localTOCDir, toWriteText);
+
+						foreach (string path in toDownload)
+						{
+							string downloadPath = Path.Combine(basePath, path);
+
+							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
+							string url = baseUrl + path;
+
+							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							if (imageData != null)
+							{
+								string fileName = Path.GetFileName(downloadPath);
+								Texture2D texture2D = Utils.LoadImage(imageData);
+								TextureStore.textureDict[fileName] = imageData;
+								File.WriteAllBytes(downloadPath, imageData);
+							}
+						}
+					}
+				}
+				
 				foreach (string filepath in Directory.EnumerateFiles(texturePackDir, "*.png", SearchOption.AllDirectories))
 				{
-					#if OBFUSCATE
-					if (CheckSumStore.IsModified(filepath))
-					{
-						Log.LogError("File {0} was modified!" , filepath);
-						continue;
-					}
-					#endif
+				#if OBFUSCATE
+				if (CheckSumStore.IsModified(filepath))
+				{
+					Log.LogError("File {0} was modified!" , filepath);
+					continue;
+				}
+				#endif
 
-					Texture2D texture2D = Utils.LoadImage(filepath);
-					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+					if (!localTOC.ContainsKey(filepath.Replace(basePath + "\\", "").Replace("\\", "/"))
+						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
+
+					byte[] imageData = File.ReadAllBytes(filepath);
+					Texture2D texture2D = Utils.LoadImage(imageData);
+					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
 			}
 

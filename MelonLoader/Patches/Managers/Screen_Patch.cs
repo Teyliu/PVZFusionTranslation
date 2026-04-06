@@ -2,23 +2,23 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace PvZ_Fusion_Translator.Patches.Managers
 {
-    [HarmonyPatch(typeof(GameAPP))]
-    public static class GameAPP_Patch
+    [HarmonyPatch(typeof(Screen))]
+    public static class Screen_Patch
     {
-        [HarmonyPatch(nameof(GameAPP.Update))]
+        [HarmonyPatch(nameof(Screen.SetResolution), argumentTypes: [typeof(int), typeof(int), typeof(bool)])]
         [HarmonyPrefix]
-        private static bool Update(GameAPP __instance)
+        private static bool SetResolution(Screen __instance)
         {
             if(EventSystem.current.currentSelectedGameObject != null)
             {
                 if (EventSystem.current.currentSelectedGameObject.TryGetComponent<TMP_InputField>(out TMP_InputField field))
                 {
-                    __instance.MusicUpdate();
                     return false;
                 }
             }

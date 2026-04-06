@@ -428,7 +428,7 @@
 		<Compile Include="Patches\GameObjects\PlantDamageMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveOptionWindow_Patch.cs" />
-		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
+		<Compile Include="Patches\Managers\Screen_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
@@ -510,6 +510,7 @@
 		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\LevelManager_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />

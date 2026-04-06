@@ -22,7 +22,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         {
             if(__instance.textHead == null) return;
             
-            if(!__instance.textHead.active) return;
+            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
 
             TranslateInGameText(__instance);
         }
@@ -33,7 +33,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         {
             if(__instance.textHead == null) return;
             
-            if(!__instance.textHead.active) return;
+            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
 
             TranslateInGameText(__instance);
         }
@@ -44,7 +44,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         {
             if(__instance.textHead == null) return;
             
-            if(!__instance.textHead.active) return;
+            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
 
             TranslateInGameText(__instance);
         }
@@ -53,7 +53,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         {
             if (__instance.textMesh == null) return;
 
-            if(!__instance.textHead.active) return;
+            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 

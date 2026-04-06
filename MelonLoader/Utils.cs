@@ -28,11 +28,11 @@ namespace PvZ_Fusion_Translator
 		{
 			if (ogTexture != null)
 			{
-				if (TextureStore.textureDict.TryGetValue(ogTexture.name, out string texturePath))
+				if (TextureStore.textureDict.TryGetValue(ogTexture.name, out byte[] textureData))
 				{
 					try
 					{
-						ImageConversion.LoadImage(ogTexture, File.ReadAllBytes(texturePath));
+						ImageConversion.LoadImage(ogTexture, textureData);
 
                         Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
 
@@ -41,7 +41,7 @@ namespace PvZ_Fusion_Translator
 					}
 					catch (Exception ex)
 					{
-						Log.LogError("Failed to replace texture: " + ogTexture.name + " at path: " + texturePath);
+						Log.LogError("Failed to replace texture: " + ogTexture.name);
 						Log.LogError(ex.ToString());
 					}
 				}
@@ -57,6 +57,19 @@ namespace PvZ_Fusion_Translator
 			}
 
 			byte[] array = File.ReadAllBytes(path);
+			Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None, 1, IntPtr.Zero, null);
+			ImageConversion.LoadImage(texture2D, array);
+			return texture2D;
+		}
+
+		internal static Texture2D LoadImage(byte[] bytes)
+		{
+			if (bytes == null)
+			{
+				throw new FileNotFoundException($"Byte array was null.");
+			}
+
+			byte[] array = bytes;
 			Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None, 1, IntPtr.Zero, null);
 			ImageConversion.LoadImage(texture2D, array);
 			return texture2D;
@@ -362,7 +375,7 @@ namespace PvZ_Fusion_Translator
         {
             Utils.useLocal = (Utils.useLocal) ? false : true;
             MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "UseLocal", Utils.useLocal);
-			StringStore.Reload();
+			ChangeLanguage(Utils.Language.ToString());
 			string sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
 			OptLanguageBtn_Patch.FlashMessage(OptLanguageBtn_Patch.toggleSlots[2], sourceMsg, 0.1f, false);
         }
@@ -373,7 +386,99 @@ namespace PvZ_Fusion_Translator
 			{
 				Log.LogInfo($"Attempting to read {url}");
 			}
-			var dataRequest = await new HttpClient().GetAsync(url);
+			HttpClient client = new HttpClient();
+			try
+			{
+				var dataRequest = await client.GetAsync(url);
+				if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+				{
+					if (isLog)
+					{
+						Log.LogInfo($"Successfully loaded data from {url}!");
+					}
+				
+					string content = await dataRequest.Content.ReadAsStringAsync();
+					return content;
+				}
+				else
+				{
+					if (isLog)
+					{
+						Log.LogError($"Failed to load data from {url}! Falling back...");
+						Log.LogError($"Status code: {dataRequest.StatusCode}");
+					}
+					new CancellationTokenSource().Cancel();
+					return null;
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.LogError($"Failed to load data from {url}! Falling back...");
+				Log.LogError(ex);
+				new CancellationTokenSource().Cancel();
+				return null;
+			}
+		}
+
+		public static async Task<byte[]> GetImageDataFromWeb(string url, bool isLog = true)
+		{
+			if (isLog)
+			{
+				Log.LogInfo($"Attempting to read {url}");
+			}
+			HttpClient client = new HttpClient();
+			try
+			{
+				var dataRequest = await client.GetAsync(url);
+				if (dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+				{
+					if (isLog)
+					{
+						Log.LogInfo($"Successfully loaded data from {url}!");
+					}
+
+					byte[] content = await dataRequest.Content.ReadAsByteArrayAsync();
+					return content;
+				}
+				else
+				{
+					if (isLog)
+					{
+						Log.LogError($"Failed to load data from {url}! Falling back...");
+						Log.LogError($"Status code: {dataRequest.StatusCode}");
+					}
+					new CancellationTokenSource().Cancel();
+					return null;
+				} 
+			}
+			catch(Exception ex)
+			{
+				Log.LogError($"Failed to load data from {url}! Falling back...");
+				Log.LogError(ex);
+				new CancellationTokenSource().Cancel();
+				return null;
+			}
+		}
+
+		public static async Task<string> GetDataFromWebWithInput(string url, bool isLog = true)
+		{
+			if (isLog)
+			{
+				Log.LogInfo($"Attempting to read {url}");
+			}
+			HttpClient client = new HttpClient();
+
+			using var request = new HttpRequestMessage()
+			{
+				Method = HttpMethod.Get,
+				RequestUri = new Uri(url)
+			};
+			request.Headers.Add("Accept", "*/*");
+			request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
+			request.Headers.Add("User-Agent", "TranslatorMod");
+
+
+			var dataRequest = await client.SendAsync(request);
             if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
             {
 				if (isLog)
@@ -478,8 +583,8 @@ namespace PvZ_Fusion_Translator
 
 		public static Dictionary<ToggleEnum, string> ToggleNames = new Dictionary<ToggleEnum, string>()
 		{
-			{ ToggleEnum.Textures, "Textures"},
-			{ ToggleEnum.Audio, "Audio"},
+			{ ToggleEnum.Textures, "<size=85%>Change Texture\nSource"},
+			{ ToggleEnum.Audio, "<size=85%>Change Audio\nSource"},
 			{ ToggleEnum.SwapLocal, "<size=85%>Change Translation\nSource"}
 		};
 

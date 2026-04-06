@@ -18,6 +18,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             Transform changelogObj = __instance.transform.Find("Grave/UpdateInfo");
             Transform langObj = UnityEngine.Object.Instantiate(changelogObj, changelogObj.position + new Vector3(0.0f, 0.855f), changelogObj.rotation, __instance.transform.Find("Grave"));
             langObj.name = "Languages";
+            __instance.collider2Ds.Add(langObj.GetComponent<Collider2D>());
             UIButton langBtn = langObj.GetComponent<UIButton>();
 
             foreach(TextMeshProUGUI text in langObj.GetComponentsInChildren<TextMeshProUGUI>())
@@ -27,7 +28,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             langBtn.clickEvent = new UnityEvent();
             langBtn.clickEvent.AddListener(new Action(() => OpenLanguageMenu(langBtn.gameObject)));
-            langBtn.clickEvent.AddListener(new Action(() => HideLangButton(langBtn.gameObject)));
         }
 
         public static void OpenLanguageMenu(GameObject langBtn)
@@ -49,7 +49,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             OptLanguageBtn_Patch.OptLangBtn_Patch.Awake(templateButton);
 
             UIButton goBackButton = newOptionsMenu.transform.Find("Goback").GetComponent<UIButton>();
-            goBackButton.clickEvent.AddListener(new Action(() => ShowLangButton(langBtn.gameObject)));
 
             newOptionsMenu.transform.Find("F").gameObject.SetActive(false);
 
