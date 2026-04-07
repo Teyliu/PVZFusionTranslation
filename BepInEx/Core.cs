@@ -40,30 +40,34 @@ public class Core : BasePlugin
     private static bool stringreloaded = false;
 
     public override void Load()
-	{
-		Log = base.Log;
-		Instance = this;
-		LoadConfig();
-		MonoInstance = AddComponent<UnityCoroutineHelper>();
-		Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+    {
+        Log = base.Log;
+        Instance = this;
+        LoadConfig();
+        MonoInstance = AddComponent<UnityCoroutineHelper>();
+        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
         dtStart = DateTime.Now;
 
-		FileLoader.LoadLanguage();
+        // TODO: Get game version for DllStore - may need adjustment for BepInEx
+        string gameVersion = "1.0.0.0"; // Placeholder - get actual game version if available
+        DllStore.Init(gameVersion);
 
-		AudioStore.Init();
-		TextureStore.Init();
-		StringStore.Init();
-		FontStore.Init();
-		Utils.RegisterPlantIndices();
-		Utils.CacheAlmanacData();
+        FileLoader.LoadLanguage();
+
+        AudioStore.Init();
+        TextureStore.Init();
+        StringStore.Init();
+        FontStore.Init();
+        Utils.RegisterPlantIndices();
+        Utils.CacheAlmanacData();
         replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
-		TravelMgr_Patch.DumpTravelBuffs();
+        TravelMgr_Patch.DumpTravelBuffs();
 
         //Utils.RegisterRecipeLinks();
         //PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
 
         InitCoroutine();
-	}
+    }
 
 	public override bool Unload()
 	{
@@ -73,6 +77,7 @@ public class Core : BasePlugin
 			Log.LogDebug("Coroutine Stopped");
 		}
 		FileLoader.SaveLanguage();
+		DllStore.UpdateNewDll();
 		
 		#if OBFUSCATE && !RELEASE
 		CheckSumStore.ConvertMD5Json();
@@ -103,7 +108,7 @@ public class Core : BasePlugin
 		if (Input.GetKeyDown(KeyCode.Delete))
 		{
 			Log.LogInfo("del del");
-			Utils.OpenTrello();
+			Utils.OpenOnlineAlmanac();
         }
         if (TowerManager.Instance != null)
         {

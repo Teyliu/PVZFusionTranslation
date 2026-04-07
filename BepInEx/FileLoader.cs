@@ -1,7 +1,8 @@
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers;
 using PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
 using UnityEngine.Rendering;
+using PvZ_Fusion_Translator.Patches.GameObjects;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {

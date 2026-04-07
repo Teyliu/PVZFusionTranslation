@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Burst.Intrinsics;
 using Unity.VisualScripting.FullSerializer;
@@ -248,9 +250,9 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Process.Start("explorer.exe", saveDirectory);
         }
 
-        public static void OpenTrello()
+        public static void OpenOnlineAlmanac()
         {
-            string website = "https://trello.com/b/DcdT1kUp";
+            string website = "https://carroti4ch.itch.io/almanac";
             Process.Start(new ProcessStartInfo(website) { UseShellExecute = true });
         }
 
@@ -545,6 +547,11 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static async Task<byte[]> GetImageDataFromWeb(string url, bool isLog = true)
         {
+            return await GetByteDataFromWeb(url, isLog);
+        }
+
+        public static async Task<byte[]> GetByteDataFromWeb(string url, bool isLog = true)
+        {
             if (isLog)
             {
                 Log.LogInfo($"Attempting to read {url}");
@@ -557,7 +564,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 {
                     if (isLog)
                     {
-                        Log.LogInfo($"Successfully loaded image data from {url}!");
+                        Log.LogInfo($"Successfully loaded data from {url}!");
                     }
                 
                     byte[] content = await dataRequest.Content.ReadAsByteArrayAsync();
@@ -567,7 +574,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 {
                     if (isLog)
                     {
-                        Log.LogError($"Failed to load image data from {url}! Falling back...");
+                        Log.LogError($"Failed to load data from {url}! Falling back...");
                         Log.LogError($"Status code: {dataRequest.StatusCode}");
                     }
                     new CancellationTokenSource().Cancel();
@@ -576,12 +583,31 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
             catch(Exception ex)
             {
-                Log.LogError($"Failed to load image data from {url}! Falling back...");
+                Log.LogError($"Failed to load data from {url}! Falling back...");
                 Log.LogError(ex);
                 new CancellationTokenSource().Cancel();
                 return null;
             }
         }
-    }
 
+        public static int CalculateGameVersion(string gameVersion)
+        {
+            int res = 0;
+            string[] gameVersionParts = gameVersion.Split('.');
+
+            int startingPower = (int)Math.Max(gameVersionParts.Length, 3);
+            for (int i = 0; i < startingPower; i++)
+            {
+                int factor = 0;
+                if (i < gameVersionParts.Length)
+                {
+                    factor = int.Parse(gameVersionParts[i]);
+                }
+                int power = startingPower - i;
+                res += factor * (int)Math.Pow(10, power - 1);
+            }
+
+            return res;
+        }
+    }
 }

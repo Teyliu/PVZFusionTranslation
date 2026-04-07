@@ -10,7 +10,7 @@ using HarmonyLib;
 //using MelonLoader.TinyJSON;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_;
-using TMMP;
+using TMPro;
 using UnityEngine.TextCore.Text;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects

@@ -1,5 +1,7 @@
-using HarmonyLib;
+﻿using HarmonyLib;
+using System;
 using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers

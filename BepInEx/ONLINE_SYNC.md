@@ -213,3 +213,73 @@ Tất cả online requests đều có try-catch:
 4. **Fallback priority:** Online → Local → (optional: empty/default)
 
 5. **Cache:** Dữ liệu được cache trong memory sau khi load lần đầu.
+
+## DllStore - Auto Update System (Từ commit b3c2200)
+
+### Tổng quan
+Hệ thống DllStore cho phép tự động tải và cập nhật các DLL từ một repository GitHub riêng biệt khi có phiên bản mới.
+
+### Cấu trúc
+```csharp
+public static class DllStore
+{
+    // Đặt tên DLL cần theo dõi
+    public static Dictionary<string, byte[]> dllData = new Dictionary<string, byte[]>()
+    {
+        { "YourMod.dll", null }
+    };
+
+    // URL repository chứa DLL
+    private const string DLL_REPO_BASE_URL = ""; // TODO: Điền URL
+    private const string GAME_VERSION_URL = "";  // TODO: Điền URL
+}
+```
+
+### Cách hoạt động
+1. **Init** - Gọi khi mod load (`Core.Load()`)
+2. **TryGetNewDll** - Kiểm tra version game và tải DLL mới nếu có
+3. **SaveNewDll** - Lưu DLL với đuôi `.update`
+4. **UpdateNewDll** - Gọi khi unload mod, khởi động tool để apply DLL mới
+
+### Cấu hình trong BepInEx
+```csharp
+// Trong Core.Load():
+string gameVersion = "1.0.0.0"; // Lấy version thực tế của game
+DllStore.Init(gameVersion);
+
+// Trong Core.Unload():
+DllStore.UpdateNewDll();
+```
+
+### URL cần điền
+- `DLL_REPO_BASE_URL`: URL raw GitHub chứa các DLL
+  - Ví dụ: `https://raw.githubusercontent.com/YourName/YourRepo/main`
+- `GAME_VERSION_URL`: URL chứa version của game hiện tại
+  - Ví dụ: `https://raw.githubusercontent.com/YourName/YourRepo/main/CURRENT_GAME_VER`
+
+### Flow
+```
+Core.Load()
+  └─> DllStore.Init(gameVersion)
+        └─> TryGetNewDll(gameVersion)
+              ├─> Kiểm tra game version từ online
+              ├─> Nếu version khác → bỏ qua update
+              └─> Nếu version giống → tải DLL mới về
+
+Core.Unload()
+  └─> DllStore.UpdateNewDll()
+        └─> Nếu có DLL mới → khởi động tool apply
+```
+
+### Hotkey
+- `Delete` - Mở Online Almanac (itch.io)
+  - Thay thế cho Trello board trước đó
+
+## Các Methods mới trong Utils.cs
+
+| Method | Mô tả |
+|--------|-------|
+| `GetByteDataFromWeb(url)` | Tải binary data từ URL |
+| `CalculateGameVersion(version)` | Tính toán version number để so sánh |
+| `OpenOnlineAlmanac()` | Mở it th.io/almanac (thay Trello) |
+

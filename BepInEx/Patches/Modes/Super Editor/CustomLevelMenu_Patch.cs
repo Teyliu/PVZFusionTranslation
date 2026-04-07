@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Newtonsoft.Json;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
@@ -9,7 +9,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using CustomButtonLevelType;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 {
@@ -76,7 +75,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
             }
 
             string dumpPath = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "custom_level_data.json");
-            File.WriteAllText(dumpPath, JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
+            File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
 			{
 				WriteIndented = true,
 				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -105,7 +104,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 
                 translatedLevelData = new Dictionary<string, TranslatedLevelData>();
 
-                var translatedLevelDataRequest = Task.Run(() => GetTranslatedLevelData());
+                var translatedLevelDataRequest = GetTranslatedLevelData();
 
                 if (translatedLevelDataRequest.Result != null)
                 {

@@ -110,6 +110,7 @@
 	<ItemGroup>
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="AssetStore\CheckSumStore.cs" />
+		<Compile Include="AssetStore\DllStore.cs" />
 		<Compile Include="AssetStore\FontStore.cs" />
 		<Compile Include="AssetStore\StringStore.cs" />
 		<Compile Include="AssetStore\TextureStore.cs" />
@@ -152,7 +153,7 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\InGameBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\MainMenu_Btn_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\MainMenu_Btn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\NormalBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptLanguageBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptionBtn_Patch.cs" />
@@ -162,7 +163,6 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Close_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\CreatePlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CreatePlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CrisisZombieWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\CustomSettings_Patch.cs" />
