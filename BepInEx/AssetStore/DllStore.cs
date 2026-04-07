@@ -107,9 +107,40 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
             if (updateOnClose)
             {
-                Log.LogWarning("DllStore: New DLLs available! They will be applied on next game restart.");
-                // TODO: Implement update mechanism if needed
-                // For now, just log that update is available
+                int processId = Process.GetCurrentProcess().Id;
+
+                // Get the mod assembly to extract embedded resource
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                string programName = "PvZ_Fusion_Translator__BepInEx_.Resources.ModUpdateUtil.exe";
+
+                // Try to get embedded resource
+                using var exeResourceStream = assembly.GetManifestResourceStream(programName);
+                
+                string tempPath = Path.Combine(Path.GetTempPath(), "ModUpdateUtil.exe");
+                
+                // If resource exists, extract it
+                if (exeResourceStream != null)
+                {
+                    using (var fileStream = File.Create(tempPath))
+                    {
+                        exeResourceStream.CopyTo(fileStream);
+                    }
+                    
+                    Log.LogInfo("DllStore: Starting ModUpdateUtil to apply new DLLs...");
+                    
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = tempPath,
+                        Arguments = $"{processId.ToString()} {string.Join(",", dllData.Keys)} {Paths.PluginPath}",
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    Log.LogWarning("DllStore: ModUpdateUtil.exe not found as embedded resource. DLL updates will be applied manually.");
+                    // Alternative: Just log the update is available for manual application
+                    Log.LogInfo("DllStore: New DLLs available! Please restart the game to apply updates.");
+                }
             }
         }
 

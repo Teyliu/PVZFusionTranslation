@@ -53,7 +53,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 					}
 				}
 			}
-			else if(System.Text.RegularExpressions.Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", System.Text.RegularExpressions.RegexOptions.Singleline).Success && !StringStore.translationString.ContainsKey(txt.text))
+			else if(System.Text.RegularExpressions.Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", System.Text.RegularExpressions.RegexOptions.Singleline).Success && (!StringStore.translationString.ContainsKey(txt.text) && !StringStore.fsTipCollectionString.ContainsKey(txt.text) && !StringStore.izTipCollectionString.ContainsKey(txt.text)))
 			{
 				txt.text = StringStore.TranslateColorText(txt.text, true);
 				if (txt.gameObject.name.Contains("main"))

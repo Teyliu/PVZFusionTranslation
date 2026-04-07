@@ -25,6 +25,14 @@
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 </ItemGroup>
 
+<ItemGroup>
+	<None Remove="Resources\ModUpdateUtil.exe" />
+</ItemGroup>
+
+<ItemGroup>
+	<EmbeddedResource Include="Resources\ModUpdateUtil.exe" />
+</ItemGroup>
+
 
 	<PropertyGroup>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
