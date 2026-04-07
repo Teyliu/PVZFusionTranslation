@@ -137,3 +137,4 @@ BepInEx/Patches/GameObjects/changes.txt
 /Assembly-CSharp
 .cursorrules
 /il2cpp-stringliteral-patcher
+BepInEx/Utils.cs.backup

@@ -237,13 +237,103 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             try
             {
                 string content = File.ReadAllText(path);
-                return JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(content);
+                var result = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(content);
+                return result;
+            }
+            catch
+            {
+                try
+                {
+                    string content = File.ReadAllText(path);
+                    return LoadTravelBuffsFlexible(content);
+                }
+                catch (Exception ex)
+                {
+                    Log.LogWarning($"[TravelMgr_Patch] Failed to load buff file {path}: {ex.Message}");
+                    return null;
+                }
+            }
+        }
+
+        internal static Dictionary<string, SortedDictionary<int, string>> ConvertLegacyTravelBuffs(Dictionary<string, SortedDictionary<int, string>> legacy)
+        {
+            var converted = new Dictionary<string, SortedDictionary<int, string>>();
+            if (legacy.TryGetValue("advancedUpgrades", out var advUpgrades))
+                converted["advancedBuffs"] = advUpgrades;
+            if (legacy.TryGetValue("ultimateUpgrades", out var ultUpgrades))
+                converted["ultimateBuffs"] = ultUpgrades;
+            if (legacy.TryGetValue("strongUltimates", out var strongUltimates))
+                converted["ultimateBuffs"] = MergeDictionaries(converted.GetValueOrDefault("ultimateBuffs", new SortedDictionary<int, string>()), strongUltimates);
+            if (legacy.TryGetValue("debuffs", out var debuffs))
+                converted["debuffs"] = debuffs;
+            if (legacy.TryGetValue("investmentBuffs", out var investBuffs))
+                converted["investmentBuffs"] = investBuffs;
+            if (legacy.TryGetValue("synergies", out var synergies))
+                converted["synergies"] = synergies;
+            return converted;
+        }
+
+        internal static Dictionary<string, SortedDictionary<int, string>> LoadTravelBuffsFlexible(string jsonString)
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(jsonString);
+                var result = new Dictionary<string, SortedDictionary<int, string>>();
+                
+                foreach (var category in doc.RootElement.EnumerateObject())
+                {
+                    var dict = new SortedDictionary<int, string>();
+                    
+                    if (category.Value.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (var item in category.Value.EnumerateObject())
+                        {
+                            if (int.TryParse(item.Name, out int key))
+                            {
+                                dict[key] = item.Value.GetString() ?? "";
+                            }
+                        }
+                    }
+                    else if (category.Value.ValueKind == JsonValueKind.Array)
+                    {
+                        int idx = 0;
+                        foreach (var item in category.Value.EnumerateArray())
+                        {
+                            if (item.ValueKind == JsonValueKind.String)
+                            {
+                                dict[idx++] = item.GetString() ?? "";
+                            }
+                        }
+                    }
+                    
+                    string newKey = category.Name;
+                    if (category.Name == "advancedUpgrades") newKey = "advancedBuffs";
+                    else if (category.Name == "ultimateUpgrades") newKey = "ultimateBuffs";
+                    else if (category.Name == "strongUltimates") newKey = "ultimateBuffs";
+                    
+                    if (!result.ContainsKey(newKey))
+                        result[newKey] = dict;
+                    else
+                        result[newKey] = MergeDictionaries(result[newKey], dict);
+                }
+                
+                return result;
             }
             catch (Exception ex)
             {
-                Log.LogWarning($"[TravelMgr_Patch] Failed to load buff file {path}: {ex.Message}");
+                Log.LogWarning($"[TravelMgr_Patch] LoadTravelBuffsFlexible failed: {ex.Message}");
                 return null;
             }
+        }
+
+        private static SortedDictionary<int, string> MergeDictionaries(SortedDictionary<int, string> a, SortedDictionary<int, string> b)
+        {
+            foreach (var pair in b)
+            {
+                if (!a.ContainsKey(pair.Key))
+                    a[pair.Key] = pair.Value;
+            }
+            return a;
         }
 
         private static void SaveDumpFileSafe(bool force = false)

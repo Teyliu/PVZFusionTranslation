@@ -38,6 +38,35 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                 string json = AlmanacPlantMenu_Patch.almanacJson;
 
+                if (string.IsNullOrEmpty(json))
+                {
+                    return;
+                }
+
+                string cleanedJson = json.Trim();
+                if (cleanedJson.Contains("}{") || cleanedJson.Contains("}\n{"))
+                {
+                    int braceCount = 0;
+                    int endIndex = 0;
+                    for (int i = 0; i < cleanedJson.Length; i++)
+                    {
+                        if (cleanedJson[i] == '{') braceCount++;
+                        else if (cleanedJson[i] == '}')
+                        {
+                            braceCount--;
+                            if (braceCount == 0)
+                            {
+                                endIndex = i + 1;
+                                break;
+                            }
+                        }
+                    }
+                    if (endIndex > 0 && endIndex < cleanedJson.Length)
+                    {
+                        cleanedJson = cleanedJson.Substring(0, endIndex);
+                    }
+                }
+
                 bool hasAlmanacFont = false;
                 TMP_FontAsset almanacFontAsset = null;
                 if (FontStore.fontAssetDictSecondary != null && 
@@ -51,7 +80,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                 AlmanacPlantBank.PlantData plantData = null;
                 
-                plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+                plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(cleanedJson);
                 
 
                 bool foundMatch = false;

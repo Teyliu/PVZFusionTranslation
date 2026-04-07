@@ -41,14 +41,29 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
             }
             catch (Exception ex)
             {
-                Log.LogError($"DllStore: Couldn't get game version info - {ex.Message}");
+                Log.LogDebug($"DllStore: Network error - {ex.Message}. Skipping DLL update check.");
+                return; // Skip gracefully on network error
             }
 
             if (getGameVersionRequest != null)
             {
                 Log.LogDebug($"Request game version: {getGameVersionRequest} -> {Utils.CalculateGameVersion(getGameVersionRequest)}");
                 Log.LogDebug($"This game version: {gameVersion} -> {Utils.CalculateGameVersion(gameVersion)}");
-                if (Utils.CalculateGameVersion(getGameVersionRequest) != Utils.CalculateGameVersion(gameVersion))
+                int serverVersion = Utils.CalculateGameVersion(getGameVersionRequest);
+                int localVersion = Utils.CalculateGameVersion(gameVersion);
+                bool sameVersion = serverVersion == localVersion;
+                
+                if (!sameVersion)
+                {
+                    ableToUpdate = false;
+                    unableReason = "Incorrect game version...";
+                }
+                else if (Core.Instance != null && Core.Instance.configAlwaysDownloadOnline?.Value == true)
+                {
+                    Log.LogInfo("DllStore: Same version but AlwaysDownloadOnline is enabled, will download latest files.");
+                    ableToUpdate = true;
+                }
+                else if (!sameVersion)
                 {
                     ableToUpdate = false;
                     unableReason = "Incorrect game version...";

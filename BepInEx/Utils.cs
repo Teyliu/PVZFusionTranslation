@@ -24,7 +24,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
     public class Utils
     {
         public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
-        
+
         public static ZombieAlmanacData CachedZombieData = null;
         public static ZombieAlmanacData CachedModdedZombieData = null;
         public static bool ZombieDataCached = false;
@@ -82,6 +82,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 originalJson = File.ReadAllText(originalPath);
                 translatedJson = File.ReadAllText(path);
+
+                translatedJson = ExtractFirstJsonObject(translatedJson);
+                originalJson = ExtractFirstJsonObject(originalJson);
+
                 AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
                 AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
 
@@ -105,6 +109,31 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     }
                 }
             }
+        }
+
+        private static string ExtractFirstJsonObject(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+                return json;
+
+            json = json.Trim();
+            if (!json.StartsWith("{"))
+                return json;
+
+            int braceCount = 0;
+            for (int i = 0; i < json.Length; i++)
+            {
+                if (json[i] == '{') braceCount++;
+                else if (json[i] == '}')
+                {
+                    braceCount--;
+                    if (braceCount == 0)
+                    {
+                        return json.Substring(0, i + 1);
+                    }
+                }
+            }
+            return json;
         }
 
         public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
@@ -315,7 +344,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 return plantInfo.Value;
             }
-            
+
             return "";
         }
 
@@ -403,16 +432,16 @@ namespace PvZ_Fusion_Translator__BepInEx_
         public static bool CheckForUntranslatedText(string text)
         {
             Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
-			try 
-			{
-				Match match = regex.Match(text);
-				return match.Success;
-			} 
-			catch(Exception e) 
-			{
-				Log.LogError(e);
-			}
-			return false;
+            try
+            {
+                Match match = regex.Match(text);
+                return match.Success;
+            }
+            catch (Exception e)
+            {
+                Log.LogError(e);
+            }
+            return false;
         }
 
 
@@ -439,11 +468,11 @@ namespace PvZ_Fusion_Translator__BepInEx_
             RegisterPlantIndices();
             PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
         }
-        #endif
+#endif
 
-        #if MULTI_LANGUAGE
+#if MULTI_LANGUAGE
         public static Utils.LanguageEnum OldLanguage;
-        #endif
+#endif
 
         public static Utils.LanguageEnum Language;
 
@@ -471,7 +500,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             Korean,
 
             // third column
-             Ukrainian,
+            Ukrainian,
             // Slovak,
             //Polish,
             Turkish,
@@ -515,13 +544,13 @@ namespace PvZ_Fusion_Translator__BepInEx_
             try
             {
                 var dataRequest = await client.GetAsync(url);
-                if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+                if (dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     if (isLog)
                     {
                         Log.LogInfo($"Successfully loaded data from {url}!");
                     }
-                
+
                     string content = await dataRequest.Content.ReadAsStringAsync();
                     return content;
                 }
@@ -536,7 +565,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     return null;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.LogError($"Failed to load data from {url}! Falling back...");
                 Log.LogError(ex);
@@ -560,13 +589,13 @@ namespace PvZ_Fusion_Translator__BepInEx_
             try
             {
                 var dataRequest = await client.GetAsync(url);
-                if(dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
+                if (dataRequest.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     if (isLog)
                     {
                         Log.LogInfo($"Successfully loaded data from {url}!");
                     }
-                
+
                     byte[] content = await dataRequest.Content.ReadAsByteArrayAsync();
                     return content;
                 }
@@ -581,7 +610,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     return null;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.LogError($"Failed to load data from {url}! Falling back...");
                 Log.LogError(ex);

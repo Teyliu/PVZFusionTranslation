@@ -13,7 +13,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.5")]
+[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.5.0")]
 [BepInProcess("PlantsVsZombiesRH.exe")]
 public class Core : BasePlugin
 {
@@ -33,6 +33,7 @@ public class Core : BasePlugin
 	public ConfigEntry<bool> configDefaultAudio;
 	public ConfigEntry<string> configLanguage;
 	public ConfigEntry<bool> configUseLocal;
+	public ConfigEntry<bool> configAlwaysDownloadOnline;
 
     private static float lastCheck = 0f;
 	private static float checkTime = 0f;
@@ -49,7 +50,7 @@ public class Core : BasePlugin
         dtStart = DateTime.Now;
 
         // TODO: Get game version for DllStore - may need adjustment for BepInEx
-        string gameVersion = "1.0.0.0"; // Placeholder - get actual game version if available
+        string gameVersion = "3.5.0";
         DllStore.Init(gameVersion);
 
         FileLoader.LoadLanguage();
@@ -186,6 +187,12 @@ public class Core : BasePlugin
 			configUseLocal = Config.Bind(new ConfigDefinition(mainCategory, "UseLocal"), false, new ConfigDescription("Use Local Translation Data", new AcceptableValueList<bool>(true, false)));
 		}
 		bool useLocal = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "UseLocal"), out configUseLocal);
+
+		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "AlwaysDownloadOnline"), out configAlwaysDownloadOnline) == false)
+		{
+			configAlwaysDownloadOnline = Config.Bind(new ConfigDefinition(mainCategory, "AlwaysDownloadOnline"), false, new ConfigDescription("Always download online files even when game version matches (for refreshing translations)", new AcceptableValueList<bool>(true, false)));
+		}
+		bool alwaysDownloadOnline = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "AlwaysDownloadOnline"), out configAlwaysDownloadOnline);
 	}
 }
 

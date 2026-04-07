@@ -86,7 +86,19 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     }
                     else if (fileName.EndsWith("travel_buffs"))
                     {
-                        TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
+                        try
+                        {
+                            var loaded = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
+                            TravelMgr_Patch.translatedTravelBuffs = loaded;
+                        }
+                        catch
+                        {
+                            var flexibleLoaded = TravelMgr_Patch.LoadTravelBuffsFlexible(jsonString);
+                            if (flexibleLoaded != null)
+                            {
+                                TravelMgr_Patch.translatedTravelBuffs = flexibleLoaded;
+                            }
+                        }
                     }
                     else if (fileName.EndsWith("tips_iz"))
                     {
@@ -157,9 +169,25 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     }
 
                     string moddedPlantContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/ModdedPlantsTranslate.json").Result;
-                    if (moddedPlantContent != null && AlmanacPlantMenu_Patch.almanacJson != "")
+                    if (!string.IsNullOrEmpty(moddedPlantContent) && !string.IsNullOrEmpty(AlmanacPlantMenu_Patch.almanacJson))
                     {
-                        AlmanacPlantMenu_Patch.almanacJson = AlmanacPlantMenu_Patch.almanacJson + "\n" + moddedPlantContent;
+                        try
+                        {
+                            var plantData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(moddedPlantContent);
+                            if (plantData.TryGetProperty("plants", out var plants) && plants.ValueKind == System.Text.Json.JsonValueKind.Array)
+                            {
+                                AlmanacPlantMenu_Patch.almanacJson = AlmanacPlantMenu_Patch.almanacJson + "\n" + moddedPlantContent;
+                            }
+                        }
+                        catch
+                        {
+                            string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
+                            if (File.Exists(moddedPath))
+                            {
+                                string localModded = File.ReadAllText(moddedPath);
+                                AlmanacPlantMenu_Patch.almanacJson = AlmanacPlantMenu_Patch.almanacJson + "\n" + localModded;
+                            }
+                        }
                     }
                     else
                     {
@@ -171,9 +199,25 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     }
 
                     string moddedZombieContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/ModdedZombiesTranslate.json").Result;
-                    if (moddedZombieContent != null && AlmanacZombieMenu_Patch.almanacJson != "")
+                    if (!string.IsNullOrEmpty(moddedZombieContent) && !string.IsNullOrEmpty(AlmanacZombieMenu_Patch.almanacJson))
                     {
-                        AlmanacZombieMenu_Patch.almanacJson = AlmanacZombieMenu_Patch.almanacJson + "\n" + moddedZombieContent;
+                        try
+                        {
+                            var zombieData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(moddedZombieContent);
+                            if (zombieData.TryGetProperty("zombies", out var zombies) && zombies.ValueKind == System.Text.Json.JsonValueKind.Array)
+                            {
+                                AlmanacZombieMenu_Patch.almanacJson = AlmanacZombieMenu_Patch.almanacJson + "\n" + moddedZombieContent;
+                            }
+                        }
+                        catch
+                        {
+                            string moddedPath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
+                            if (File.Exists(moddedPath))
+                            {
+                                string localModded = File.ReadAllText(moddedPath);
+                                AlmanacZombieMenu_Patch.almanacJson = AlmanacZombieMenu_Patch.almanacJson + "\n" + localModded;
+                            }
+                        }
                     }
                     else
                     {
@@ -236,14 +280,28 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     string travelBuffsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/travel_buffs.json").Result;
                     if (travelBuffsContent != null)
                     {
-                        TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
+                        try
+                        {
+                            TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
+                        }
+                        catch
+                        {
+                            TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.LoadTravelBuffsFlexible(travelBuffsContent);
+                        }
                     }
                     else
                     {
                         string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
                         if (File.Exists(travelBuffsPath))
                         {
-                            TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+                            try
+                            {
+                                TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+                            }
+                            catch
+                            {
+                                TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.LoadTravelBuffsFlexible(File.ReadAllText(travelBuffsPath));
+                            }
                         }
                     }
                 }
@@ -252,7 +310,14 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
                     if (File.Exists(travelBuffsPath))
                     {
-                        TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+                        try
+                        {
+                            TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+                        }
+                        catch
+                        {
+                            TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.LoadTravelBuffsFlexible(File.ReadAllText(travelBuffsPath));
+                        }
                     }
                 }
 #endif
