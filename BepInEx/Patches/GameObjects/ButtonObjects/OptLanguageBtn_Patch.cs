@@ -1,4 +1,4 @@
-#if MULTI_LANGUAGE
+﻿#if MULTI_LANGUAGE
 using HarmonyLib;
 using System.Collections.Generic;
 using System;
@@ -80,8 +80,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					Position = pos
 				};
 			}
-
-			UpdatePage();
 		}
 
 		public static void CreateToggleButtons(OptionBtn templateButton)
@@ -112,20 +110,24 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
                     Position = pos
                 };
             }
-
-			UpdatePage();
         }
 
 		private static void UpdatePage()
 		{
+			// Initialize arrays if needed
+			if (buttonSlots == null) buttonSlots = new OptionBtn[6];
+			if (toggleSlots == null) toggleSlots = new OptionBtn[3];
+			
 			int startIndex = currentPage * LanguagesPerPage;
-			int langCount = AvailableLanguages.Count;
-			int toggleCount = (togglesCreated) ? AvailableToggles.Count : 0;
+			int langCount = (AvailableLanguages != null) ? AvailableLanguages.Count : 0;
+			int toggleCount = (togglesCreated && AvailableToggles != null) ? AvailableToggles.Count : 0;
 
             for (int i = 0; i < 5; i++)
 			{
+				if (buttonSlots[i] == null) continue;
 				var btn = buttonSlots[i];
-				var data = LanguageBtnDict[btn.GetInstanceID()];
+				
+				if (!LanguageBtnDict.TryGetValue(btn.GetInstanceID(), out var data)) continue;
 
 				if (startIndex + i < langCount)
 				{
@@ -147,8 +149,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			{
 				for (int i = 0; i < 3; i++)
 				{
+					if (toggleSlots[i] == null) continue;
 					var btn = toggleSlots[i];
-					var data = ToggleBtnDict[btn.GetInstanceID()];
+					
+					if (!ToggleBtnDict.TryGetValue(btn.GetInstanceID(), out var data)) continue;
 
 					if (i < toggleCount)
 					{
@@ -184,12 +188,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			}
 
 			// "Next" button always visible at index 5
-			var nextBtn = buttonSlots[5];
-			var nextData = LanguageBtnDict[nextBtn.GetInstanceID()];
-			nextData.Language = null;
-			nextData.IsNextButton = true;
-			nextBtn.gameObject.SetActive(true);
-			UpdateButtonText(nextBtn, "Next");
+			if (buttonSlots[5] != null)
+			{
+				if (LanguageBtnDict.TryGetValue(buttonSlots[5].GetInstanceID(), out var nextData))
+				{
+					nextData.Language = null;
+					nextData.IsNextButton = true;
+					buttonSlots[5].gameObject.SetActive(true);
+					UpdateButtonText(buttonSlots[5], "Next");
+				}
+			}
 		}
 
 		public static void UpdateButtonText(OptionBtn button, string languageName)
@@ -293,13 +301,38 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			[HarmonyPostfix]
 			private static void Awake(OptionBtn __instance)
 			{
-				if (!buttonsCreated || cachedTemplateButton == null)
+				// Already created, skip
+				if (buttonsCreated && togglesCreated) return;
+				
+				// This is our button, skip
+				if (LanguageBtnDict.ContainsKey(__instance.GetInstanceID()) || 
+				    ToggleBtnDict.ContainsKey(__instance.GetInstanceID()))
 				{
-					buttonsCreated = false;
-					togglesCreated = false;
-                    CreateLanguageButtons(__instance);
-					CreateToggleButtons(__instance);
-                }
+					return;
+				}
+				
+				// First button is our template
+				if (cachedTemplateButton == null)
+				{
+					cachedTemplateButton = __instance;
+				}
+				
+				// Use template to create buttons if available
+				if (cachedTemplateButton != null && !buttonsCreated)
+				{
+					CreateLanguageButtons(cachedTemplateButton);
+				}
+				
+				if (cachedTemplateButton != null && !togglesCreated)
+				{
+					CreateToggleButtons(cachedTemplateButton);
+				}
+				
+				// Update UI after buttons created
+				if (buttonsCreated && togglesCreated)
+				{
+					UpdatePage();
+				}
 			}
 
 			[HarmonyPatch("OnMouseUpAsButton")]

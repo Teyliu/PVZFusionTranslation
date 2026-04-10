@@ -41,7 +41,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
 #endif
         {
 #if MULTI_LANGUAGE
-            string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
+            Utils.LanguageEnum currentLang = language;
+            string stringDir = GetAssetDir(AssetType.Strings, currentLang);
 #else
 			string stringDir = GetAssetDir(AssetType.Strings);
 #endif
@@ -125,6 +126,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
             LoadTravelBuffs();
             LoadAlmanac();
+            SaveAlmanacFiles();
         }
 
         internal static void LoadAlmanac()
@@ -132,7 +134,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
             try
             {
 #if MULTI_LANGUAGE
-                string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+                Utils.LanguageEnum currentLang = Utils.Language;
+                Log.LogInfo($"[LoadAlmanac] Loading for language: {currentLang}");
+                
+                string almanacDir = GetAssetDir(AssetType.Almanac, currentLang);
                 if (!Directory.Exists(almanacDir))
                 {
                     Directory.CreateDirectory(almanacDir);
@@ -140,27 +145,39 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
                 if (!Utils.useLocal)
                 {
-                    string plantAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/LawnStringsTranslate.json").Result;
+                    string urlLang = currentLang.ToString();
+                    Log.LogInfo($"[LoadAlmanac] Fetching from URL with language: {urlLang}");
+                    Log.LogInfo($"[LoadAlmanac] URL: https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{urlLang}/Almanac/LawnStringsTranslate.json");
+                    
+                    string plantAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{urlLang}/Almanac/LawnStringsTranslate.json").Result;
                     if (plantAlmanacContent != null)
                     {
+                        Log.LogInfo($"[LoadAlmanac] Received plant content, length: {plantAlmanacContent.Length}");
+                        // Check first few chars to verify language
+                        string sample = plantAlmanacContent.Length > 50 ? plantAlmanacContent.Substring(0, 50) : plantAlmanacContent;
+                        Log.LogInfo($"[LoadAlmanac] Plant content sample: {sample}");
                         AlmanacPlantMenu_Patch.almanacJson = plantAlmanacContent;
                     }
                     else
                     {
+                        Log.LogWarning($"[LoadAlmanac] Failed to get plant content from web");
                         string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
                         if (File.Exists(path))
                         {
                             AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(path);
+                            Log.LogInfo($"[LoadAlmanac] Loaded plant from local: {path}");
                         }
                     }
 
-                    string zombieAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/ZombieStringsTranslate.json").Result;
+                    string zombieAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{urlLang}/Almanac/ZombieStringsTranslate.json").Result;
                     if (zombieAlmanacContent != null)
                     {
+                        Log.LogInfo($"[LoadAlmanac] Received zombie content, length: {zombieAlmanacContent.Length}");
                         AlmanacZombieMenu_Patch.almanacJson = zombieAlmanacContent;
                     }
                     else
                     {
+                        Log.LogWarning($"[LoadAlmanac] Failed to get zombie content from web");
                         string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
                         if (File.Exists(path))
                         {
@@ -168,7 +185,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                         }
                     }
 
-                    string moddedPlantContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/ModdedPlantsTranslate.json").Result;
+                    string moddedPlantContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{urlLang}/Almanac/ModdedPlantsTranslate.json").Result;
                     if (!string.IsNullOrEmpty(moddedPlantContent) && !string.IsNullOrEmpty(AlmanacPlantMenu_Patch.almanacJson))
                     {
                         try
@@ -198,7 +215,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                         }
                     }
 
-                    string moddedZombieContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/ModdedZombiesTranslate.json").Result;
+                    string moddedZombieContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{urlLang}/Almanac/ModdedZombiesTranslate.json").Result;
                     if (!string.IsNullOrEmpty(moddedZombieContent) && !string.IsNullOrEmpty(AlmanacZombieMenu_Patch.almanacJson))
                     {
                         try
@@ -529,20 +546,33 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 File.WriteAllText(Path.Combine(stringDir, "abyss_buffs.json"), abyssBuffData);
             }
 
+            SaveAlmanacFiles();
+#endif
+        }
+
+        internal static void SaveAlmanacFiles()
+        {
+#if MULTI_LANGUAGE
             string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
             if (!Directory.Exists(almanacDir))
             {
                 Directory.CreateDirectory(almanacDir);
             }
 
+            Log.LogInfo($"[SaveAlmanacFiles] Saving to directory: {almanacDir}");
+            
             if (AlmanacPlantMenu_Patch.almanacJson != "")
             {
-                File.WriteAllText(Path.Combine(almanacDir, "LawnStringsTranslate.json"), AlmanacPlantMenu_Patch.almanacJson);
+                string filePath = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+                File.WriteAllText(filePath, AlmanacPlantMenu_Patch.almanacJson);
+                Log.LogInfo($"[SaveAlmanacFiles] Saved LawnStringsTranslate.json, length: {AlmanacPlantMenu_Patch.almanacJson.Length}");
             }
 
             if (AlmanacZombieMenu_Patch.almanacJson != "")
             {
-                File.WriteAllText(Path.Combine(almanacDir, "ZombieStringsTranslate.json"), AlmanacZombieMenu_Patch.almanacJson);
+                string filePath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+                File.WriteAllText(filePath, AlmanacZombieMenu_Patch.almanacJson);
+                Log.LogInfo($"[SaveAlmanacFiles] Saved ZombieStringsTranslate.json, length: {AlmanacZombieMenu_Patch.almanacJson.Length}");
             }
 #endif
         }

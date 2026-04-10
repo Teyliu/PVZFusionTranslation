@@ -40,7 +40,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 if (File.Exists(zombiePath))
                 {
                     string zombieJson = File.ReadAllText(zombiePath);
-                    CachedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(zombieJson);
+                    string cleanedZombieJson = ExtractFirstJsonObject(zombieJson);
+                    CachedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(cleanedZombieJson);
                     Log.LogInfo($"Cached {CachedZombieData?.zombies?.Count ?? 0} zombie entries");
                 }
                 else
@@ -51,7 +52,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 if (File.Exists(moddedZombiePath))
                 {
                     string moddedZombieJson = File.ReadAllText(moddedZombiePath);
-                    CachedModdedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(moddedZombieJson);
+                    string cleanedModdedJson = ExtractFirstJsonObject(moddedZombieJson);
+                    CachedModdedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(cleanedModdedJson);
                     Log.LogInfo($"Cached {CachedModdedZombieData?.zombies?.Count ?? 0} modded zombie entries");
                 }
 
@@ -111,7 +113,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
         }
 
-        private static string ExtractFirstJsonObject(string json)
+        public static string ExtractFirstJsonObject(string json)
         {
             if (string.IsNullOrEmpty(json))
                 return json;
@@ -401,7 +403,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             if (!ZombieDataCached || CachedZombieData == null || CachedZombieData.zombies == null)
             {
-                Log.LogWarning("Zombie data not cached, unable to get zombie name");
+                Log.LogWarning($"Zombie data not cached, unable to get zombie name for type: {(int)theZombieType}");
                 return "";
             }
 
@@ -424,6 +426,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 }
             }
 
+            Log.LogWarning($"Zombie type {(int)theZombieType} not found in almanac cache");
             return "";
         }
 
@@ -448,25 +451,59 @@ namespace PvZ_Fusion_Translator__BepInEx_
 #if MULTI_LANGUAGE
         internal static void ChangeLanguage(string language)
         {
-            OldLanguage = Language;
-
-            if (Enum.TryParse(language, out Utils.LanguageEnum lang))
+            try
             {
-                Utils.Language = lang;
-            }
-            else
-            {
-                // Handle invalid language string
-                Log.LogError($"Invalid language string: {language}");
-            }
+                if (Enum.TryParse(language, out Utils.LanguageEnum lang))
+                {
+                    if (Language == lang)
+                    {
+                        Log.LogInfo($"Language is already {lang}, skipping change");
+                        return;
+                    }
+                    
+                    OldLanguage = Language;
+                    Utils.Language = lang;
+                    
+                    Log.LogInfo($"Changing language from {OldLanguage} to {Language}");
+                }
+                else
+                {
+                    Log.LogError($"Invalid language string: {language}");
+                    return;
+                }
 
-            //WarningStore.isWarningMessageLoaded = false;
-            FontStore.Reload();
-            StringStore.Reload();
-            TextureStore.Reload();
-            FileLoader.SaveLanguage();
-            RegisterPlantIndices();
-            PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
+                Log.LogInfo("Reloading FontStore...");
+                try { FontStore.Reload(); } catch (Exception ex) { Log.LogError($"FontStore.Reload error: {ex.Message}"); }
+                
+                Log.LogInfo("Reloading StringStore...");
+                try { StringStore.Reload(); } catch (Exception ex) { Log.LogError($"StringStore.Reload error: {ex.Message}"); }
+                
+                Log.LogInfo("Reloading TextureStore...");
+                try { TextureStore.Reload(); } catch (Exception ex) { Log.LogError($"TextureStore.Reload error: {ex.Message}"); }
+                
+                Log.LogInfo("Loading Almanac...");
+                try { FileLoader.LoadAlmanac(); } catch (Exception ex) { Log.LogError($"LoadAlmanac error: {ex.Message}"); }
+                
+                Log.LogInfo("Saving Language and Almanac...");
+                try { FileLoader.SaveLanguage(); FileLoader.SaveAlmanacFiles(); } catch (Exception ex) { Log.LogError($"Save error: {ex.Message}"); }
+                
+                Log.LogInfo("Registering Plant Indices...");
+                try { RegisterPlantIndices(); } catch (Exception ex) { Log.LogError($"RegisterPlantIndices error: {ex.Message}"); }
+                
+                Log.LogInfo("Caching Almanac Data...");
+                try { CacheAlmanacData(); } catch (Exception ex) { Log.LogError($"CacheAlmanacData error: {ex.Message}"); }
+                
+                Log.LogInfo("Loading HP Strings...");
+                try { PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings(); } 
+                catch (Exception ex) { Log.LogError($"LoadHPStrings error: {ex.Message}"); }
+                
+                Log.LogInfo($"Language changed to {Language} successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.LogError($"Error in ChangeLanguage: {ex.Message}");
+                Log.LogError(ex.StackTrace);
+            }
         }
 #endif
 
