@@ -34,6 +34,7 @@ public class Core : BasePlugin
 	public ConfigEntry<string> configLanguage;
 	public ConfigEntry<bool> configUseLocal;
 	public ConfigEntry<bool> configAlwaysDownloadOnline;
+	public ConfigEntry<bool> configEnableDllUpdate;
 
     private static float lastCheck = 0f;
 	private static float checkTime = 0f;
@@ -51,7 +52,10 @@ public class Core : BasePlugin
 
         // TODO: Get game version for DllStore - may need adjustment for BepInEx
         string gameVersion = "3.5.0";
-        DllStore.Init(gameVersion);
+        if (configEnableDllUpdate.Value)
+        {
+            DllStore.Init(gameVersion);
+        }
 
         FileLoader.LoadLanguage();
 
@@ -78,7 +82,10 @@ public class Core : BasePlugin
 			Log.LogDebug("Coroutine Stopped");
 		}
 		FileLoader.SaveLanguage();
-		DllStore.UpdateNewDll();
+		if (configEnableDllUpdate.Value)
+		{
+			DllStore.UpdateNewDll();
+		}
 		
 		#if OBFUSCATE && !RELEASE
 		CheckSumStore.ConvertMD5Json();
@@ -193,6 +200,12 @@ public class Core : BasePlugin
 			configAlwaysDownloadOnline = Config.Bind(new ConfigDefinition(mainCategory, "AlwaysDownloadOnline"), false, new ConfigDescription("Always download online files even when game version matches (for refreshing translations)", new AcceptableValueList<bool>(true, false)));
 		}
 		bool alwaysDownloadOnline = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "AlwaysDownloadOnline"), out configAlwaysDownloadOnline);
+
+		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "EnableDllUpdate"), out configEnableDllUpdate) == false)
+		{
+			configEnableDllUpdate = Config.Bind(new ConfigDefinition(mainCategory, "EnableDllUpdate"), true, new ConfigDescription("Enable DLL update functionality", new AcceptableValueList<bool>(true, false)));
+		}
+		bool enableDllUpdate = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "EnableDllUpdate"), out configEnableDllUpdate);
 	}
 }
 
