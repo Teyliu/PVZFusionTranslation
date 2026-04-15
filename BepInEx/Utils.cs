@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
@@ -480,6 +480,12 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 
                 Log.LogInfo("Reloading TextureStore...");
                 try { TextureStore.Reload(); } catch (Exception ex) { Log.LogError($"TextureStore.Reload error: {ex.Message}"); }
+
+                if (!customTextures && !useLocal)
+                {
+                    Log.LogInfo("Downloading textures from Github...");
+                    FileLoader.DownloadTexturesFromGithub(lang);
+                }
                 
                 Log.LogInfo("Loading Almanac...");
                 try { FileLoader.LoadAlmanac(); } catch (Exception ex) { Log.LogError($"LoadAlmanac error: {ex.Message}"); }

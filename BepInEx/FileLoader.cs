@@ -1,4 +1,4 @@
-﻿using BepInEx.Configuration;
+using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers;
 using PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects;
@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using PvZ_Fusion_Translator.Patches.GameObjects;
@@ -372,12 +373,106 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 LoadLocalizedTextures(Utils.LanguageEnum.English);
             }
+
+            if (!Utils.customTextures && !Utils.useLocal)
+            {
+                DownloadTexturesFromGithub(Utils.Language);
+            }
+
             LoadLocalizedTextures(Utils.Language);
 #else
 			LoadLocalizedTextures();
 #endif
 
             Log.LogInfo("Textures loaded successfully.");
+        }
+
+        internal static async void DownloadTexturesFromGithub(Utils.LanguageEnum language)
+        {
+            if (Utils.useLocal) return;
+
+            try
+            {
+                string url = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{language}/Textures/Texture_TOC.json";
+                string tocContent = await Utils.GetDataFromWeb(url, true);
+
+                if (string.IsNullOrEmpty(tocContent))
+                {
+                    Log.LogWarning("[DownloadTexturesFromGithub] No TOC found, skipping texture download");
+                    return;
+                }
+
+                var textureToc = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(tocContent);
+                if (textureToc == null || textureToc.Count == 0)
+                {
+                    Log.LogWarning("[DownloadTexturesFromGithub] Empty TOC, skipping");
+                    return;
+                }
+
+                string textureDir = GetAssetDir(AssetType.Textures, language);
+                if (!Directory.Exists(textureDir))
+                {
+                    Directory.CreateDirectory(textureDir);
+                }
+
+                string localTocPath = Path.Combine(textureDir, "Texture_TOC.json");
+                Dictionary<string, string> localToc = new();
+
+                if (File.Exists(localTocPath))
+                {
+                    string localTocContent = File.ReadAllText(localTocPath);
+                    localToc = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(localTocContent) ?? new();
+                }
+
+                List<string> toDownload = new();
+                foreach (var kvp in textureToc)
+                {
+                    if (!localToc.ContainsKey(kvp.Key) || localToc[kvp.Key] != kvp.Value)
+                    {
+                        toDownload.Add(kvp.Key);
+                    }
+                    else
+                    {
+                        string localPath = Path.Combine(textureDir, kvp.Key + ".png");
+                        if (!File.Exists(localPath))
+                        {
+                            toDownload.Add(kvp.Key);
+                        }
+                    }
+                }
+
+                if (toDownload.Count > 0)
+                {
+                    Log.LogInfo($"[DownloadTexturesFromGithub] Downloading {toDownload.Count} textures...");
+                }
+
+                foreach (string textureName in toDownload)
+                {
+                    try
+                    {
+                        string textureUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{language}/Textures/{textureName}.png";
+                        byte[] textureData = await Utils.GetByteDataFromWeb(textureUrl, true);
+
+                        if (textureData != null)
+                        {
+                            string texturePath = Path.Combine(textureDir, textureName + ".png");
+                            File.WriteAllBytes(texturePath, textureData);
+                            Log.LogDebug($"[DownloadTexturesFromGithub] Downloaded: {textureName}.png");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.LogError($"[DownloadTexturesFromGithub] Failed to download {textureName}: {ex.Message}");
+                    }
+                }
+
+                File.WriteAllText(localTocPath, tocContent);
+                Log.LogInfo("[DownloadTexturesFromGithub] Texture download completed");
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"[DownloadTexturesFromGithub] Error: {e.Message}");
+            }
         }
 
 		internal static void LoadLocalizedTextures(Utils.LanguageEnum? language = null)

@@ -1,4 +1,4 @@
-﻿#if MULTI_LANGUAGE
+#if MULTI_LANGUAGE
 using HarmonyLib;
 using System.Collections.Generic;
 using System;
@@ -21,8 +21,8 @@ public class OptionButtonData
 {
 	public OptionBtn Button { get; set; }
 	public Vector3 Position { get; set; }
-	public Utils.LanguageEnum? Language { get; set; } // Null if it's the "Next" button
-	public Utils.ToggleEnum? Toggle { get; set; } // Null if it's the "Next" button
+	public Utils.LanguageEnum? Language { get; set; }
+	public Utils.ToggleEnum? Toggle { get; set; }
 	public bool IsNextButton { get; set; }
 	public bool shifted = false;
 }
@@ -33,10 +33,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 	{
 		public static Dictionary<int, OptionButtonData> LanguageBtnDict = new();
 		public static Dictionary<int, OptionButtonData> ToggleBtnDict = new();
-        private static bool buttonsCreated = false;
-		private static bool togglesCreated = false;
-        private static OptionBtn cachedTemplateButton;
-        private static OptionBtn cachedTemplateToggleButton;
+        public static bool buttonsCreated = false;
+		public static bool togglesCreated = false;
+        public static OptionBtn cachedTemplateButton;
+        public static OptionBtn cachedTemplateToggleButton;
 
         private const float startX = 4.3241f + 2.56f;
 		private const float startY = 2.7769f;
@@ -49,8 +49,31 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
         private static List<Utils.ToggleEnum> AvailableToggles;
         private const int LanguagesPerPage = 5;
 		private static int currentPage = 0;
-		private static OptionBtn[] buttonSlots = new OptionBtn[6]; // 5 language buttons + 1 next button
+		private static OptionBtn[] buttonSlots = new OptionBtn[6];
 		private static OptionBtn[] toggleSlots = new OptionBtn[3];
+
+        private static bool IsInLanguageMenu(OptionBtn btn)
+        {
+            if (btn.tag == "LangOpt")
+                return true;
+
+            Transform parent = btn.transform.parent;
+            while (parent != null)
+            {
+                if (parent.name == "LanguageMenu")
+                    return true;
+                parent = parent.parent;
+            }
+            return false;
+        }
+
+        public static void InitializeLanguageMenu(OptionBtn templateButton)
+        {
+            cachedTemplateButton = templateButton;
+            CreateLanguageButtons(cachedTemplateButton);
+            CreateToggleButtons(cachedTemplateButton);
+            UpdatePage();
+        }
 
         public static void CreateLanguageButtons(OptionBtn templateButton)
 		{
@@ -67,6 +90,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			{
 				var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
 				newButton.optionType = 80 + i;
+				newButton.tag = "LangOpt";
 
 				float yPos = startY - i * ySpacing;
 				Vector3 pos = new(startX, yPos);
@@ -97,6 +121,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
                 newButton.optionType = 100 + i;
+                newButton.tag = "LangOpt";
 
                 float yPos = toggleStartY - i * ySpacing;
                 Vector3 pos = new(toggleStartX, yPos);
@@ -114,7 +139,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 
 		private static void UpdatePage()
 		{
-			// Initialize arrays if needed
 			if (buttonSlots == null) buttonSlots = new OptionBtn[6];
 			if (toggleSlots == null) toggleSlots = new OptionBtn[3];
 			
@@ -162,21 +186,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 						btn.gameObject.SetActive(true);
 						string buttonText = Utils.ToggleNames[toggle];
 						UpdateButtonText(btn, buttonText);
-						string sourceMsg = "";
-						switch(i)
-						{
-							case 0:
-								sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
-								break;
-							case 1:
-								sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
-								break;
-							case 2:
-								sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
-								break;
-							default:
-								break;
-						}
 					}
 					else
 					{
@@ -187,7 +196,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 				}
 			}
 
-			// "Next" button always visible at index 5
 			if (buttonSlots[5] != null)
 			{
 				if (LanguageBtnDict.TryGetValue(buttonSlots[5].GetInstanceID(), out var nextData))
@@ -274,16 +282,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
             {
                 ConfigEntry<bool> customTexturesEntry;
                 Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out customTexturesEntry);
-                customTexturesEntry.BoxedValue = !customTexturesEntry.Value; // Toggle the config value
+                customTexturesEntry.BoxedValue = !customTexturesEntry.Value;
                 TextureStore.Reload();
-                Coroutine replaceTextureRoutine = Core.MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
+                if (Core.MonoInstance != null)
+                    Core.MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
             }
 
             if (type == "Audio")
             {
                 ConfigEntry<bool> customAudioEntry;
                 Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out customAudioEntry);
-                customAudioEntry.BoxedValue = !customAudioEntry.Value; // Toggle the config value
+                customAudioEntry.BoxedValue = !customAudioEntry.Value;
             }
 
 			if (type == "SwapLocal")
@@ -301,23 +310,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			[HarmonyPostfix]
 			private static void Awake(OptionBtn __instance)
 			{
-				// Already created, skip
-				if (buttonsCreated && togglesCreated) return;
+				if (!IsInLanguageMenu(__instance))
+					return;
 				
-				// This is our button, skip
 				if (LanguageBtnDict.ContainsKey(__instance.GetInstanceID()) || 
-				    ToggleBtnDict.ContainsKey(__instance.GetInstanceID()))
+				   ToggleBtnDict.ContainsKey(__instance.GetInstanceID()))
 				{
 					return;
 				}
 				
-				// First button is our template
 				if (cachedTemplateButton == null)
 				{
 					cachedTemplateButton = __instance;
 				}
 				
-				// Use template to create buttons if available
 				if (cachedTemplateButton != null && !buttonsCreated)
 				{
 					CreateLanguageButtons(cachedTemplateButton);
@@ -328,7 +334,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					CreateToggleButtons(cachedTemplateButton);
 				}
 				
-				// Update UI after buttons created
 				if (buttonsCreated && togglesCreated)
 				{
 					UpdatePage();
@@ -365,20 +370,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					}
 				}
 
-			if (ToggleBtnDict.TryGetValue(__instance.GetInstanceID(), out var toggleData))
-			{
-				string toggleType = toggleData.Toggle.ToString();
-				ToggleCustomAssets(toggleType);
-                if (toggleType == "Textures")
-                {
-                    FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\n(Restart Required)", 0.1f);
-                }
-                else if (toggleType == "Audio")
-                {
-                    FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
-                }
+				if (ToggleBtnDict.TryGetValue(__instance.GetInstanceID(), out var toggleData))
+				{
+					string toggleType = toggleData.Toggle.ToString();
+					ToggleCustomAssets(toggleType);
+					if (toggleType == "Textures")
+					{
+						FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\n(Restart Required)", 0.1f);
+					}
+					else if (toggleType == "Audio")
+					{
+						FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
+					}
+				}
 			}
-            }
 
 			[HarmonyPatch(nameof(OptionBtn.Update))]
 			[HarmonyPostfix]
@@ -389,11 +394,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					btnData.Button.transform.position = btnData.Position;
 				}
 
-                if (ToggleBtnDict.TryGetValue(__instance.GetInstanceID(), out var toggleData))
-                {
-                    toggleData.Button.transform.position = toggleData.Position;
-                }
-            }
+				if (ToggleBtnDict.TryGetValue(__instance.GetInstanceID(), out var toggleData))
+				{
+					toggleData.Button.transform.position = toggleData.Position;
+				}
+			}
 		}
 	}
 }
