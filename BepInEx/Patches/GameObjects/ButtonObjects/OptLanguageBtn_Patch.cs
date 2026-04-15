@@ -54,9 +54,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 
         private static bool IsInLanguageMenu(OptionBtn btn)
         {
-            if (btn.tag == "LangOpt")
-                return true;
-
             Transform parent = btn.transform.parent;
             while (parent != null)
             {

@@ -227,27 +227,116 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         internal static bool TryReplaceTexture2D(Texture2D ogTexture)
         {
-            if (ogTexture != null)
+            if (ogTexture == null)
+                return false;
+
+            if (!TextureStore.textureDict.TryGetValue(ogTexture.name, out byte[] textureData))
+                return false;
+
+            bool replaced = false;
+            try
             {
-                if (TextureStore.textureDict.TryGetValue(ogTexture.name, out string texturePath))
+                replaced = ImageConversion.LoadImage(ogTexture, textureData);
+            }
+            catch { }
+
+            if (!replaced)
+            {
+                try
                 {
-                    try
+                    Texture2D tempTex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                    if (ImageConversion.LoadImage(tempTex, textureData))
                     {
-                        ImageConversion.LoadImage(ogTexture, File.ReadAllBytes(texturePath));
-
-                        Core.Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
-
-                        ogTexture.name = "replaced_" + ogTexture.name;
-                        return true;
+                        ogTexture.Resize(tempTex.width, tempTex.height, TextureFormat.RGBA32, false);
+                        ogTexture.SetPixels(tempTex.GetPixels());
+                        ogTexture.Apply(false);
+                        UnityEngine.Object.Destroy(tempTex);
+                        replaced = true;
                     }
-                    catch (Exception ex)
-                    {
-                        Log.LogError("Failed to replace texture: " + ogTexture.name + " at path: " + texturePath);
-                        Log.LogError(ex.ToString());
-                    }
+                    UnityEngine.Object.Destroy(tempTex);
                 }
+                catch { }
+            }
+
+            if (replaced)
+            {
+                Core.Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
+                ogTexture.name = "replaced_" + ogTexture.name;
+                return true;
             }
             return false;
+        }
+
+        internal static void RebuildSpriteRenderer(SpriteRenderer sr)
+        {
+            if (sr?.sprite == null)
+                return;
+
+            try
+            {
+                var oldSprite = sr.sprite;
+                var texture = oldSprite.texture;
+
+                if (texture == null)
+                    return;
+
+                string textureName = texture.name;
+                if (!TextureStore.spriteDict.ContainsKey(textureName))
+                    return;
+
+                Sprite newSprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    oldSprite.pivot,
+                    oldSprite.pixelsPerUnit,
+                    0,
+                    SpriteMeshType.FullRect,
+                    oldSprite.border
+                );
+                newSprite.name = oldSprite.name;
+
+                sr.sprite = newSprite;
+            }
+            catch { }
+        }
+
+        internal static void RebuildAllSpriteRenderers()
+        {
+            var spriteRenderers = Resources.FindObjectsOfTypeAll<SpriteRenderer>();
+            int rebuiltCount = 0;
+            foreach (var sr in spriteRenderers)
+            {
+                if (sr.sprite == null)
+                    continue;
+
+                var texture = sr.sprite.texture;
+                if (texture == null)
+                    continue;
+
+                string textureName = texture.name;
+                if (!TextureStore.spriteDict.ContainsKey(textureName))
+                    continue;
+
+                try
+                {
+                    var oldSprite = sr.sprite;
+                    Sprite newSprite = Sprite.Create(
+                        texture,
+                        new Rect(0, 0, texture.width, texture.height),
+                        oldSprite.pivot,
+                        oldSprite.pixelsPerUnit,
+                        0,
+                        SpriteMeshType.FullRect,
+                        oldSprite.border
+                    );
+                    newSprite.name = oldSprite.name;
+
+                    sr.sprite = newSprite;
+                    rebuiltCount++;
+                }
+                catch { }
+            }
+            Core.Log.LogDebug($"Rebuilt {rebuiltCount} SpriteRenderers");
         }
 
         internal static Texture2D LoadImage(string path)
@@ -258,8 +347,21 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
 
             byte[] array = File.ReadAllBytes(path);
-            Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None, 1, IntPtr.Zero, null);
-            ImageConversion.LoadImage(texture2D, array);
+            return LoadImage(array);
+        }
+
+        internal static Texture2D LoadImage(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0)
+            {
+                throw new ArgumentException("Byte array was null or empty.");
+            }
+
+            Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None);
+            if (!ImageConversion.LoadImage(texture2D, bytes))
+            {
+                throw new InvalidOperationException("Failed to load image from bytes.");
+            }
             return texture2D;
         }
 
@@ -480,6 +582,9 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 
                 Log.LogInfo("Reloading TextureStore...");
                 try { TextureStore.Reload(); } catch (Exception ex) { Log.LogError($"TextureStore.Reload error: {ex.Message}"); }
+
+                Log.LogInfo("Applying texture replacements...");
+                try { TextureStore.ReplaceTextures(); } catch (Exception ex) { Log.LogError($"ReplaceTextures error: {ex.Message}"); }
 
                 if (!customTextures && !useLocal)
                 {

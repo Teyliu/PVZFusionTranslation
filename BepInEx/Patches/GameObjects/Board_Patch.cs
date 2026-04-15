@@ -1,5 +1,4 @@
 using HarmonyLib;
-using System;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
 
@@ -14,12 +13,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             foreach (SpriteRenderer spriteRenderer in __instance.GetComponentsInChildren<SpriteRenderer>())
             {
-                if (spriteRenderer.sprite != null)
+                if (spriteRenderer.sprite == null)
+                    continue;
+
+                bool hasBorder = TextureStore.spriteDict.ContainsKey(spriteRenderer.sprite.name) && spriteRenderer.drawMode != SpriteDrawMode.Sliced;
+                if (hasBorder)
                 {
-                    if (TextureStore.spriteDict.ContainsKey(spriteRenderer.sprite.name) && spriteRenderer.drawMode != SpriteDrawMode.Sliced)
-                    {
-                        spriteRenderer.drawMode = SpriteDrawMode.Sliced;
-                    }
+                    spriteRenderer.drawMode = SpriteDrawMode.Sliced;
                 }
             }
         }

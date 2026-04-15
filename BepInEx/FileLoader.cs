@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using PvZ_Fusion_Translator.Patches.GameObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+using JsonSerializerOptions = System.Text.Json.JsonSerializerOptions;
 
 namespace PvZ_Fusion_Translator__BepInEx_
 {
@@ -350,7 +354,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
         internal static void LoadTextures()
         {
 
-            // Default or Custom Texturse -> English Textures -> Localized Textures
+            // Default or Custom Textures -> English Textures (if needed) -> Localized Textures
             try
             {
                 if (Utils.customTextures)
@@ -369,17 +373,22 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
 
 #if MULTI_LANGUAGE
+            // Load English textures first as fallback (if current language is not English)
             if (Utils.Language != Utils.LanguageEnum.English)
             {
                 LoadLocalizedTextures(Utils.LanguageEnum.English);
+                LoadLocalizedSprites(Utils.LanguageEnum.English);
             }
 
+            // Download from GitHub if not using local files
             if (!Utils.customTextures && !Utils.useLocal)
             {
                 DownloadTexturesFromGithub(Utils.Language);
             }
 
+            // Load the current language textures (English will already be loaded as fallback)
             LoadLocalizedTextures(Utils.Language);
+            LoadLocalizedSprites(Utils.Language);
 #else
 			LoadLocalizedTextures();
 #endif
@@ -427,17 +436,12 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 List<string> toDownload = new();
                 foreach (var kvp in textureToc)
                 {
-                    if (!localToc.ContainsKey(kvp.Key) || localToc[kvp.Key] != kvp.Value)
+                    string fileName = Path.GetFileName(kvp.Key);
+                    string localPath = Path.Combine(textureDir, fileName + ".png");
+
+                    if (!File.Exists(localPath))
                     {
                         toDownload.Add(kvp.Key);
-                    }
-                    else
-                    {
-                        string localPath = Path.Combine(textureDir, kvp.Key + ".png");
-                        if (!File.Exists(localPath))
-                        {
-                            toDownload.Add(kvp.Key);
-                        }
                     }
                 }
 
@@ -450,14 +454,24 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 {
                     try
                     {
-                        string textureUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{language}/Textures/{textureName}.png";
+                        string textureUrl;
+                        if (textureName.StartsWith("Localization/"))
+                        {
+                            textureUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/{textureName}";
+                        }
+                        else
+                        {
+                            textureUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{language}/Textures/{textureName}";
+                        }
+
                         byte[] textureData = await Utils.GetByteDataFromWeb(textureUrl, true);
 
                         if (textureData != null)
                         {
-                            string texturePath = Path.Combine(textureDir, textureName + ".png");
+                            string fileName = Path.GetFileName(textureName);
+                            string texturePath = Path.Combine(textureDir, fileName + ".png");
                             File.WriteAllBytes(texturePath, textureData);
-                            Log.LogDebug($"[DownloadTexturesFromGithub] Downloaded: {textureName}.png");
+                            Log.LogDebug($"[DownloadTexturesFromGithub] Downloaded: {fileName}.png");
                         }
                     }
                     catch (Exception ex)
@@ -488,6 +502,22 @@ namespace PvZ_Fusion_Translator__BepInEx_
 			}
 			try
 			{
+				string tocPath = Path.Combine(textureDir, "Texture_TOC.json");
+				Dictionary<string, string> tocDict = new Dictionary<string, string>();
+
+				if (File.Exists(tocPath))
+				{
+					try
+					{
+						string tocJson = File.ReadAllText(tocPath);
+						tocDict = JsonSerializer.Deserialize<Dictionary<string, string>>(tocJson) ?? new Dictionary<string, string>();
+					}
+					catch (Exception ex)
+					{
+						Log.LogWarning($"Failed to load Texture_TOC.json: {ex.Message}");
+					}
+				}
+
 				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
 				{
 					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
@@ -503,18 +533,130 @@ namespace PvZ_Fusion_Translator__BepInEx_
 					}
 #endif
 
+					string key = Path.GetFileNameWithoutExtension(filepath);
+
 #if DEBUG
-                    Log.LogDebug("Loading File : " + filepath);
+                    Log.LogDebug("Loading Texture : " + filepath);
 #endif
 
-                    // Only store filepath, load texture on-demand to save memory
-                    TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+                    byte[] textureData = File.ReadAllBytes(filepath);
+
+					try
+					{
+						Texture2D testTexture = Utils.LoadImage(textureData);
+						if (testTexture != null)
+						{
+							TextureStore.textureDict[key] = textureData;
+						}
+					}
+					catch (Exception ex)
+					{
+						Log.LogError($"Invalid texture {key}: {ex.Message}");
+					}
 				}
 			}
 
 			catch (Exception e)
 			{
 				Log.LogError("Error loading Texture.");
+				Log.LogError(e.GetType() + " " + e.Message);
+			}
+		}
+
+		internal static void LoadLocalizedSprites(Utils.LanguageEnum? language = null)
+		{
+			ConfigEntry<bool> defaultTextureEntry;
+			Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
+
+			string textureDir = GetAssetDir(AssetType.Textures, language);
+
+			if (!Directory.Exists(textureDir))
+			{
+				Directory.CreateDirectory(textureDir);
+			}
+
+			string spritesDir = GetAssetDir(AssetType.Sprites, language);
+			if (!Directory.Exists(spritesDir))
+			{
+				Directory.CreateDirectory(spritesDir);
+			}
+
+			try
+			{
+				string tocPath = Path.Combine(textureDir, "Texture_TOC.json");
+				Dictionary<string, string> tocDict = new Dictionary<string, string>();
+
+				if (File.Exists(tocPath))
+				{
+					try
+					{
+						string tocJson = File.ReadAllText(tocPath);
+						tocDict = JsonSerializer.Deserialize<Dictionary<string, string>>(tocJson) ?? new Dictionary<string, string>();
+					}
+					catch (Exception ex)
+					{
+						Log.LogWarning($"Failed to load Texture_TOC.json for sprites: {ex.Message}");
+					}
+				}
+
+				foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
+				{
+					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
+					{
+						continue;
+					}
+
+#if OBFUSCATE
+					if (CheckSumStore.IsModified(filepath))
+					{
+						continue;
+					}
+#endif
+
+					string key = Path.GetFileNameWithoutExtension(filepath);
+
+#if DEBUG
+                    Log.LogDebug("Loading Sprite : " + filepath);
+#endif
+
+                    byte[] textureData = File.ReadAllBytes(filepath);
+
+					try
+					{
+						Texture2D testTexture = Utils.LoadImage(textureData);
+						if (testTexture != null)
+						{
+							TextureStore.spriteDict[key] = textureData;
+						}
+					}
+					catch { }
+				}
+
+				foreach (string filepath in Directory.EnumerateFiles(spritesDir, "*.png", SearchOption.AllDirectories))
+				{
+					if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
+					{
+						continue;
+					}
+
+					string key = Path.GetFileNameWithoutExtension(filepath);
+
+					byte[] textureData = File.ReadAllBytes(filepath);
+
+					try
+					{
+						Texture2D testTexture = Utils.LoadImage(textureData);
+						if (testTexture != null)
+						{
+							TextureStore.spriteDict[key] = textureData;
+						}
+					}
+					catch { }
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError("Error loading Sprites.");
 				Log.LogError(e.GetType() + " " + e.Message);
 			}
 		}
@@ -541,8 +683,22 @@ namespace PvZ_Fusion_Translator__BepInEx_
 						}
 #endif
 
-                        // Only store filepath, load texture on-demand to save memory
-                        TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+                        byte[] textureData = File.ReadAllBytes(filepath);
+						string key = Path.GetFileNameWithoutExtension(filepath);
+
+						try
+						{
+							Texture2D testTexture = Utils.LoadImage(textureData);
+							if (testTexture != null)
+							{
+								TextureStore.textureDict[key] = textureData;
+								TextureStore.spriteDict[key] = textureData;
+							}
+						}
+						catch (Exception ex)
+						{
+							Log.LogError($"Invalid texture {key}: {ex.Message}");
+						}
 					}
 				}
 
@@ -574,8 +730,22 @@ namespace PvZ_Fusion_Translator__BepInEx_
 					}
 #endif
 
-                    // Only store filepath, load texture on-demand to save memory
-                    TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = filepath;
+byte[] textureData = File.ReadAllBytes(filepath);
+					string key = Path.GetFileNameWithoutExtension(filepath);
+
+					try
+					{
+						Texture2D testTexture = Utils.LoadImage(textureData);
+						if (testTexture != null)
+						{
+							TextureStore.textureDict[key] = textureData;
+							TextureStore.spriteDict[key] = textureData;
+						}
+					}
+					catch (Exception ex)
+					{
+						Log.LogError($"Invalid texture {key}: {ex.Message}");
+					}
 				}
 			}
 
@@ -586,7 +756,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 			}
 		}
 
-        internal static void SaveStrings()
+		internal static void SaveStrings()
         {
 #if MULTI_LANGUAGE
             string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);

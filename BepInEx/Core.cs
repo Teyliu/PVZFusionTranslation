@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
@@ -65,13 +65,13 @@ public class Core : BasePlugin
         FontStore.Init();
         Utils.RegisterPlantIndices();
         Utils.CacheAlmanacData();
-        replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
         TravelMgr_Patch.DumpTravelBuffs();
 
         //Utils.RegisterRecipeLinks();
         //PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
 
-        InitCoroutine();
+        // Start texture replacement coroutine once
+        replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
     }
 
 	public override bool Unload()
