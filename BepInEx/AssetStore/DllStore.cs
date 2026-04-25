@@ -120,7 +120,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
                 }
             }
 
-            if (updateOnClose)
+            if (!updateOnClose)
+            {
+                Log.LogError("Cannot update on close! All .dll data is null!");
+            }
+            else if (updateOnClose)
             {
                 int processId = Process.GetCurrentProcess().Id;
 

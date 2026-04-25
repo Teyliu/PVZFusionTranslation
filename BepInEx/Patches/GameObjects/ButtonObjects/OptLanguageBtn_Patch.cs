@@ -181,7 +181,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						string buttonText = Utils.ToggleNames[toggle];
+						string buttonText = Utils.ToggleNames.ContainsKey(toggle) ? Utils.ToggleNames[toggle] : toggle.ToString();
 						UpdateButtonText(btn, buttonText);
 					}
 					else

@@ -15,9 +15,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
         private static Dictionary<string, string> HPStrings = new Dictionary<string, string>()
         {
             { "最后一击：(\\d+)\nDPS：([^\\s]+)\n总伤害：(\\d+)", "Last Damage: {0}\nDPS: {1}\nTotal: {2}" },
-            { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}\nType 2 armor: {4}/{5}" },
-            { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 1 armor: {2}/{3}" },
-            { "^HP：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nType 2 armor: {2}/{3}" },
+            { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nT1 armor: {2}/{3}\nT2 armor: {4}/{5}" },
+            { "^HP：(\\d+)/(\\d+)\n一类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nT1 armor: {2}/{3}" },
+            { "^HP：(\\d+)/(\\d+)\n二类：(\\d+)/(\\d+)$", "HP: {0}/{1}\nT2 armor: {2}/{3}" },
             { "^HP：(\\d+)/(\\d+)$", "HP: {0}/{1}" }
         };
 
@@ -39,12 +39,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
                 __instance.healthText.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         }
 
-        [HarmonyPatch(nameof(Zombie.Update))]
-        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Zombie.UpdateHealthText))]
+        [HarmonyPostfix]
         public static void Update(Zombie __instance)
         {
             if (__instance.theZombieType == ZombieType.TrainingDummy || !Board.Instance.showZombieHealth)
                 return;
+
+            if (__instance.healthText == null || __instance.healthTextShadow == null) return;
+
             TranslateHpUI(__instance.healthText, __instance);
             TranslateHpUI(__instance.healthTextShadow, __instance);
 

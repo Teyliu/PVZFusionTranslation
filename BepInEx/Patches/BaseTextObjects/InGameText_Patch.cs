@@ -18,19 +18,42 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 		[HarmonyPostfix]
 		private static void ShowText_Post(InGameText __instance)
 		{
-			if(__instance.textHead == null) return;
-			
-			if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
+			TranslateInGameText(__instance);
+		}
+
+		public static void TranslateInGameText(InGameText __instance)
+		{
+			TextMeshProUGUI txt = null;
+
+			if (__instance.textMesh == null || __instance.textHead == null)
+			{
+				if (__instance.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI selfTxt))
+				{
+					txt = selfTxt;
+				}
+			}
+			else
+			{
+				txt = __instance.textMesh;
+			}
+
+			if (txt != null)
+			{
+				if (!txt.gameObject.active) return;
+
+				TranslateInGameTextMesh(txt);
+			}
+		}
+
+		public static void TranslateInGameTextMesh(TextMeshProUGUI txt)
+		{
+			if (txt == null) return;
 
 			#if MULTI_LANGUAGE
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 			#else
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
 			#endif
-
-			// In 3.5, InGameText has textMesh instead of textMeshes array
-			TextMeshProUGUI txt = __instance.textMesh;
-			if (txt == null) return;
 
 			string originalText = txt.text;
 			string travelMatch = TravelMgr_Patch.MatchTravelBuff(originalText);
@@ -53,7 +76,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 					}
 				}
 			}
-			else if(System.Text.RegularExpressions.Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", System.Text.RegularExpressions.RegexOptions.Singleline).Success && (!StringStore.translationString.ContainsKey(txt.text) && !StringStore.fsTipCollectionString.ContainsKey(txt.text) && !StringStore.izTipCollectionString.ContainsKey(txt.text)))
+			else if (System.Text.RegularExpressions.Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", System.Text.RegularExpressions.RegexOptions.Singleline).Success && (!StringStore.translationString.ContainsKey(txt.text) && !StringStore.fsTipCollectionString.ContainsKey(txt.text) && !StringStore.izTipCollectionString.ContainsKey(txt.text)))
 			{
 				txt.text = StringStore.TranslateColorText(txt.text, true);
 				if (txt.gameObject.name.Contains("main"))
