@@ -404,6 +404,7 @@
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\GameLose_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />

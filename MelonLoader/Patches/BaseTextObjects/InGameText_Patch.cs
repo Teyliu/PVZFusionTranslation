@@ -20,10 +20,6 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         [HarmonyPostfix]
         public static void ShowText(InGameText __instance)
         {
-            if(__instance.textHead == null) return;
-            
-            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
-
             TranslateInGameText(__instance);
         }
 
@@ -31,10 +27,6 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         [HarmonyPostfix]
         public static void DebugWarning(InGameText __instance)
         {
-            if(__instance.textHead == null) return;
-            
-            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
-
             TranslateInGameText(__instance);
         }
 
@@ -42,24 +34,39 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         [HarmonyPostfix]
         public static void Update(InGameText __instance)
         {
-            if(__instance.textHead == null) return;
-            
-            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
-
             TranslateInGameText(__instance);
         }
 
         public static void TranslateInGameText(InGameText __instance)
         {
-            if (__instance.textMesh == null) return;
+            TextMeshProUGUI txt = null;
 
-            if(!__instance.textHead.active || !__instance.textMesh.gameObject.active) return;
+            if (__instance.textMesh == null || __instance.textHead == null)
+            {
+                if (__instance.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI selfTxt))
+                {
+                    txt = selfTxt;
+                }
+            }
+            else
+            {
+                txt = __instance.textMesh;
+            }
+
+            if(txt != null)
+            {
+                if (!txt.gameObject.active) return;
+
+                TranslateInGameTextMesh(txt);
+            }
+        }
+
+        public static void TranslateInGameTextMesh(TextMeshProUGUI txt)
+        {
+            if (txt == null) return;
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            currentText = __instance.textMesh.text;
-
-            TextMeshProUGUI txt = __instance.textMesh;
             string originalText = txt.text;
             string travelMatch = TravelMgr_Patch.MatchTravelBuff(originalText);
             int godsGachaCheck = CheckGodsGachaPopup(originalText);

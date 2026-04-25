@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
 {
-    [HarmonyPatch(typeof(Plant))]
+    /*[HarmonyPatch(typeof(Plant))]
     public static class Plant_Patch
     {
         [HarmonyPostfix]
@@ -43,5 +43,5 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             }
             return originalText;
         }
-    }
+    }*/
 }

@@ -14,7 +14,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 		public static Dictionary<string, byte[]> dllData = new Dictionary<string, byte[]>()
 		{
 			{ "Blooms_QOL.dll", null },
-			{ "HideMetalObjects.dll", null },
 			{ "PvZ_Fusion_Translator.dll", null }
 		};
 		public static bool updateOnClose = false;
@@ -93,7 +92,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 				string programName = "PvZ_Fusion_Translator.Resources.ModUpdateUtil.exe";
 
 				using var exeResourceStream = assembly.GetManifestResourceStream(programName);
-				string tempPath = Path.Combine(Path.GetTempPath(), "ModUpdateUtil.exe");
+				string tempPath = Path.Combine(MelonEnvironment.ModsDirectory, "ModUpdateUtil.exe");
 				using (var fileStream = File.Create(tempPath))
 				{
 					exeResourceStream.CopyTo(fileStream);
@@ -102,9 +101,13 @@ namespace PvZ_Fusion_Translator.AssetStore
 				Process.Start(new ProcessStartInfo
 				{
 					FileName = tempPath,
-					Arguments = $"{processId.ToString()} {string.Join(",", dllData.Keys)} {MelonEnvironment.ModsDirectory}",
+					Arguments = $"{processId.ToString()} {string.Join(",", dllData.Keys)} \"{MelonEnvironment.ModsDirectory}\"",
 					UseShellExecute = true
 				});
+			}
+			else
+			{
+				Log.LogError("Cannot update on close! All .dll data is null!");
 			}
 		}
     }

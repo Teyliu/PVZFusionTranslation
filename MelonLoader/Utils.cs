@@ -562,7 +562,7 @@ namespace PvZ_Fusion_Translator
 			Chinese_cn,
 			French,
 			//Italian,
-			//German,
+			German,
 			Spanish,
 			
 
@@ -593,6 +593,7 @@ namespace PvZ_Fusion_Translator
 			{ LanguageEnum.English, "English"},
 			{ LanguageEnum.Chinese_cn, "简体中文"},
 			{ LanguageEnum.French, "Français"},
+			{ LanguageEnum.German, "Deutsch"},
 			{ LanguageEnum.Spanish, "Español"},
 			{ LanguageEnum.Vietnamese, "Tiếng Việt"},
 			{ LanguageEnum.Japanese, "日本語"},

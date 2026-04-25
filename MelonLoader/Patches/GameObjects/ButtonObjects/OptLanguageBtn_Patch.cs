@@ -137,7 +137,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 					data.IsNextButton = false;
 					btn.gameObject.SetActive(true);
 
-					UpdateButtonText(btn, Utils.LanguageNames[lang], FontStore.LoadTMPFont(lang.ToString()));
+					string languageName = Utils.LanguageNames.ContainsKey(lang) ? Utils.LanguageNames[lang] : lang.ToString();
+					UpdateButtonText(btn, languageName, FontStore.LoadTMPFont(lang.ToString()));
 				}
 				else
 				{
@@ -160,7 +161,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 						data.Toggle = toggle;
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
-						string buttonText = Utils.ToggleNames[toggle];
+						string buttonText = Utils.ToggleNames.ContainsKey(toggle) ? Utils.ToggleNames[toggle] : toggle.ToString();
 						UpdateButtonText(btn, StringStore.TranslateText(buttonText), FontStore.LoadTMPFont(Utils.Language.ToString()));
 						string sourceMsg = "";
 						switch(i)
