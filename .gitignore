@@ -139,6 +139,7 @@ BepInEx/Patches/GameObjects/changes.txt
 /il2cpp-stringliteral-patcher
 BepInEx/Utils.cs.backup
 /3.5
+/3.6
 /Trans_ML
 MelonLoader/bin
 MelonLoader/obj
