@@ -1,3 +1,18 @@
+/*
+ * [3.6 OBSOLETE] AlmanacPlantBank_Patch.cs
+ *
+ * HISTORY:
+ * - AlmanacPlantBank.InitNameAndInfoFromJson() was REMOVED in 3.6
+ *   This class is kept for reference only. All methods are commented out.
+ * - The new almanac system uses AlmanacDataLoader and AlmanacPlantWindow instead
+ *
+ * MAINTENANCE NOTE:
+ * If you need to modify almanac behavior in 3.6+, look at:
+ * - AlmanacPlantWindow_Patch.cs (for plant display)
+ * - AlmanacPlantMenu_Patch.cs (for plant list and search)
+ * - FileLoader.cs LoadAlmanac() (for data loading)
+ */
+
 using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -10,6 +25,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
     [HarmonyPatch(typeof(AlmanacPlantBank))]
     public static partial class AlmanacPlantBank_Patch
     {
+        // [3.6 OBSOLETE] InitNameAndInfoFromJson() was removed in 3.6
+        // This method was used in 3.5 to initialize plant name/info from JSON
+        // In 3.6+, this is handled by AlmanacPlantWindow.UpdateText() and AlmanacDataLoader
+#if false
         [HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
         [HarmonyPostfix]
         private static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
@@ -43,7 +62,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
             bool hasAlmanacFont = false;
             TMP_FontAsset almanacFontAsset = null;
-            if (FontStore.fontAssetDictSecondary != null && 
+            if (FontStore.fontAssetDictSecondary != null &&
                 (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage)))
             {
                 almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
@@ -94,7 +113,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
                     component.overflowMode = TextOverflowModes.Page;
 
-                    // fix dimensions for cost text
                     component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
                     component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
                     component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
@@ -147,7 +165,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                             component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
                             component.overflowMode = TextOverflowModes.Page;
 
-                            // fix dimensions for cost text
                             component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
                             component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
                             component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
@@ -187,7 +204,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
             return;
         }
+#endif
 
+        // [3.6 NOTE] OnMouseDown still exists in 3.6, but may behave differently
+        // Keeping this for potential future use if needed
         [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
         [HarmonyPrefix]
         private static bool OnMouseDown(AlmanacPlantBank __instance)
@@ -201,6 +221,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             return true;
         }
 
+        // [3.6 NOTE] PVPInit still exists in 3.6, keeping for reference
         [HarmonyPatch(nameof(AlmanacPlantBank.PVPInit))]
         [HarmonyPostfix]
         private static void PVPInit(AlmanacPlantBank __instance)
@@ -229,6 +250,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             }
         }
 
+        // [3.6 NOTE] Start still exists in 3.6 AlmanacPlantBank, keeping for reference
         [HarmonyPatch(nameof(AlmanacPlantBank.Start))]
         [HarmonyPostfix]
         public static void Post_Start(AlmanacPlantBank __instance)
@@ -271,7 +293,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             skinShadowTextObj.transform.Translate(new Vector3(-0.022f, 0));
             __instance.skinButton.transform.localScale /= 1.75f;
             __instance.skinButton.transform.Translate(new Vector3(-0.075f, -0.15f, 0));
-            
+
             if (__instance.skinButton.transform.childCount > 2)
             {
                 __instance.skinButton.transform.GetChild(1).Translate(new Vector3(0.35f, 0));

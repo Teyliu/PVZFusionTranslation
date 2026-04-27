@@ -1,5 +1,6 @@
 using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches;
 using PvZ_Fusion_Translator__BepInEx_.Patches.OtherManagers;
 using PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
@@ -290,6 +291,23 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 Log.LogError("Error loading almanac: " + e.Message);
             }
+        }
+
+        // Helper class to deserialize our translated LawnStrings format
+        [Serializable]
+        private class AlmanacTranslationData
+        {
+            public List<PlantTranslationEntry> plants;
+        }
+
+        [Serializable]
+        private class PlantTranslationEntry
+        {
+            public string name;
+            public string introduce;
+            public string info;
+            public string cost;
+            public int seedType;
         }
 
         internal static void LoadTravelBuffs()
@@ -877,18 +895,19 @@ byte[] textureData = File.ReadAllBytes(filepath);
             File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
             File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
-            Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
-            foreach (var entry in AchievementClip.achievementsText)
-            {
-                var key = entry.Key;
-                var value = entry.Value;
-                achievementsList.Add(key, new AchievementObject(key, value.Item1, value.Item2));
-            }
-            File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            }));
+            // [3.6 OBSOLETE] Achievement types no longer exist in this form
+            // Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
+            // foreach (var entry in AchievementClip.achievementsText)
+            // {
+            //     var key = entry.Key;
+            //     var value = entry.Value;
+            //     achievementsList.Add(key, new AchievementObject(key, value.Item1, value.Item2));
+            // }
+            // File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
+            // {
+            //     WriteIndented = true,
+            //     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            // }));
 
             var options = new JsonSerializerOptions
             {

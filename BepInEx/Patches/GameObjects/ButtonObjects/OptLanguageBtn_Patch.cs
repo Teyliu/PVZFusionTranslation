@@ -1,4 +1,3 @@
-#if MULTI_LANGUAGE
 using HarmonyLib;
 using System.Collections.Generic;
 using System;
@@ -399,4 +398,3 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 		}
 	}
 }
-#endif

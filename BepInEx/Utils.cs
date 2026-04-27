@@ -1,7 +1,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
+using PvZ_Fusion_Translator__BepInEx_.Patches;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +16,6 @@ using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
-using static AlmanacPlantBank;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
 
 namespace PvZ_Fusion_Translator__BepInEx_
@@ -37,11 +36,13 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 string zombiePath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
                 string moddedZombiePath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
 
+                var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
                 if (File.Exists(zombiePath))
                 {
                     string zombieJson = File.ReadAllText(zombiePath);
                     string cleanedZombieJson = ExtractFirstJsonObject(zombieJson);
-                    CachedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(cleanedZombieJson);
+                    CachedZombieData = System.Text.Json.JsonSerializer.Deserialize<ZombieAlmanacData>(cleanedZombieJson, jsonOptions);
                     Log.LogInfo($"Cached {CachedZombieData?.zombies?.Count ?? 0} zombie entries");
                 }
                 else
@@ -53,7 +54,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 {
                     string moddedZombieJson = File.ReadAllText(moddedZombiePath);
                     string cleanedModdedJson = ExtractFirstJsonObject(moddedZombieJson);
-                    CachedModdedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(cleanedModdedJson);
+                    CachedModdedZombieData = System.Text.Json.JsonSerializer.Deserialize<ZombieAlmanacData>(cleanedModdedJson, jsonOptions);
                     Log.LogInfo($"Cached {CachedModdedZombieData?.zombies?.Count ?? 0} modded zombie entries");
                 }
 
@@ -76,6 +77,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
             string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
             string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 
+            var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
             if ((!File.Exists(path)) || (!File.Exists(originalPath)))
             {
                 Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
@@ -88,13 +91,13 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 translatedJson = ExtractFirstJsonObject(translatedJson);
                 originalJson = ExtractFirstJsonObject(originalJson);
 
-                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
-                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
+                PlantData originalPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(originalJson, jsonOptions);
+                PlantData translatedPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(translatedJson, jsonOptions);
 
                 for (int i = 0; i < originalPlantData.plants.Count; i++)
                 {
                     var originalPlantInfo = originalPlantData.plants[i];
-                    AlmanacPlantBank.PlantInfo translatedPlantInfo = null;
+                    PlantInfo translatedPlantInfo = null;
 
                     foreach (var info in translatedPlantData.plants)
                     {
@@ -474,14 +477,15 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 bool foundPlantName = false;
 
+                var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 originalJson = File.ReadAllText(originalPath);
                 translatedJson = File.ReadAllText(path);
-                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
-                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
+                PlantData originalPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(originalJson, jsonOptions);
+                PlantData translatedPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(translatedJson, jsonOptions);
 
                 for (int i = 0; i < originalPlantData.plants.Count; i++)
                 {
-                    AlmanacPlantBank.PlantInfo originalPlantInfo = originalPlantData.plants[i];
+                    PlantInfo originalPlantInfo = originalPlantData.plants[i];
                     KeyValuePair<int, string> translatedPlantInfo = plantIndices[originalPlantInfo.seedType];
 
                     if (originalPlantInfo.name == theOriginalPlantName)
@@ -550,7 +554,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
         }
 
 
-#if MULTI_LANGUAGE
         internal static void ChangeLanguage(string language)
         {
             try
@@ -616,11 +619,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 Log.LogError(ex.StackTrace);
             }
         }
-#endif
 
-#if MULTI_LANGUAGE
         public static Utils.LanguageEnum OldLanguage;
-#endif
 
         public static Utils.LanguageEnum Language;
 

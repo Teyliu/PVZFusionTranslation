@@ -12,9 +12,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     {
         public static string almanacJson = "";
 
-        [HarmonyPatch(nameof(AlmanacZombieMenu.Awake))]
+        [HarmonyPatch(nameof(AlmanacZombieMenu.Start))]
         [HarmonyPostfix]
-        private static void Awake(AlmanacZombieMenu __instance)
+        private static void Start(AlmanacZombieMenu __instance)
         {
             TMP_FontAsset font = FontStore.LoadTMPFont(Utils.Language.ToString());
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>(true))

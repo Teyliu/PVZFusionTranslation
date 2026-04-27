@@ -145,8 +145,8 @@
 		
 		<Compile Include="Patches\GameObjects\Almanac_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ActionCard_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AlmanacData_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AlmanacDataTypes.cs" />
+		<!-- <Compile Include="Patches\GameObjects\AlmanacData_Patch.cs" /> --> <!-- [MISSING 3.6] -->
+		<!-- <Compile Include="Patches\GameObjects\AlmanacDataTypes.cs" /> --> <!-- [MISSING 3.6] -->
 		<Compile Include="Patches\GameObjects\AlmanacPlantMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacPlantWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacSelectMenu_Patch.cs" />
@@ -227,7 +227,7 @@
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffMenu_Patch.cs" />
-		<!-- <Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" /> --> <!-- [3.6 OUTDATED] -->
+		<!-- <Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" /> --> <!-- [3.6 OUTDATED - buffType/buffIndex no longer exist] -->
 		
 		<!-- <Compile Include="Patches\GameObjects\TravelInvestMenu_Patch.cs" /> --> <!-- [3.6 OUTDATED] -->
 		<!-- <Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" /> --> <!-- [3.6 OUTDATED] -->
@@ -253,7 +253,8 @@
 		
 		<Compile Include="Patches\Managers\CanvasUpUI_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
-		<Compile Include="Patches\Managers\InGameText_ShowText_Patch.cs" />
+		<Compile Include="Patches\Managers\DifficultyMgr_Patch.cs" />
+		<!-- <Compile Include="Patches\Managers\InGameText_ShowText_Patch.cs" /> --> <!-- [MISSING 3.6] -->
 
 		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />
 		
@@ -268,7 +269,9 @@
 		
 		<Compile Include="Patches\OtherManagers\MenuText_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\ThanksMenu_Patch.cs" />
+		<Compile Include="Patches\AlmanacCompatibility.cs" />
 		<Compile Include="Utils.cs" />
+		<Compile Include="Patches\Outdated\Playername_Patch.cs" />
 	</ItemGroup>
 	
 <ItemGroup>
@@ -630,6 +633,7 @@
 		<HintPath>$(GamePath)\BepInEx\core\Newtonsoft.Json.dll</HintPath>
 	</Reference>
 </ItemGroup>
+	
 
 <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\BepInEx\plugins&quot;" />

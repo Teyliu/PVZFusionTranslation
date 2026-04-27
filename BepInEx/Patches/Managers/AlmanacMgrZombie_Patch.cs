@@ -79,7 +79,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 				return;
 			}
 
-			ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+			var zombieJsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+			ZombieAlmanacData zombieData = System.Text.Json.JsonSerializer.Deserialize<ZombieAlmanacData>(json, zombieJsonOptions);
 
 			if (zombieData?.zombies == null)
 			{
@@ -116,12 +117,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 		if (File.Exists(moddedPath))
 			{
-				string moddedJson;
-				moddedJson = File.ReadAllText(moddedPath);
+string moddedJson;
+			moddedJson = File.ReadAllText(moddedPath);
 
-				ZombieAlmanacData moddedZombieData = JsonUtility.FromJson<ZombieAlmanacData>(moddedJson);
+			var moddedZombieJsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+			ZombieAlmanacData moddedZombieData = System.Text.Json.JsonSerializer.Deserialize<ZombieAlmanacData>(moddedJson, moddedZombieJsonOptions);
 
-				if (moddedZombieData?.zombies != null)
+			if (moddedZombieData?.zombies != null)
 				{
 					foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
 					{

@@ -13,13 +13,61 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     {
         public static void AnimOver(BaseMenu __instance)
         {
-            Transform changelogObj = __instance.transform.Find("Grave/UpdateInfo");
-            Transform langObj = UnityEngine.Object.Instantiate(changelogObj, changelogObj.position + new Vector3(0.0f, 0.855f), changelogObj.rotation, __instance.transform.Find("Grave"));
-            langObj.name = "Languages";
-            __instance.collider2Ds.Add(langObj.GetComponent<Collider2D>());
-            UIButton langBtn = langObj.GetComponent<UIButton>();
+            Transform grave = __instance.transform.Find("Grave");
+            if (grave == null)
+            {
+                Core.Log.LogWarning("[MainMenu_Patch] Could not find 'Grave' in MainMenu, skipping language button creation");
+                return;
+            }
+            Transform playerName = __instance.transform.Find("Playername");
+            if (playerName == null)
+            {
+                return;
+            }
+            playerName.gameObject.SetActive(false);
+            GameAPP.playerName = "";
 
-            foreach(TextMeshProUGUI text in langObj.GetComponentsInChildren<TextMeshProUGUI>())
+            Transform changelogObj = grave.Find("UpdateInfo");
+            if (changelogObj == null)
+            {
+                Transform templateButton = null;
+                for (int i = 0; i < grave.childCount; i++)
+                {
+                    Transform child = grave.GetChild(i);
+                    if (child.GetComponent<UIButton>() != null)
+                    {
+                        templateButton = child;
+                        break;
+                    }
+                }
+
+                if (templateButton == null)
+                {
+                    Core.Log.LogWarning("[MainMenu_Patch] Could not find 'UpdateInfo' or any UIButton template in Grave, skipping language button creation");
+                    return;
+                }
+
+                changelogObj = templateButton;
+            }
+
+            Vector3 spawnPos = changelogObj.position + new Vector3(0.0f, 0.855f);
+            Transform langObj = UnityEngine.Object.Instantiate(changelogObj, spawnPos, changelogObj.rotation, grave);
+            langObj.name = "Languages";
+
+            Collider2D langCollider = langObj.GetComponent<Collider2D>();
+            if (langCollider != null)
+            {
+                __instance.collider2Ds.Add(langCollider);
+            }
+
+            UIButton langBtn = langObj.GetComponent<UIButton>();
+            if (langBtn == null)
+            {
+                Core.Log.LogWarning("[MainMenu_Patch] Language button missing UIButton component");
+                return;
+            }
+
+            foreach (TextMeshProUGUI text in langObj.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 text.text = StringStore.TranslateText("Languages");
             }
@@ -70,9 +118,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
             fBtn?.gameObject.SetActive(false);
 
-            foreach(TextMeshProUGUI text in optionMenu.transform.Find("Background").GetComponentsInChildren<TextMeshProUGUI>())
+            Transform background = optionMenu.transform.Find("Background");
+            if (background != null)
             {
-                text.text = StringStore.TranslateText("Language Settings");
+                foreach(TextMeshProUGUI text in background.GetComponentsInChildren<TextMeshProUGUI>())
+                {
+                    text.text = StringStore.TranslateText("Language Settings");
+                }
             }
         }
     }

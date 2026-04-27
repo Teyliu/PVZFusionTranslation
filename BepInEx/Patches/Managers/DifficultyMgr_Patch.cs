@@ -11,7 +11,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		[HarmonyPostfix]
 		private static void DifficultyMgr_Update(DifficultyMgr __instance)
 		{
-			__instance.t = StringStore.TranslateText(__instance.t);
+			__instance.t.text = StringStore.TranslateText(__instance.t.text);
 			__instance.t.autoSizeTextContainer = false;
 		}
 	}
