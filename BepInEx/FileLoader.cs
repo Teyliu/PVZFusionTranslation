@@ -971,7 +971,7 @@ byte[] textureData = File.ReadAllBytes(filepath);
         }
 
 //#if DEBUG
-        public static void DumpUntranslatedStrings(string text)
+        public static void DumpUntranslatedStrings(string key, string originalValue = null)
         {
             string dumpDir = GetAssetDir(AssetType.Dumps);
             string jsonFile = Path.Combine(dumpDir, "UntranslatedStrings.json");
@@ -983,15 +983,16 @@ byte[] textureData = File.ReadAllBytes(filepath);
 
             if (!File.Exists(jsonFile))
             {
-                File.WriteAllText(jsonFile, "{}"); // Initialize empty JSON object
+                File.WriteAllText(jsonFile, "{}");
             }
 
             string json = File.ReadAllText(jsonFile);
             var untranslatedStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 
-            if (!untranslatedStrings.ContainsKey(text))
+            string valueToDump = originalValue ?? key;
+            if (!string.IsNullOrEmpty(valueToDump) && !untranslatedStrings.ContainsKey(key))
             {
-                untranslatedStrings[text] = text;
+                untranslatedStrings[key] = valueToDump;
                 var options = new JsonSerializerOptions
                 {
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,

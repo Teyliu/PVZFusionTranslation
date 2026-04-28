@@ -38,7 +38,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         public static void TranslatePlantDataMenu(PlantDataMenu __instance)
         {
             PlantType thePlantType = __instance.plant.thePlantType;
-            string plantName = Utils.GetPlantNameFromAlmanac(thePlantType);
+            string originalName = __instance.nameText.Count > 0 ? __instance.nameText[0].text : "";
+            string plantName = Utils.GetPlantNameFromAlmanac(thePlantType, originalName);
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 

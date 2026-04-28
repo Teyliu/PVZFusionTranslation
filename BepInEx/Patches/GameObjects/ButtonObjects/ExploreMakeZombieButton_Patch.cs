@@ -1,4 +1,4 @@
-﻿﻿using HarmonyLib;
+﻿using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_;
@@ -13,7 +13,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 		[HarmonyPatch(nameof(ExploreMakeZombieButton.Start))]
 		public static void Start(ExploreMakeZombieButton __instance)
 		{
-			__instance.sceneText.text = Utils.GetZombieNameFromAlmanac(__instance.theZombieType);
+			string originalZombieName = __instance.sceneText.text;
+			__instance.sceneText.text = Utils.GetZombieNameFromAlmanac(__instance.theZombieType, originalZombieName);
 			__instance.sceneText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
 		}
 	}

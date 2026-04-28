@@ -2,6 +2,8 @@
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
@@ -36,7 +38,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 string currentLanguage = Utils.Language.ToString();
                 string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 
-                // Step 1: Get original values from AlmanacDataLoader.GetPlantData (3.6 native)
+                // Step 1: Get original Chinese values from AlmanacDataLoader.almanacData.plants
                 string originalName = "";
                 string originalIntroduce = "";
                 string originalInfo = "";
@@ -44,29 +46,65 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                 try
                 {
-                    var getPlantDataMethod = Type.GetType("AlmanacData.AlmanacDataLoader, Assembly-CSharp")
-                        ?.GetMethod("GetPlantData", new[] { typeof(PlantType) });
-
-                    if (getPlantDataMethod != null)
+                    Type loaderType = Type.GetType("AlmanacData.AlmanacDataLoader, Assembly-CSharp");
+                    if (loaderType != null)
                     {
-                        var plantInfoObj = getPlantDataMethod.Invoke(null, new object[] { thePlantType });
-                        if (plantInfoObj != null)
+                        var almanacDataField = loaderType.GetField("almanacData", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                        if (almanacDataField != null)
                         {
-                            Type pType = plantInfoObj.GetType();
-                            originalName = (string)pType.GetField("name")?.GetValue(plantInfoObj) ?? "";
-                            originalIntroduce = (string)pType.GetField("introduce")?.GetValue(plantInfoObj) ?? "";
-                            originalInfo = (string)pType.GetField("info")?.GetValue(plantInfoObj) ?? "";
-                            originalCost = (string)pType.GetField("cost")?.GetValue(plantInfoObj) ?? "";
-                            Log.LogInfo($"[AlmanacPlantWindow_Patch] Got original from GetPlantData: name='{originalName}'");
-                        }
-                        else
-                        {
-                            Log.LogInfo("[AlmanacPlantWindow_Patch] GetPlantData returned null");
+                            var almanacDataObj = almanacDataField.GetValue(null);
+                            if (almanacDataObj != null)
+                            {
+                                Type almanacDataType = almanacDataObj.GetType();
+                                var plantsField = almanacDataType.GetField("plants");
+                                if (plantsField != null)
+                                {
+                                    var plantsList = plantsField.GetValue(almanacDataObj) as IList;
+                                    if (plantsList != null)
+                                    {
+                                        foreach (var plantObj in plantsList)
+                                        {
+                                            if (plantObj == null) continue;
+                                            Type plantType = plantObj.GetType();
+                                            var seedTypeField = plantType.GetField("seedType");
+                                            if (seedTypeField != null)
+                                            {
+                                                int seedType = (int)seedTypeField.GetValue(plantObj);
+                                                if (seedType == (int)thePlantType)
+                                                {
+                                                    originalName = (string)plantType.GetField("name")?.GetValue(plantObj) ?? "";
+                                                    originalIntroduce = (string)plantType.GetField("introduce")?.GetValue(plantObj) ?? "";
+                                                    originalInfo = (string)plantType.GetField("info")?.GetValue(plantObj) ?? "";
+                                                    originalCost = (string)plantType.GetField("cost")?.GetValue(plantObj) ?? "";
+                                                    Log.LogInfo($"[AlmanacPlantWindow_Patch] Got original from almanacData.plants: name='{originalName}'");
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                    else
+
+                    if (string.IsNullOrEmpty(originalName))
                     {
-                        Log.LogWarning("[AlmanacPlantWindow_Patch] Could not find AlmanacDataLoader.GetPlantData method");
+                        var getPlantDataMethod = Type.GetType("AlmanacData.AlmanacDataLoader, Assembly-CSharp")
+                            ?.GetMethod("GetPlantData", new[] { typeof(PlantType) });
+
+                        if (getPlantDataMethod != null)
+                        {
+                            var plantInfoObj = getPlantDataMethod.Invoke(null, new object[] { thePlantType });
+                            if (plantInfoObj != null)
+                            {
+                                Type pType = plantInfoObj.GetType();
+                                originalName = (string)pType.GetField("name")?.GetValue(plantInfoObj) ?? "";
+                                originalIntroduce = (string)pType.GetField("introduce")?.GetValue(plantInfoObj) ?? "";
+                                originalInfo = (string)pType.GetField("info")?.GetValue(plantInfoObj) ?? "";
+                                originalCost = (string)pType.GetField("cost")?.GetValue(plantInfoObj) ?? "";
+                                Log.LogInfo($"[AlmanacPlantWindow_Patch] Got original from GetPlantData: name='{originalName}'");
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -79,6 +117,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 string finalIntroduce = originalIntroduce;
                 string finalInfo = originalInfo;
                 string finalCost = originalCost;
+                bool foundTranslation = false;
 
                 string jsonPath = Path.Combine(almanacDir, "LawnStringsTranslate.json");
                 Log.LogInfo($"[AlmanacPlantWindow_Patch] Looking for JSON at: {jsonPath}");
@@ -106,6 +145,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                     finalIntroduce = plant.introduce ?? originalIntroduce;
                                     finalInfo = plant.info ?? originalInfo;
                                     finalCost = plant.cost ?? originalCost;
+                                    foundTranslation = true;
                                     Log.LogInfo($"[AlmanacPlantWindow_Patch] Found translated plant: seedType={plant.seedType}, name='{plant.name}', introduce='{plant.introduce?.Substring(0, Math.Min(50, plant.introduce?.Length ?? 0))}', info='{plant.info?.Substring(0, Math.Min(50, plant.info?.Length ?? 0))}', cost='{plant.cost}'");
                                     break;
                                 }
@@ -144,6 +184,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                         finalIntroduce = moddedInfo.introduce ?? finalIntroduce;
                                         finalInfo = moddedInfo.info ?? finalInfo;
                                         finalCost = moddedInfo.cost ?? finalCost;
+                                        foundTranslation = true;
                                         Log.LogInfo($"[AlmanacPlantWindow_Patch] Modded override: name='{moddedInfo.name}'");
                                         break;
                                     }
@@ -156,6 +197,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         Log.LogWarning($"[AlmanacPlantWindow_Patch] Modded parse failed: {ex.Message}");
                     }
                 }
+
+                Log.LogInfo($"[AlmanacPlantWindow_Patch] seedType={(int)thePlantType} name='{originalName}' introduce='{originalIntroduce}' info='{originalInfo}' cost='{originalCost}'");
+
+                if (!string.IsNullOrEmpty(originalName))
+                    DumpUntranslatedStrings(originalName, originalName);
+                if (!string.IsNullOrEmpty(originalIntroduce))
+                    DumpUntranslatedStrings(originalIntroduce, originalIntroduce);
+                if (!string.IsNullOrEmpty(originalInfo))
+                    DumpUntranslatedStrings(originalInfo, originalInfo);
+                if (!string.IsNullOrEmpty(originalCost))
+                    DumpUntranslatedStrings(originalCost, originalCost);
 
                 Log.LogInfo($"[AlmanacPlantWindow_Patch] Final values - name='{finalName}', introduce='{finalIntroduce?.Substring(0, Math.Min(50, finalIntroduce?.Length ?? 0))}', info='{finalInfo?.Substring(0, Math.Min(50, finalInfo?.Length ?? 0))}', cost='{finalCost}'");
 

@@ -10,6 +10,7 @@
 /BepInEx/obj/Debug/net6.0
 /BepInEx/obj
 /BepInEx/bin/ReleaseMulti/net6.0
+/BepInEx/bin
 /AlmanacPlantBank_Patch.cs
 MelonLoader/bin/x64/Debug/net6.0/0Harmony.dll
 MelonLoader/bin/x64/Debug/net6.0/AsmResolver.dll

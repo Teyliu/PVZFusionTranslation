@@ -444,7 +444,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             newGoBackText.color = color;
         }
 
-        public static string GetPlantNameFromAlmanac(PlantType thePlantType)
+        public static string GetPlantNameFromAlmanac(PlantType thePlantType, string fallback = null)
         {
             int seedType = (int)thePlantType;
             if (plantIndices.TryGetValue(seedType, out var plantInfo))
@@ -452,15 +452,11 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 return plantInfo.Value;
             }
 
-            return "";
+            return fallback ?? thePlantType.ToString();
         }
 
         public static string GetPlantNameFromAlmanac(string theOriginalPlantName)
         {
-            string originalJson;
-            string translatedJson;
-            string thePlantName = "";
-
             string currentLanguage = Utils.Language.ToString();
             string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
             string dumpDir = GetAssetDir(AssetType.Dumps);
@@ -470,54 +466,46 @@ namespace PvZ_Fusion_Translator__BepInEx_
             if ((!File.Exists(path)) || (!File.Exists(originalPath)))
             {
                 Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-                Log.LogError("Plant name could not be found!");
-                thePlantName = "";
+                return theOriginalPlantName;
             }
-            else
+
+            var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            string originalJson = File.ReadAllText(originalPath);
+            string translatedJson = File.ReadAllText(path);
+            PlantData originalPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(originalJson, jsonOptions);
+            PlantData translatedPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(translatedJson, jsonOptions);
+
+            for (int i = 0; i < originalPlantData.plants.Count; i++)
             {
-                bool foundPlantName = false;
+                PlantInfo originalPlantInfo = originalPlantData.plants[i];
 
-                var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                originalJson = File.ReadAllText(originalPath);
-                translatedJson = File.ReadAllText(path);
-                PlantData originalPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(originalJson, jsonOptions);
-                PlantData translatedPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(translatedJson, jsonOptions);
-
-                for (int i = 0; i < originalPlantData.plants.Count; i++)
+                if (originalPlantInfo.name == theOriginalPlantName)
                 {
-                    PlantInfo originalPlantInfo = originalPlantData.plants[i];
-                    KeyValuePair<int, string> translatedPlantInfo = plantIndices[originalPlantInfo.seedType];
-
-                    if (originalPlantInfo.name == theOriginalPlantName)
+                    if (plantIndices.TryGetValue(originalPlantInfo.seedType, out var translatedInfo))
                     {
-                        thePlantName = translatedPlantInfo.Value;
-                        foundPlantName = true;
+                        return translatedInfo.Value;
                     }
-                }
 
-                if (!foundPlantName)
-                {
-                    Log.LogInfo("Couldn't find plant name!");
-                    thePlantName = "";
+                    return theOriginalPlantName;
                 }
             }
 
-            return thePlantName;
+            return theOriginalPlantName;
         }
 
-        public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
+        public static string GetZombieNameFromAlmanac(ZombieType theZombieType, string fallback = null)
         {
             if (!ZombieDataCached || CachedZombieData == null || CachedZombieData.zombies == null)
             {
                 Log.LogWarning($"Zombie data not cached, unable to get zombie name for type: {(int)theZombieType}");
-                return "";
+                return fallback ?? theZombieType.ToString();
             }
 
             foreach (ZombieInfo zombieInfo in CachedZombieData.zombies)
             {
                 if ((int)zombieInfo.theZombieType == (int)theZombieType)
                 {
-                    return zombieInfo.name ?? "";
+                    return zombieInfo.name ?? (fallback ?? theZombieType.ToString());
                 }
             }
 
@@ -527,13 +515,12 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 {
                     if ((int)zombieInfo.theZombieType == (int)theZombieType)
                     {
-                        return zombieInfo.name ?? "";
+                        return zombieInfo.name ?? (fallback ?? theZombieType.ToString());
                     }
                 }
             }
 
-            Log.LogWarning($"Zombie type {(int)theZombieType} not found in almanac cache");
-            return "";
+            return fallback ?? theZombieType.ToString();
         }
 
 

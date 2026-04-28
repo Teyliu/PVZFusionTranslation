@@ -77,6 +77,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 string finalName = originalName;
                 string finalIntroduce = originalIntroduce;
                 string finalInfo = originalInfo;
+                bool foundTranslation = false;
 
                 string jsonPath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
                 Log.LogInfo($"[AlmanacZombieWindow_Patch] Looking for JSON at: {jsonPath}");
@@ -103,6 +104,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                     finalName = zombie.name ?? originalName;
                                     finalIntroduce = zombie.introduce ?? originalIntroduce;
                                     finalInfo = zombie.info ?? originalInfo;
+                                    foundTranslation = true;
                                     Log.LogInfo($"[AlmanacZombieWindow_Patch] Found translated zombie: theZombieType={zombie.theZombieType}, name='{zombie.name}', introduce='{zombie.introduce?.Substring(0, Math.Min(50, zombie.introduce?.Length ?? 0))}', info='{zombie.info?.Substring(0, Math.Min(50, zombie.info?.Length ?? 0))}'");
                                     break;
                                 }
@@ -140,6 +142,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                         finalName = moddedInfo.name ?? finalName;
                                         finalIntroduce = moddedInfo.introduce ?? finalIntroduce;
                                         finalInfo = moddedInfo.info ?? finalInfo;
+                                        foundTranslation = true;
                                         Log.LogInfo($"[AlmanacZombieWindow_Patch] Modded override: name='{moddedInfo.name}'");
                                         break;
                                     }
@@ -151,6 +154,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     {
                         Log.LogWarning($"[AlmanacZombieWindow_Patch] Modded parse failed: {ex.Message}");
                     }
+                }
+
+                if (!foundTranslation)
+                {
+                    Log.LogDebug($"[DumpUntranslated] Zombie type={__instance.currentZombieType} - name='{originalName}', introduce='{originalIntroduce}', info='{originalInfo}'");
+                    if (!string.IsNullOrEmpty(originalName))
+                        DumpUntranslatedStrings($"Zombie[{__instance.currentZombieType}]_name", originalName);
+                    if (!string.IsNullOrEmpty(originalIntroduce))
+                        DumpUntranslatedStrings($"Zombie[{__instance.currentZombieType}]_introduce", originalIntroduce);
+                    if (!string.IsNullOrEmpty(originalInfo))
+                        DumpUntranslatedStrings($"Zombie[{__instance.currentZombieType}]_info", originalInfo);
                 }
 
                 Log.LogInfo($"[AlmanacZombieWindow_Patch] Final values - name='{finalName}', introduce='{finalIntroduce?.Substring(0, Math.Min(50, finalIntroduce?.Length ?? 0))}', info='{finalInfo?.Substring(0, Math.Min(50, finalInfo?.Length ?? 0))}'");

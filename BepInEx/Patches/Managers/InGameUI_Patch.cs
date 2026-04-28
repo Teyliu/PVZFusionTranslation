@@ -25,12 +25,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 if (text.text.Contains("配方：") && !checkFusionChallenge.IsMatch(text.text))
                 {
                     string[] lines = text.text.Split("：");
-                    lines[1] = Utils.GetPlantNameFromAlmanac(lines[1]);
-                    if (lines[1] == "")
-                    {
-                        Log.LogError("Couldn't find plant! (Fusion Showcase)");
-                        lines[1] = StringStore.TranslateText(lines[1]);
-                    }
+                    string plantName = Utils.GetPlantNameFromAlmanac(lines[1], lines[1]);
+                    lines[1] = plantName;
                     text.text = StringStore.TranslateText("配方：") + lines[1];
                     text.autoSizeTextContainer = true;
                 }
@@ -57,12 +53,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 if (text.text.Contains("配方：") && !checkFusionChallenge.IsMatch(text.text))
                 {
                     string[] lines = text.text.Split("：");
-                    lines[1] = Utils.GetPlantNameFromAlmanac(lines[1]);
-                    if (lines[1] == "")
-                    {
-                        Log.LogError("Couldn't find plant! (Fusion Showcase)");
-                        lines[1] = StringStore.TranslateText(lines[1]);
-                    }
+                    string plantName = Utils.GetPlantNameFromAlmanac(lines[1], lines[1]);
+                    lines[1] = plantName;
                     text.text = StringStore.TranslateText("配方：") + lines[1];
                     text.autoSizeTextContainer = true;
                 }
@@ -89,12 +81,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 if (text.text.Contains("配方：") && !checkFusionChallenge.IsMatch(text.text))
                 {
                     string[] lines = text.text.Split("：");
-                    lines[1] = Utils.GetPlantNameFromAlmanac(lines[1]);
-                    if (lines[1] == "")
-                    {
-                        Log.LogError("Couldn't find plant! (Fusion Showcase)");
-                        lines[1] = StringStore.TranslateText(lines[1]);
-                    }
+                    string plantName = Utils.GetPlantNameFromAlmanac(lines[1], lines[1]);
+                    lines[1] = plantName;
                     text.text = StringStore.TranslateText("配方：") + lines[1];
                     text.autoSizeTextContainer = true;
                 }

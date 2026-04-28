@@ -15,11 +15,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             PlantType thePlantType = (PlantType)__instance.selfType;
 
-            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
-            if (__instance.nameText.text == "")
-            {
-                __instance.nameText.text = StringStore.TranslateText(__instance.nameText.text);
-            }
+            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType, __instance.nameText.text);
             __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
         }
 
@@ -29,11 +25,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             PlantType thePlantType = (PlantType)__instance.selfType;
 
-            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
-            if (__instance.nameText.text == "")
-            {
-                __instance.nameText.text = StringStore.TranslateText(__instance.nameText.text);
-            }
+            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType, __instance.nameText.text);
             __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
         }
 
@@ -43,11 +35,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             PlantType thePlantType = (PlantType)__instance.selfType;
 
-            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType);
-            if (__instance.nameText.text == "")
-            {
-                __instance.nameText.text = StringStore.TranslateText(__instance.nameText.text);
-            }
+            __instance.nameText.text = Utils.GetPlantNameFromAlmanac(thePlantType, __instance.nameText.text);
             __instance.nameText.font = FontStore.LoadTMPFont(Utils.Language.ToString());
         }
 
