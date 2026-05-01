@@ -161,13 +161,11 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
             if (fIndex > -1 && found)
             {
                 string fStr = HPStrings.ElementAt(fIndex).Value;
-                string DPS = originalText.Split("\n")[1].Replace("DPS：", "");
-                DPS = StringStore.TranslateText(DPS);
 
                 switch (fIndex)
                 {
                     case 0:
-                        finalText = string.Format(fStr, __instance.lastDamage, DPS, __instance.totalDamage);
+                        finalText = string.Format(fStr, __instance.lastDamage, __instance.CurrentDPS, __instance.totalDamage);
                         break;
                     default:
                         break;

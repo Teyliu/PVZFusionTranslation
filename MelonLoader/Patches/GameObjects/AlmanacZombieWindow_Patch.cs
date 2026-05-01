@@ -33,10 +33,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             TMP_FontAsset fontAsset = (hasAlmanacFont) ? FontStore.LoadTMPFontAlmanac(Utils.Language.ToString()) : FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            ZombieAlmanacData zombieAlmanacData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+            Il2CppAlmanacData.AlmanacData zombieAlmanacData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(json);
             var zombieDataDic = ZombieDataManager.zombieDataDic;
 
-            foreach (ZombieInfo zombieInfo in zombieAlmanacData.zombies)
+            foreach (Il2CppAlmanacData.ZombieInfo zombieInfo in zombieAlmanacData.zombies)
             {
                 if (zombieInfo.theZombieType == __instance.currentZombieType)
                 {

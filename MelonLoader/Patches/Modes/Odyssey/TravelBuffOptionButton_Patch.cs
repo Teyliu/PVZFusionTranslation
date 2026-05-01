@@ -27,11 +27,11 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 
         public static void TranslateOptionButton(TravelBuffOptionButton button)
         {
-            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
+            /*SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[button.buffType]];
 
             string buff = button.show != null && button.introduce.text != "词条已选完" ? buffSet[button.buffIndex] : StringStore.TranslateText("词条已选完");
 
-            button.introduce.text = buff;
+            button.introduce.text = buff;*/
         }
     }
 

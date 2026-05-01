@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppAlmanacData;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
@@ -34,12 +35,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 MainMenu_Patch.AnimOver(__instance);
             }
 
-            TranslateBaseMenu(__instance, "Level");
-            TranslateBaseMenu(__instance, "Levels");
-            TranslateBaseMenu(__instance, "CustomLevel");
+            TranslateBaseMenuTransform(__instance, "Level");
+            TranslateBaseMenuTransform(__instance, "Levels");
+            TranslateBaseMenuTransform(__instance, "CustomLevel");
+
+            StringStore.TranslateTextTransform(__instance.transform.Find("Goback"));
+            StringStore.TranslateTextTransform(__instance.transform.Find("Switich"));
         }
 
-        public static void TranslateBaseMenu(BaseMenu __instance, string levelsName)
+        public static void TranslateBaseMenuTransform(BaseMenu __instance, string levelsName)
         {
             Transform levels = __instance.transform.Find(levelsName);
             if (levels != null)
@@ -52,9 +56,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                         StringStore.TranslateTextTransform(child);
                     }
                 }
-
-                StringStore.TranslateTextTransform(__instance.transform.Find("Goback"));
-                StringStore.TranslateTextTransform(__instance.transform.Find("Switich"));
             }
         }
     }

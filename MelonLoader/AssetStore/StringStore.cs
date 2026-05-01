@@ -1,4 +1,6 @@
-﻿using Il2CppTMPro;
+﻿using Il2CppSystem.Runtime.Remoting.Messaging;
+using Il2CppTMPro;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -87,6 +89,12 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static TextMeshPro TranslateText(TextMeshPro originalTMP, bool isLog = false)
 		{
+			/*var frame = new StackTrace().GetFrame(1);
+			var method = frame.GetMethod();
+			var className = method.DeclaringType.Name;
+
+			Console.WriteLine($"TextMeshPro: {className}.{method.Name}");*/
+
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
@@ -103,6 +111,12 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static TextMeshProUGUI TranslateText(TextMeshProUGUI originalTMP, bool isLog = false)
 		{
+			/*var frame = new StackTrace().GetFrame(1);
+			var method = frame.GetMethod();
+			var className = method.DeclaringType.Name;
+
+			Console.WriteLine($"tmp pro ugui: {className}.{method.Name}");*/
+
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
@@ -119,6 +133,12 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static string TranslateText(string originalText, bool isLog = false)
 		{
+			/*var frame = new StackTrace().GetFrame(1);
+			var method = frame.GetMethod();
+			var className = method.DeclaringType.Name;
+        
+			Console.WriteLine($"string: {className}.{method.Name}");*/
+
 			string text = DoTranslateText(originalText, false);
 			string checkText;
 			#if DEBUG

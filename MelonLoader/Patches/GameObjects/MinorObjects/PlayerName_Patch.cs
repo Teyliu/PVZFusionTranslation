@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+﻿/*using HarmonyLib;
 using Il2Cpp;
 using PvZ_Fusion_Translator.AssetStore;
 
@@ -14,4 +14,4 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
 			__instance.textMesh.text = StringStore.TranslateText(__instance.textMesh.text);
 		}   
 	}
-}
+}*/

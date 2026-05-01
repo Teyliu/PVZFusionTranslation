@@ -15,14 +15,14 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         [HarmonyPostfix]
         private static void SetType(TravelStoreWindow __instance)
         {
-            var buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            /*var buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
 
-            string buff = __instance.show != null && __instance.introduce.text != "词条已选完" ? buffSet[__instance.buffIndex] : StringStore.TranslateText("词条已选完");
+            string buff = __instance.show != null && __instance.introduce.text != "词条已选完" ? buffSet[__instance.buffIndex] : StringStore.TranslateText("词条已选完");*/
             string originalText = __instance.introduce.text;
 
             string affinities = TranslateAffinities(originalText);
 
-            __instance.introduce.text = buff + affinities;
+            __instance.introduce.text = originalText + affinities;
 
             foreach (var text in __instance.buttonText)
             {

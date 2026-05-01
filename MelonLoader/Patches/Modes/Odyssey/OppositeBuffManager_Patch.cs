@@ -16,29 +16,33 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         public static string badFormat = StringStore.translationStringRegex.ContainsKey(badPattern) ? StringStore.translationStringRegex[badPattern] : "But, {0}";
         public static TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-        [HarmonyPatch(nameof(OppositeBuffManager.Awake))]
+        [HarmonyPatch(nameof(OppositeBuffManager.SetText))]
         [HarmonyPostfix]
-        private static void Awake(OppositeBuffManager __instance)
+        private static void SetText(OppositeBuffManager __instance)
         {
-            TranslateOppositeText(__instance.textA_bad, BuffType.Debuff, __instance.buffA.theDebuffID, true);
-            TranslateOppositeText(__instance.textA_good, __instance.buffA.theOptionType, __instance.buffA.theOptionID);
-            TranslateOppositeText(__instance.textB_bad, BuffType.Debuff, __instance.buffB.theDebuffID, true);
-            TranslateOppositeText(__instance.textB_good, __instance.buffB.theOptionType, __instance.buffB.theOptionID);
+            /*if (TravelMgr_Patch.travelBuffString.ContainsKey(__result))
+            { 
+                __result = TravelMgr_Patch.travelBuffString[__result]; 
+            }
+            else if(TravelMgr_Patch.travelBuffString.ContainsKey(TravelMgr_Patch.RemoveBuffName(__result)))
+            {
+                __result = TravelMgr_Patch.travelBuffString[TravelMgr_Patch.RemoveBuffName(__result)];
+            }*/
         }
 
-        public static void TranslateOppositeText(Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> textList, BuffType buffType, int buffIndex, bool isBad = false)
+        public static void TranslateOppositeText(Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> textList, Il2CppSystem.Object buff, bool isBad = false)
         {
-            string buff = translatedTravelBuffs[buffLinks[buffType]][buffIndex];
+            string buffText = TravelMgr.Instance.GetText(buff);
 
             foreach (var text in textList)
             {
                 if (isBad)
                 {
-                    text.text = string.Format(badFormat, buff);
+                    text.text = string.Format(badFormat, buffText);
                 }
                 else
                 {
-                    text.text = buff;
+                    text.text = buffText;
                 }
 
                 text.font = fontAsset;

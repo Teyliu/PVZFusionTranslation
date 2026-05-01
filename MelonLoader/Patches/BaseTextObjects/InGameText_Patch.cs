@@ -1,10 +1,9 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppAlmanacData;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
-
-//using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEngine;
@@ -68,6 +67,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
             string originalText = txt.text;
+            string lockedPlantMatch = CheckLockedMessage(originalText);
             string travelMatch = TravelMgr_Patch.MatchTravelBuff(originalText);
             int godsGachaCheck = CheckGodsGachaPopup(originalText);
             string godsGachaMatch = "";
@@ -114,6 +114,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             {
                 txt.text = superEditorPlantMatch;
             }
+            else if(lockedPlantMatch != "")
+            {
+                txt.text = lockedPlantMatch;
+            }
             else if((Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success) && (!StringStore.translationString.ContainsKey(txt.text) && !StringStore.fsTipCollectionString.ContainsKey(txt.text) && !StringStore.izTipCollectionString.ContainsKey(txt.text)))
             {
                 txt.text = StringStore.TranslateColorText(txt.text, true);
@@ -146,14 +150,20 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         public static string namePlantedPattern = "种植了：([^\\s]+)";
         public static string nameUpgradedPattern = "升级成功：([^\\s]+) -> ([^\\s]+)";
         public static string nameAlreadyPlantedPattern = "场上已经有一个([^\\s]+)了";
+        public static string upgradePathRemovedPattern = "已移除路线：([^\\s]+)";
+
+        public static string lockedPlantPattern = "^([^\\s:]+)\\+([^\\s:]+)";
+        public static string multiLockedPlantPattern = "^或 ([^\\s:]+)\\+([^\\s:]+)";
 
         public static Dictionary<string, string> fallbackFStrs = new Dictionary<string, string>()
         {
-            {"种植了：([^\\s]+)", "{0} planted!"},
-            {"升级成功：([^\\s]+) -> ([^\\s]+)", "{0} successfully upgraded to {1}!"},
-            {"场上已经有一个([^\\s]+)了", "{0} already exists on the lawn!"},
-            {"已移除路线：([^\\s]+)", "Upgrade Path removed for {0}" },
-            { @"([^\s]+)\((\d+)\)", "{0}({1})" }
+            { namePlantedPattern, "{0} planted!"},
+            { nameUpgradedPattern, "{0} successfully upgraded to {1}!"},
+            { nameAlreadyPlantedPattern, "{0} already exists on the lawn!"},
+            { upgradePathRemovedPattern, "Upgrade Path removed for {0}" },
+            { @"([^\s]+)\((\d+)\)", "{0}({1})" },
+            { lockedPlantPattern, "{0} + {1}" },
+            { multiLockedPlantPattern, "or {0} + {1}" }
         };
 	    
         public static int CheckGodsGachaPopup(string originalText)
@@ -218,14 +228,36 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             }
             return res;
         }
+
+        public static string TranslatePlantNameParts(string originalText, string pattern, string fallback)
+        {
+            string res = "";
+            string fStr = "";
+            Match match = Regex.Match(originalText, pattern);
+            if(match.Success)
+            {
+                GroupCollection groups = match.Groups;
+                fStr = StringStore.translationStringRegex.ContainsKey(pattern) ? StringStore.translationStringRegex[pattern] : fallback;
+                List<string> dynamicParts = [];
+                for(int i = 1; i < groups.Count; i++)
+                {
+                    string group = groups[i].Value;
+                    string plantName = Utils.GetPlantNameFromAlmanac(group);
+                    if (plantName == "") plantName = StringStore.TranslateText(group);
+                    dynamicParts.Add(plantName);
+                }
+                res = string.Format(fStr, [.. dynamicParts]);
+            }
+            return res;
+        }
     
         public static string CheckSuperEditorPopup(string originalText)
         {
             string res = "";
 
-            if(Regex.IsMatch(originalText, "已移除路线：([^\\s]+)"))
+            if(Regex.IsMatch(originalText, upgradePathRemovedPattern))
             {
-                res = TranslatePlantNameParts(originalText, "已移除路线：([^\\s]+)");
+                res = TranslatePlantNameParts(originalText, upgradePathRemovedPattern);
             }
             else if(Regex.IsMatch(originalText, "当前全部基础植物：(.*)"))
             {
@@ -249,6 +281,65 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                         }
                     }
                     res = StringStore.TranslateText("当前全部基础植物：" + plantRes);
+                }
+            }
+
+            return res;
+        }
+
+        public static string CheckLockedMessage(string originalText)
+        {
+            string res = "";
+
+            Regex lockedPlantRegex = new Regex(lockedPlantPattern);
+            Regex multiLockedPlantRegex = new Regex(multiLockedPlantPattern);
+
+            if(lockedPlantRegex.IsMatch(originalText))
+            {
+                if(originalText.Contains("\n"))
+                {
+                    string[] lines = originalText.Split("\n");
+                    if (lockedPlantRegex.IsMatch(lines[0]))
+                    {
+                        string firstLine = lines[0];
+                        Match match = lockedPlantRegex.Match(firstLine);
+                        GroupCollection groups = match.Groups;
+                        Log.LogDebug(Utils.plantIndiceStrings.ContainsKey(groups[1].Value));
+                        Log.LogDebug(Utils.plantIndiceStrings.ContainsKey(groups[2].Value));
+                        if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
+                        {
+                            firstLine = TranslatePlantNameParts(firstLine, lockedPlantPattern);
+                            List<string> translatedLines = new List<string>() { firstLine };
+                            for(int i = 1; i < lines.Length; i++)
+                            {
+                                string nextLine = lines[i];
+                                Log.LogDebug(nextLine);
+                                string translatedNextLine = TranslatePlantNameParts(nextLine, multiLockedPlantPattern);
+                                translatedLines.Add(translatedNextLine);
+                            }
+                            res = string.Join("\n", translatedLines);
+                        }
+                        else
+                        {
+                            return "";
+                        }
+                    }
+                }
+                else
+                {
+                    if (lockedPlantRegex.IsMatch(originalText))
+                    {
+                        Match match = lockedPlantRegex.Match(originalText);
+                        GroupCollection groups = match.Groups;
+                        if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
+                        {
+                            res = TranslatePlantNameParts(originalText, lockedPlantPattern);
+                        }
+                        else
+                        {
+                            return "";
+                        }
+                    }
                 }
             }
 

@@ -16,7 +16,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
-using static Il2Cpp.AlmanacPlantBank;
 using static MelonLoader.MelonLogger;
 using static PvZ_Fusion_Translator.FileLoader;
 
@@ -153,75 +152,47 @@ namespace PvZ_Fusion_Translator
             newGoBackText.color = color;
         }
 
-		public static string GetPlantNameFromAlmanac(PlantType thePlantType)
+		public static string GetPlantNameFromAlmanac(PlantType thePlantType, bool log = false)
 		{
-            string json;
-            string thePlantName = "";
+            bool foundPlantName = false;
+			string thePlantName = "";
 
-			json = AlmanacPlantMenu_Patch.almanacJson;
-            AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+			if(plantIndices.ContainsKey((int)thePlantType))
+			{
+				foundPlantName = true;
+				thePlantName = plantIndices[(int)thePlantType].Value;
+			}
 
-            foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+            if (!foundPlantName)
             {
-                if (plantInfo.seedType == (int)thePlantType)
-                {
-                    thePlantName = plantInfo.name;
-                }
+				if(log)
+				{
+					Log.LogInfo("Couldn't find plant name!");
+				}
+                thePlantName = "";
             }
 
-			return thePlantName;
+            return thePlantName;
         }
 
         public static string GetPlantNameFromAlmanac(string theOriginalPlantName, bool log = false)
 		{
-			string originalJson;
-            string translatedJson;
-            string thePlantName = "";
+			bool foundPlantName = false;
+			string thePlantName = "";
 
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-			string dumpDir = GetAssetDir(AssetType.Dumps);
-			string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
-            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+			if(plantIndiceStrings.ContainsKey(theOriginalPlantName))
+			{
+				foundPlantName = true;
+				thePlantName = plantIndiceStrings[theOriginalPlantName];
+			}
 
-            if ((!File.Exists(originalPath)))
+            if (!foundPlantName)
             {
 				if(log)
 				{
-					Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-					Log.LogError("Plant name could not be found!");
+					Log.LogInfo("Couldn't find plant name!");
 				}
                 thePlantName = "";
-            }
-            else
-            {
-				bool foundPlantName = false;
-
-				originalJson = File.ReadAllText(originalPath);
-				translatedJson = AlmanacPlantMenu_Patch.almanacJson;
-                AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
-                AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
-
-				for(int i = 0; i < originalPlantData.plants.Count; i++)
-				{
-					AlmanacPlantBank.PlantInfo originalPlantInfo = originalPlantData.plants[i];
-					KeyValuePair<int, string> translatedPlantInfo = plantIndices[originalPlantInfo.seedType];
-
-                    if (originalPlantInfo.name == theOriginalPlantName)
-                    {
-                        thePlantName = translatedPlantInfo.Value;
-						foundPlantName = true;
-                    }
-                }
-
-                if (!foundPlantName)
-                {
-					if(log)
-					{
-						Log.LogInfo("Couldn't find plant name!");
-					}
-                    thePlantName = "";
-                }
             }
 
             return thePlantName;
@@ -235,9 +206,9 @@ namespace PvZ_Fusion_Translator
 			string currentLanguage = Utils.Language.ToString();
 
 			json = AlmanacZombieMenu_Patch.almanacJson;
-            ZombieAlmanacData zombieData = JsonUtility.FromJson<ZombieAlmanacData>(json);
+            Il2CppAlmanacData.AlmanacData zombieData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(json);
 
-			foreach (ZombieInfo zombieInfo in zombieData.zombies)
+			foreach (Il2CppAlmanacData.ZombieInfo zombieInfo in zombieData.zombies)
 			{
 				if ((int)zombieInfo.theZombieType == (int)theZombieType)
 				{
@@ -249,10 +220,12 @@ namespace PvZ_Fusion_Translator
 		}
 
 		public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+		public static Dictionary<string, string> plantIndiceStrings = new Dictionary<string, string>();
 
 		public static void RegisterPlantIndices()
 		{
 			plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+			plantIndiceStrings = new Dictionary<string, string>();
             string originalJson;
             string translatedJson;
 
@@ -270,15 +243,19 @@ namespace PvZ_Fusion_Translator
 			{
 				originalJson = File.ReadAllText(originalPath);
 				translatedJson = AlmanacPlantMenu_Patch.almanacJson;
-				AlmanacPlantBank.PlantData originalPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(originalJson);
-				AlmanacPlantBank.PlantData translatedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(translatedJson);
+				Il2CppAlmanacData.AlmanacData originalPlantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(originalJson);
+				Il2CppAlmanacData.AlmanacData translatedPlantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(translatedJson);
 
 				for (int i = 0; i < originalPlantData.plants.Count; i++)
 				{
-					PlantInfo originalPlantInfo = originalPlantData.plants[i];
-					PlantInfo translatedPlantInfo = null;
+					Il2CppAlmanacData.PlantInfo originalPlantInfo = originalPlantData.plants[i];
+					if(!plantIndiceStrings.ContainsKey(originalPlantInfo.name))
+					{
+						plantIndiceStrings.Add(originalPlantInfo.name, originalPlantInfo.name);
+					}
+					Il2CppAlmanacData.PlantInfo translatedPlantInfo = null;
 
-					foreach (PlantInfo info in translatedPlantData.plants)
+					foreach (Il2CppAlmanacData.PlantInfo info in translatedPlantData.plants)
 					{
 						if (info.seedType == originalPlantInfo.seedType)
 						{
@@ -290,6 +267,7 @@ namespace PvZ_Fusion_Translator
 					{
 						KeyValuePair<int, string> temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
 						plantIndices.Add(originalPlantInfo.seedType, temp);
+						plantIndiceStrings[originalPlantInfo.name] = translatedPlantInfo.name;
 					}
 				}
 			}

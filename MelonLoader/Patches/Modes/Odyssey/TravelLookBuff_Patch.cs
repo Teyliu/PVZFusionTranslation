@@ -38,9 +38,9 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         [HarmonyPostfix]
         public static void Post_SetBuff(TravelLookBuff __instance)
         {
-            SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            /*SortedDictionary<int, string> buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
             string buffText = buffSet.ContainsKey(__instance.buffIndex) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
-            __instance.introduce.text = buffText;
+            __instance.introduce.text = buffText;*/
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {

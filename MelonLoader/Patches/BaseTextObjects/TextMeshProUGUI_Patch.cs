@@ -17,12 +17,21 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
-				if(__instance.transform.parent.parent != null)
+				if(__instance.transform.parent != null)
 				{
-                    if (__instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
-                    {
-                        return;
-                    }
+					if(__instance.transform.parent.name.Contains("DrawCardsText"))
+					{
+						Log.LogDebug("skipping drawcardstext");
+						return;
+					}
+
+					if(__instance.transform.parent.parent != null)
+					{
+						if (__instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
+						{
+							return;
+						}
+					}
                 }
 
 				__instance = StringStore.TranslateText(__instance);
@@ -47,7 +56,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 			}
 		}
 
-		[HarmonyPatch(nameof(TextMeshProUGUI.Awake))]
+		/*[HarmonyPatch(nameof(TextMeshProUGUI.Awake))]
 		[HarmonyPostfix]
 		private static void Awake(TextMeshProUGUI __instance)
 		{
@@ -77,9 +86,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 
 				// __instance.ForceMeshUpdate();
 			}
-		}
+		}*/
 	}
-	[HarmonyPatch(typeof(TMP_SubMeshUI))]
+
+	/*[HarmonyPatch(typeof(TMP_SubMeshUI))]
 	public static class TMP_SubMeshUI_Patch
 	{
 		[HarmonyPatch(nameof(TMP_SubMeshUI.OnEnable))]
@@ -93,5 +103,5 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 				__instance.textComponent.text = StringStore.TranslateText(text);
 			}
 		}
-	}
+	}*/
 }

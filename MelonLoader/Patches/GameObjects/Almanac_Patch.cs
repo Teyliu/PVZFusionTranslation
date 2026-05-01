@@ -37,6 +37,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             TMP_FontAsset font = FontStore.LoadTMPFont(Utils.Language.ToString());
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
+                if (text.gameObject.name.Contains("Cost")) continue;
+
                 if(text.text == "关闭")
                 {
                     text.text = StringStore.TranslateText("合上");

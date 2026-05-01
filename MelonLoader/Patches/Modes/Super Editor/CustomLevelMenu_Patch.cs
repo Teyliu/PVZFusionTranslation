@@ -36,9 +36,16 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
             }
         }
 
-        [HarmonyPatch(nameof(CustomLevelMenu.InitWindows))]
+        [HarmonyPatch(nameof(CustomLevelMenu.InitLocalWindows))]
         [HarmonyPostfix]
         public static void InitWindows(CustomLevelMenu __instance)
+        {
+            TranslateLevelButtons(__instance);
+        }
+
+        [HarmonyPatch(nameof(CustomLevelMenu.InitOnlineWindow))]
+        [HarmonyPostfix]
+        public static void InitOnlineWindow(CustomLevelMenu __instance)
         {
             TranslateLevelButtons(__instance);
         }
@@ -56,20 +63,23 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
 
             foreach(CustomButton_enterGame level in __instance.levels)
             {
-                string levelId = level.levelData.levelId;
-                if(levelId != null)
+                if(level.onlineLevelInfo != null)
                 {
-                    if(translatedLevelData.ContainsKey(levelId))
+                    string levelId = level.onlineLevelInfo.levelId;
+                    if(levelId != null)
                     {
-                        TranslatedLevelData levelData = translatedLevelData[levelId];
-                        level.levelName.text = levelData.name;
-                        level.levelData.Name = levelData.name;
-                        level.serializedLevel.boardConfig.startTip = levelData.startTip;
-                    }
-                    else
-                    {
-                        TranslatedLevelData dumpedLevelData = new TranslatedLevelData(level.levelData.Name, level.serializedLevel.boardConfig.startTip);
-                        dumpData.Add(levelId, dumpedLevelData);
+                        if(translatedLevelData.ContainsKey(levelId))
+                        {
+                            TranslatedLevelData levelData = translatedLevelData[levelId];
+                            level.levelName.text = levelData.name;
+                            level.serializedLevel.name = levelData.name;
+                            level.serializedLevel.boardConfig.startTip = levelData.startTip;
+                        }
+                        else
+                        {
+                            TranslatedLevelData dumpedLevelData = new TranslatedLevelData(level.levelData.Name, level.serializedLevel.boardConfig.startTip);
+                            dumpData.Add(levelId, dumpedLevelData);
+                        }
                     }
                 }
                 else

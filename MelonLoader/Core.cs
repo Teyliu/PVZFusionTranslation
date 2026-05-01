@@ -32,7 +32,7 @@ namespace PvZ_Fusion_Translator
 			base.OnInitializeMelon();
 			Instance = this;
 			
-			DllStore.Init(MelonLoader.InternalUtils.UnityInformationHandler.GameVersion);
+			//DllStore.Init(MelonLoader.InternalUtils.UnityInformationHandler.GameVersion);
 
 			Config();
 			#if MULTI_LANGUAGE
@@ -51,7 +51,7 @@ namespace PvZ_Fusion_Translator
 		{
 			dtStart = DateTime.Now;
 			replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
-			TravelMgr_Patch.DumpTravelBuffs();
+			LoadTravelBuffs();
         }
 
 		public override void OnDeinitializeMelon()
@@ -60,7 +60,7 @@ namespace PvZ_Fusion_Translator
 			#if MULTI_LANGUAGE
 			FileLoader.SaveLanguage();
 			#endif
-			DllStore.UpdateNewDll();
+			//DllStore.UpdateNewDll();
 			#if OBFUSCATE && !RELEASE
 			CheckSumStore.ConvertMD5Json();
 			#endif

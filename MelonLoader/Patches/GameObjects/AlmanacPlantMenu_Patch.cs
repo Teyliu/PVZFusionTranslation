@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppAlmanacData;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static Il2Cpp.AlmanacPlantBank;
+using UnityEngine.UIElements;
 using static PvZ_Fusion_Translator.FileLoader;
 using static PvZ_Fusion_Translator.Utils;
 
@@ -26,12 +27,17 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
                 bool isPlantName = text.gameObject.name.Contains("Name") && text.transform.parent.name != "Background";
-                if (text.gameObject.name != "Description" && !isPlantName)
+                if (text.gameObject.name != "Description" && !isPlantName && !text.gameObject.name.Contains("Cost"))
                 {
                     text.text = StringStore.TranslateText(text.text);
                     text.font = font;
                     text.autoSizeTextContainer = true;
                 }
+            }
+
+            foreach(AlmanacCardUI almanacCardUI in __instance.GetComponentsInChildren<AlmanacCardUI>())
+            {
+                AlmanacCardUI_Patch.Awake(almanacCardUI);
             }
 
             // skin button resize
@@ -63,7 +69,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
                 TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
 
-                PlantData plantData = JsonUtility.FromJson<PlantData>(json);
+                AlmanacData plantData = JsonUtility.FromJson<AlmanacData>(json);
 
                 Il2CppSystem.Collections.Generic.List<PlantType> searchedPlants = new();
 

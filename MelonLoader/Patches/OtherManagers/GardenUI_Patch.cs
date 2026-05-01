@@ -2,6 +2,7 @@
 using Il2Cpp;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
+using Il2CppZenGarden;
 
 namespace PvZ_Fusion_Translator.Patches.OtherManagers
 {
@@ -13,7 +14,6 @@ namespace PvZ_Fusion_Translator.Patches.OtherManagers
 		public static void Update(GardenUI __instance)
 		{
 			__instance.currentPageText = StringStore.TranslateText(__instance.currentPageText, false);
-			__instance.currentPageText2 = StringStore.TranslateText(__instance.currentPageText2, false);
 
 			// Transform PageText = __instance.transform.Find("PageText");
             // StringStore.TranslateTextTransform(PageText.transform);

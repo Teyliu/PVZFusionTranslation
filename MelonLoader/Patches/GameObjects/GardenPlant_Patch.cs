@@ -2,6 +2,7 @@
 using Il2Cpp;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Text.RegularExpressions;
+using Il2CppZenGarden;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
