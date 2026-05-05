@@ -83,7 +83,7 @@ namespace PvZ_Fusion_Translator
 				Utils.OpenSaveDirectory();
 			}
 
-			if (Input.GetKeyDown(KeyCode.Delete))
+			if (Input.GetKeyDown(KeyCode.PageUp))
 			{
 				Utils.OpenOnlineAlmanac();
 			}

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Il2CppGameLevel.EventNodes;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.BaseTextObjects;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
 {
@@ -17,23 +18,38 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
     public static class RuntimeNodeUI_Patch
     {
         [HarmonyPatch(nameof(RuntimeNodeUI.Awake))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.Initialize))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.CreatePorts))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.CreateTravelEntryEditUI), argumentTypes: [typeof(RectTransform), typeof(GetTravelEntryNode)])]
+        [HarmonyPatch(nameof(RuntimeNodeUI.CreateStringInputField))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.CreatePorts))]
         [HarmonyPostfix]
         public static void Awake(RuntimeNodeUI __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            if(__instance.dropdownPrefab)
+            {
+                if(__instance.dropdownPrefab.TryGetComponent<TMP_Dropdown>(out TMP_Dropdown dropdown))
+                {
+                    TMP_Dropdown_Patch.CreateDropdownList(dropdown);
+                }
+            }
+
+            if(__instance.valueInputField)
+            {
+                TMP_InputField_Patch.OnEnable(__instance.valueInputField);
+                foreach(TextMeshProUGUI txt in __instance.valueInputField.GetComponentsInChildren<TextMeshProUGUI>(true))
+                {
+                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
+                }
+            }
 
             foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
                 txt.font = fontAsset;
             }
-        }
-
-        [HarmonyPatch(nameof(RuntimeNodeUI.Initialize))]
-        [HarmonyPostfix]
-        public static void Initialize(RuntimeNodeUI __instance)
-        {
-            Awake(__instance);
         }
 
         [HarmonyPatch(nameof(RuntimeNodeUI.UpdateDisplay))]
@@ -65,6 +81,23 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
                         txt.text = (zombieName != "") ? zombieName : StringStore.TranslateText(txt.text);
                         txt.font = fontAsset;
                     }
+                }
+            }
+
+            if(__instance.dropdownPrefab)
+            {
+                if(__instance.dropdownPrefab.TryGetComponent<TMP_Dropdown>(out TMP_Dropdown dropdown))
+                {
+                    TMP_Dropdown_Patch.CreateDropdownList(dropdown);
+                }
+            }
+
+            if(__instance.valueInputField)
+            {
+                TMP_InputField_Patch.OnEnable(__instance.valueInputField);
+                foreach(TextMeshProUGUI txt in __instance.valueInputField.GetComponentsInChildren<TextMeshProUGUI>(true))
+                {
+                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
                 }
             }
         }

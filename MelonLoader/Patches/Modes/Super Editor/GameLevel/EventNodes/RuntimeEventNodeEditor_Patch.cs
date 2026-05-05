@@ -69,6 +69,20 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
                     txt.text = (zombieName != "") ? zombieName : StringStore.TranslateText(txt.text);
                     txt.font = fontAsset;
                 }
+                else if(nodeUI.Node.nodeType == "PlantTypeListStorageNode")
+                {
+                    Transform dropdownTransform = nodeUI.transform.Find("Header/ValueEditContainer/Dropdown(Clone)");
+
+                    if (!dropdownTransform) continue;
+
+                    foreach(TextMeshProUGUI txt in dropdownTransform.GetComponentsInChildren<TextMeshProUGUI>())
+                    {
+                        if (!Utils.CheckForUntranslatedText(txt.text)) continue;
+                        
+                        txt.text = StringStore.TranslateText(txt.text);
+                        txt.font = fontAsset;
+                    }
+                }
             }
         }
     }

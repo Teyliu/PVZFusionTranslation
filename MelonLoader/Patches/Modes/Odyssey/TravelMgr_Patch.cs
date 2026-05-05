@@ -169,10 +169,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                             }
                         }
                     }
-                    else
-                    {
-                        Log.LogInfo("Couldnt find this buff");
-                    }
 
                     /*var translatedBuffSet = travelBuffs[i.Key];
                     if(translatedBuffSet.ContainsKey(j.Key))

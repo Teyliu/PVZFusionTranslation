@@ -63,6 +63,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         public static void TranslateInGameTextMesh(TextMeshProUGUI txt)
         {
             if (txt == null) return;
+            if (txt.text == currentText) return;
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
@@ -145,6 +146,8 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 }
             }
             txt.font = fontAsset;
+
+            currentText = txt.text;
         }
 
         public static string namePlantedPattern = "种植了：([^\\s]+)";

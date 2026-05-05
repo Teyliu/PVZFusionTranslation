@@ -42,6 +42,14 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
             string buffText = buffSet.ContainsKey(__instance.buffIndex) ? buffSet[__instance.buffIndex] : StringStore.TranslateText(__instance.introduce.text);
             __instance.introduce.text = buffText;*/
 
+            foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Introduce").GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                if(!TravelMgr_Patch.travelBuffString.ContainsKey(text.text) && Utils.CheckForUntranslatedText(text.text))
+                {
+                    text.text = StringStore.TranslateText(text.text);
+                }
+            }
+
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {
                 text.text = StringStore.TranslateText(text.text);

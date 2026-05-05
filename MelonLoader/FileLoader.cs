@@ -154,7 +154,7 @@ namespace PvZ_Fusion_Translator
 					}
 				}
 
-				string detailStringsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/3.6/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/DetailStrings.json").Result;
+				string detailStringsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/DetailStringsTranslate.json").Result;
 				if(detailStringsContent != null)
 				{
 					LoadDetailStrings(detailStringsContent);

@@ -21,7 +21,6 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 				{
 					if(__instance.transform.parent.name.Contains("DrawCardsText"))
 					{
-						Log.LogDebug("skipping drawcardstext");
 						return;
 					}
 

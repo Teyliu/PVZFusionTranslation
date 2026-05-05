@@ -402,6 +402,7 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\BaseTextObjects\TMP_Dropdown_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacCardUI_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacSelectMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
