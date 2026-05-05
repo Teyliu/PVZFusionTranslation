@@ -17,7 +17,10 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             {
                 if (transform != null)
                 {
-                    transform.GetComponent<TextMeshProUGUI>().text = StringStore.TranslateText(transform.GetComponent<TextMeshProUGUI>().text);
+                    if(transform.gameObject.active)
+                    {
+                        transform.GetComponent<TextMeshProUGUI>().text = StringStore.TranslateText(transform.GetComponent<TextMeshProUGUI>().text);
+                    }
                 }
             }
         }

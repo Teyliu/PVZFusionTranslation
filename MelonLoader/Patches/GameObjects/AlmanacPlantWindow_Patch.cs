@@ -34,9 +34,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             TMP_FontAsset fontAsset = (hasAlmanacFont) ? FontStore.LoadTMPFontAlmanac(Utils.Language.ToString()) : FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
+            Il2CppAlmanacData.AlmanacData plantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(json);
 
-            foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
+            foreach (Il2CppAlmanacData.PlantInfo plantInfo in plantData.plants)
             {
                 if (plantInfo.seedType == (int)__instance.currentPlantType)
                 {

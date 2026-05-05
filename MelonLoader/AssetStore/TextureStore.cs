@@ -6,8 +6,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 {
 	public static class TextureStore
 	{
-		internal static Dictionary<string, string> textureDict = [];
-		internal static Dictionary<string, string> spriteDict = [];
+		internal static Dictionary<string, byte[]> textureDict = [];
+		internal static Dictionary<string, byte[]> spriteDict = [];
 
         internal static void Init() => FileLoader.LoadTextures();
 
@@ -55,13 +55,13 @@ namespace PvZ_Fusion_Translator.AssetStore
 		}
 		#endif
 
-		public static void LogAll()
+		/*public static void LogAll()
 		{
 			Log.LogInfo("Logging all TextureStore entries.");
 			foreach (KeyValuePair<string, string> entry in textureDict)
 			{
 				Log.LogInfo("TextureDict Entry: " + entry.Key + " | " + entry.Value);
 			}
-		}
+		}*/
 	}
 }

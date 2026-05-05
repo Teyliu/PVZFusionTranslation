@@ -155,6 +155,9 @@ namespace PvZ_Fusion_Translator.AssetStore
 				if (__instance.clip == null)
 					return;
 
+				if (Il2CppRhythmGame.RhythmGameManager.Instance != null && __instance.clip.name == "loon")
+					return;
+
 				if (LogSounds)
 					MelonLogger.Msg($"Playing \"{__instance.clip.name}\" from object \"{__instance.gameObject.name}\"");
 

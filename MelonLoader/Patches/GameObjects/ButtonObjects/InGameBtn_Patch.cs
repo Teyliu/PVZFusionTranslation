@@ -9,9 +9,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
     [HarmonyPatch(typeof(InGameBtn))]
 	public static class InGameBtn_Patch
 	{
-		[HarmonyPatch(nameof(InGameBtn.Update))]
+		[HarmonyPatch(nameof(InGameBtn.Start))]
 		[HarmonyPostfix]
-		private static void Update(InGameBtn __instance)
+		private static void Start(InGameBtn __instance)
 		{
 			Transform sceneText = __instance.transform.FindChild("SceneText");
 			if(sceneText != null)

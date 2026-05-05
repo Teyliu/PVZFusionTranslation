@@ -17,12 +17,20 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
-				if(__instance.transform.parent.parent != null)
+				if(__instance.transform.parent != null)
 				{
-                    if (__instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
-                    {
-                        return;
-                    }
+					if(__instance.transform.parent.name.Contains("DrawCardsText"))
+					{
+						return;
+					}
+
+					if(__instance.transform.parent.parent != null)
+					{
+						if (__instance.transform.parent.parent.name.Contains("AbyssBagMenu"))
+						{
+							return;
+						}
+					}
                 }
 
 				__instance = StringStore.TranslateText(__instance);
@@ -32,7 +40,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 				{
 					__instance.text = __instance.text.Replace("\n", " ");
                     
-                    if (__instance.name == "LevelName2" || __instance.name == "LevelName3")
+                    if ((__instance.name == "LevelName2" || __instance.name == "LevelName3") && !(__instance.gameObject.transform.parent.name.Contains("Difficulty") || __instance.gameObject.name.Contains("Difficulty")))
                     {
                         TowerManager_Patch.updatedText.Add(__instance.transform);
                     }
@@ -47,7 +55,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 			}
 		}
 
-		[HarmonyPatch(nameof(TextMeshProUGUI.Awake))]
+		/*[HarmonyPatch(nameof(TextMeshProUGUI.Awake))]
 		[HarmonyPostfix]
 		private static void Awake(TextMeshProUGUI __instance)
 		{
@@ -77,9 +85,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 
 				// __instance.ForceMeshUpdate();
 			}
-		}
+		}*/
 	}
-	[HarmonyPatch(typeof(TMP_SubMeshUI))]
+
+	/*[HarmonyPatch(typeof(TMP_SubMeshUI))]
 	public static class TMP_SubMeshUI_Patch
 	{
 		[HarmonyPatch(nameof(TMP_SubMeshUI.OnEnable))]
@@ -93,5 +102,5 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 				__instance.textComponent.text = StringStore.TranslateText(text);
 			}
 		}
-	}
+	}*/
 }

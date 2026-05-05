@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -33,6 +33,7 @@
 	<ItemGroup>
 	  <None Remove=".gitattributes" />
 	  <None Remove=".gitignore" />
+	  <None Remove="Resources\ModUpdateUtil.exe" />
 	</ItemGroup>
 		
 	<ItemGroup>
@@ -392,6 +393,7 @@
 
 	<ItemGroup>
 		<Compile Include="AssetStore\CheckSumStore.cs" />
+		<Compile Include="AssetStore\DllStore.cs" />
 		<Compile Include="AssetStore\FontStore.cs" />
 		<Compile Include="AssetStore\StringStore.cs" />
 		<Compile Include="AssetStore\TextureStore.cs" />
@@ -402,8 +404,13 @@
 		<Compile Include="Log.cs" />
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
+		<Compile Include="Patches\BaseTextObjects\TMP_Dropdown_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacCardUI_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacSelectMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\LevelResultMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\GameLose_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />
@@ -411,6 +418,8 @@
 		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\MultipleChoiceMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\TravelAdvantureMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelInvestMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\SynergyDisplay_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelStoreWindow_Patch.cs" />
@@ -430,7 +439,7 @@
 		<Compile Include="Patches\GameObjects\PlantDamageMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\EveOptionWindow_Patch.cs" />
-		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
+		<Compile Include="Patches\Managers\Screen_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
@@ -507,11 +516,17 @@
 		<Compile Include="Patches\Managers\TowerManager_Patch.cs" />
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelBuffOptionButton_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomButton_enterGame_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomOnlineMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_shooting_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeNodeUI_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeEventNodeEditor_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\LevelManager_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\RhythmGame\RhythmGameChartEditorUI_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\RhythmGame\RhythmGameManager_Patch.cs" />
 		<Compile Include="Patches\OtherManagers\AchievementClip_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
 		<Compile Include="Patches\Managers\AlmanacMgrZombie_Patch.cs" />
@@ -552,6 +567,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Resources\ModUpdateUtil.exe" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	
@@ -559,5 +578,6 @@
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Mods\&quot;" />
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Translation Builds\&quot;" />
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PVZF-Translation\&quot;" />
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PvZF-Translation-DLLs\&quot;" />
 	</Target>
 </Project>

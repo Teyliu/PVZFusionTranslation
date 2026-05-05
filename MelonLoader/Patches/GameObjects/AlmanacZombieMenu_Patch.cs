@@ -16,13 +16,15 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     {
         public static string almanacJson = "";
 
-        [HarmonyPatch(nameof(AlmanacZombieMenu.Awake))]
+        [HarmonyPatch(nameof(AlmanacZombieMenu.Start))]
         [HarmonyPostfix]
-        private static void Awake(AlmanacZombieMenu __instance)
+        private static void Start(AlmanacZombieMenu __instance)
         {
             TMP_FontAsset font = FontStore.LoadTMPFont(Utils.Language.ToString());
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
+                if (text.gameObject.name.Contains("Cost")) continue;
+
                 bool isZombieName = text.gameObject.name.Contains("Name") && text.transform.parent.name != "Background";
                 if (text.gameObject.name != "Description" && !isZombieName)
                 {

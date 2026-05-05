@@ -2,9 +2,10 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
-using static PvZ_Fusion_Translator.Patches.Modes.Odyssey.TravelMgr_Patch;
-using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine;
+using static Il2CppSystem.Globalization.TimeSpanFormat;
+using static PvZ_Fusion_Translator.Patches.Modes.Odyssey.TravelMgr_Patch;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 {
@@ -15,14 +16,23 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         [HarmonyPostfix]
         private static void SetType(TravelStoreWindow __instance)
         {
-            var buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
+            /*var buffSet = translatedTravelBuffs[buffLinks[__instance.buffType]];
 
-            string buff = __instance.show != null && __instance.introduce.text != "词条已选完" ? buffSet[__instance.buffIndex] : StringStore.TranslateText("词条已选完");
+            string buff = __instance.show != null && __instance.introduce.text != "词条已选完" ? buffSet[__instance.buffIndex] : StringStore.TranslateText("词条已选完");*/
             string originalText = __instance.introduce.text;
-
-            string affinities = TranslateAffinities(originalText);
-
-            __instance.introduce.text = buff + affinities;
+            string affinityPattern = "([\\s\\S]+)(\\\n<color=red>)([\\s\\S]+)(<\\/color>)";
+            if(Regex.IsMatch(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline))
+            {
+                Match match = Regex.Match(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline);
+                string startText = match.Groups[1].Value;
+                string affinityText = match.Groups[3].Value;
+                string affinities = TranslateAffinities(affinityText);
+                __instance.introduce.text = startText + affinities;
+            }
+            else
+            {
+                __instance.introduce.text = originalText;
+            }
 
             foreach (var text in __instance.buttonText)
             {
@@ -42,55 +52,41 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 
         public static string TranslateAffinities(string originalText)
         {
-            string discolored = Utils.RemoveColorTags(originalText);
-            int firstNewlineIndex = discolored.IndexOf('\n');
-
             string result = "";
             List<string> translatedAffinities = [];
 
-            if(firstNewlineIndex >= 0)
+            string[] lines = originalText.Split('\n');
+
+            foreach(string line in lines)
             {
-                string affinityString = discolored.Substring(firstNewlineIndex);
-                string[] affinities = affinityString.Split('\n');
+                if (string.IsNullOrEmpty(line)) continue;
 
                 string fStr = StringStore.translationStringRegex.ContainsKey("【([^\\s]+)】_IV") ? StringStore.translationStringRegex["【([^\\s]+)】_IV"] : "[{0}]";
-                string originalPattern = "【([^\\s]+)】";
+                
+                // Extract dynamic parts from the original text
+                var regex = new Regex("【([^\\s]+)】");
+                var match = regex.Match(line);
+                int groupCount = match.Groups.Count;
 
-                foreach (string affinity in affinities)
+                // List to hold formatted dynamic parts
+                List<string> dynamicParts = [];
+
+                // Loop through each group and determine its translation
+                for (int i = 1; i < groupCount; i++)
                 {
-                    if(affinity != "")
-                    {
-                        string translatedAffinity = affinity;
-                        if (StringStore.TestRegex(affinity, originalPattern))
-                        {
-                            // Extract dynamic parts from the original text
-                            var regex = new Regex(originalPattern);
-                            var match = regex.Match(affinity);
-                            int groupCount = match.Groups.Count;
-
-                            // List to hold formatted dynamic parts
-                            List<string> dynamicParts = [];
-
-                            // Loop through each group and determine its translation
-                            for (int i = 1; i < groupCount; i++)
-                            {
-                                string groupValue = match.Groups[i].Value;
-                                string translatedValue = StringStore.translationString.ContainsKey(groupValue)
-                                    ? StringStore.translationString[groupValue]
-                                    : groupValue;
-                                dynamicParts.Add(translatedValue);
-                            }
-
-                            // Format the output string with dynamic parts
-                            translatedAffinity = string.Format(fStr, [.. dynamicParts]);
-                        }
-
-                        translatedAffinities.Add(translatedAffinity);
-                    }
+                    string groupValue = match.Groups[i].Value;
+                    string translatedValue = StringStore.translationString.ContainsKey(groupValue)
+                        ? StringStore.translationString[groupValue]
+                        : groupValue;
+                    dynamicParts.Add(translatedValue);
                 }
-                result = "\n" + "<color=red>" + String.Join("\n", translatedAffinities) + "</color>";
+
+                // Format the output string with dynamic parts
+                string translatedAffinity = string.Format(fStr, [.. dynamicParts]);
+                translatedAffinities.Add(translatedAffinity);
             }
 
+            result = "\n" + "<color=red>" + String.Join("\n", translatedAffinities) + "</color>";
             return result;
         }
     }

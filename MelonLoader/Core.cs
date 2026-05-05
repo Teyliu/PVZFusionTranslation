@@ -31,6 +31,9 @@ namespace PvZ_Fusion_Translator
 		{
 			base.OnInitializeMelon();
 			Instance = this;
+			
+			//DllStore.Init(MelonLoader.InternalUtils.UnityInformationHandler.GameVersion);
+
 			Config();
 			#if MULTI_LANGUAGE
 			FileLoader.LoadLanguage();
@@ -40,6 +43,7 @@ namespace PvZ_Fusion_Translator
 			AudioStore.Init();
 			FontStore.Init();
 			Utils.RegisterPlantIndices();
+
 			//Utils.RegisterRecipeLinks();
         }
 
@@ -47,7 +51,7 @@ namespace PvZ_Fusion_Translator
 		{
 			dtStart = DateTime.Now;
 			replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
-			TravelMgr_Patch.DumpTravelBuffs();
+			LoadTravelBuffs();
         }
 
 		public override void OnDeinitializeMelon()
@@ -56,6 +60,7 @@ namespace PvZ_Fusion_Translator
 			#if MULTI_LANGUAGE
 			FileLoader.SaveLanguage();
 			#endif
+			//DllStore.UpdateNewDll();
 			#if OBFUSCATE && !RELEASE
 			CheckSumStore.ConvertMD5Json();
 			#endif
@@ -78,9 +83,9 @@ namespace PvZ_Fusion_Translator
 				Utils.OpenSaveDirectory();
 			}
 
-			if (Input.GetKeyDown(KeyCode.Delete))
+			if (Input.GetKeyDown(KeyCode.PageUp))
 			{
-				Utils.OpenTrello();
+				Utils.OpenOnlineAlmanac();
 			}
 
 			TowerManager_Patch.UpdateText();
