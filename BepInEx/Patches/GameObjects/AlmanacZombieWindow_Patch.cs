@@ -2,12 +2,13 @@ using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
 using static PvZ_Fusion_Translator__BepInEx_.Log;
-using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -16,6 +17,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     {
         [HarmonyPatch(nameof(AlmanacZombieWindow.UpdateText))]
         [HarmonyPostfix]
+        [HarmonyPriority(Priority.Last)]
         private static void UpdateText(AlmanacZombieWindow __instance, ZombieType theZombieType)
         {
             try
@@ -32,40 +34,80 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     return;
                 }
 
-                Log.LogInfo($"[AlmanacZombieWindow_Patch] UpdateText called for zombie type: {__instance.currentZombieType}");
+                int zombieTypeInt = (int)__instance.currentZombieType;
+                Log.LogInfo($"[AlmanacZombieWindow_Patch] UpdateText called for zombie type: {zombieTypeInt}");
 
                 string currentLanguage = Utils.Language.ToString();
                 string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 
-                // Step 1: Get original values from AlmanacDataLoader.GetZombieData (3.6 native)
+                // Step 1: Get original Chinese values from AlmanacDataLoader.almanacData.zombies
                 string originalName = "";
                 string originalIntroduce = "";
                 string originalInfo = "";
 
                 try
                 {
-                    var getZombieDataMethod = Type.GetType("AlmanacData.AlmanacDataLoader, Assembly-CSharp")
-                        ?.GetMethod("GetZombieData", new[] { typeof(ZombieType) });
-
-                    if (getZombieDataMethod != null)
+                    Type loaderType = Type.GetType("AlmanacData.AlmanacDataLoader, Assembly-CSharp");
+                    if (loaderType != null)
                     {
-                        var zombieInfoObj = getZombieDataMethod.Invoke(null, new object[] { __instance.currentZombieType });
-                        if (zombieInfoObj != null)
+                        var almanacDataField = loaderType.GetField("almanacData", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                        if (almanacDataField != null)
                         {
-                            Type zType = zombieInfoObj.GetType();
-                            originalName = (string)zType.GetField("name")?.GetValue(zombieInfoObj) ?? "";
-                            originalIntroduce = (string)zType.GetField("introduce")?.GetValue(zombieInfoObj) ?? "";
-                            originalInfo = (string)zType.GetField("info")?.GetValue(zombieInfoObj) ?? "";
-                            Log.LogInfo($"[AlmanacZombieWindow_Patch] Got original from GetZombieData: name='{originalName}'");
-                        }
-                        else
-                        {
-                            Log.LogInfo("[AlmanacZombieWindow_Patch] GetZombieData returned null");
+                            var almanacDataObj = almanacDataField.GetValue(null);
+                            if (almanacDataObj != null)
+                            {
+                                Type almanacDataType = almanacDataObj.GetType();
+                                var zombiesField = almanacDataType.GetField("zombies");
+                                if (zombiesField != null)
+                                {
+                                    var zombiesList = zombiesField.GetValue(almanacDataObj) as IList;
+                                    if (zombiesList != null)
+                                    {
+                                        foreach (var zombieObj in zombiesList)
+                                        {
+                                            if (zombieObj == null) continue;
+                                            Type zType = zombieObj.GetType();
+                                            var theZombieTypeField = zType.GetField("theZombieType");
+                                            if (theZombieTypeField != null)
+                                            {
+                                                int zombieTypeVal = (int)theZombieTypeField.GetValue(zombieObj);
+                                                if (zombieTypeVal == zombieTypeInt)
+                                                {
+                                                    originalName = (string)zType.GetField("name")?.GetValue(zombieObj) ?? "";
+                                                    originalIntroduce = (string)zType.GetField("introduce")?.GetValue(zombieObj) ?? "";
+                                                    originalInfo = (string)zType.GetField("info")?.GetValue(zombieObj) ?? "";
+                                                    Log.LogInfo($"[AlmanacZombieWindow_Patch] Got original from almanacData.zombies: name='{originalName}'");
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                    else
+
+                    if (string.IsNullOrEmpty(originalName))
                     {
-                        Log.LogWarning("[AlmanacZombieWindow_Patch] Could not find AlmanacDataLoader.GetZombieData method");
+                        var getZombieDataMethod = Type.GetType("AlmanacData.AlmanacDataLoader, Assembly-CSharp")
+                            ?.GetMethod("GetZombieData", new[] { typeof(ZombieType) });
+
+                        if (getZombieDataMethod != null)
+                        {
+                            var zombieInfoObj = getZombieDataMethod.Invoke(null, new object[] { __instance.currentZombieType });
+                            if (zombieInfoObj != null)
+                            {
+                                Type zType = zombieInfoObj.GetType();
+                                originalName = (string)zType.GetField("name")?.GetValue(zombieInfoObj) ?? "";
+                                originalIntroduce = (string)zType.GetField("introduce")?.GetValue(zombieInfoObj) ?? "";
+                                originalInfo = (string)zType.GetField("info")?.GetValue(zombieInfoObj) ?? "";
+                                Log.LogInfo($"[AlmanacZombieWindow_Patch] Got original from GetZombieData: name='{originalName}'");
+                            }
+                            else
+                            {
+                                Log.LogInfo("[AlmanacZombieWindow_Patch] GetZombieData returned null (likely modded zombie)");
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -73,11 +115,28 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     Log.LogWarning($"[AlmanacZombieWindow_Patch] GetZombieData failed: {ex.Message}");
                 }
 
+                // Step 1.5: If no original data found, read current UI text (may have been set by a mod's postfix)
+                if (string.IsNullOrEmpty(originalName) && __instance.showedZombieName != null && __instance.showedZombieName.Count > 0)
+                {
+                    foreach (TextMeshProUGUI text in __instance.showedZombieName)
+                    {
+                        if (text != null && !string.IsNullOrEmpty(text.text))
+                        {
+                            originalName = text.text;
+                            break;
+                        }
+                    }
+                }
+                if (string.IsNullOrEmpty(originalInfo) && string.IsNullOrEmpty(originalIntroduce) && __instance.showedZombieIntroduce != null && !string.IsNullOrEmpty(__instance.showedZombieIntroduce.text))
+                {
+                    originalIntroduce = __instance.showedZombieIntroduce.text;
+                }
+
                 // Step 2: Read JSON file and find zombie by theZombieType
                 string finalName = originalName;
                 string finalIntroduce = originalIntroduce;
                 string finalInfo = originalInfo;
-                bool foundTranslation = false;
+                bool foundInJson = false;
 
                 string jsonPath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
                 Log.LogInfo($"[AlmanacZombieWindow_Patch] Looking for JSON at: {jsonPath}");
@@ -95,17 +154,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                         if (zombieData?.zombies != null)
                         {
-                            Log.LogInfo($"[AlmanacZombieWindow_Patch] Parsed {zombieData.zombies.Count} zombies, looking for type {__instance.currentZombieType}");
+                            Log.LogInfo($"[AlmanacZombieWindow_Patch] Parsed {zombieData.zombies.Count} zombies, looking for type {zombieTypeInt}");
 
                             foreach (var zombie in zombieData.zombies)
                             {
-                                if (zombie != null && zombie.theZombieType == __instance.currentZombieType)
+                                if (zombie != null && zombie.theZombieType == zombieTypeInt)
                                 {
                                     finalName = zombie.name ?? originalName;
                                     finalIntroduce = zombie.introduce ?? originalIntroduce;
                                     finalInfo = zombie.info ?? originalInfo;
-                                    foundTranslation = true;
-                                    Log.LogInfo($"[AlmanacZombieWindow_Patch] Found translated zombie: theZombieType={zombie.theZombieType}, name='{zombie.name}', introduce='{zombie.introduce?.Substring(0, Math.Min(50, zombie.introduce?.Length ?? 0))}', info='{zombie.info?.Substring(0, Math.Min(50, zombie.info?.Length ?? 0))}'");
+                                    foundInJson = true;
+                                    Log.LogInfo($"[AlmanacZombieWindow_Patch] Found translated zombie: theZombieType={zombie.theZombieType}, name='{zombie.name}'");
                                     break;
                                 }
                             }
@@ -137,12 +196,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                             {
                                 foreach (var moddedInfo in moddedData.zombies)
                                 {
-                                    if (moddedInfo != null && moddedInfo.theZombieType == __instance.currentZombieType)
+                                    if (moddedInfo != null && moddedInfo.theZombieType == zombieTypeInt)
                                     {
                                         finalName = moddedInfo.name ?? finalName;
                                         finalIntroduce = moddedInfo.introduce ?? finalIntroduce;
                                         finalInfo = moddedInfo.info ?? finalInfo;
-                                        foundTranslation = true;
+                                        foundInJson = true;
                                         Log.LogInfo($"[AlmanacZombieWindow_Patch] Modded override: name='{moddedInfo.name}'");
                                         break;
                                     }
@@ -156,20 +215,51 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     }
                 }
 
-                if (!foundTranslation)
+                // Step 4: If still no translation data and no original data, translate current UI text via StringStore
+                if (!foundInJson && string.IsNullOrEmpty(originalName) && string.IsNullOrEmpty(originalIntroduce) && string.IsNullOrEmpty(originalInfo))
                 {
-                    Log.LogDebug($"[DumpUntranslated] Zombie type={__instance.currentZombieType} - name='{originalName}', introduce='{originalIntroduce}', info='{originalInfo}'");
-                    if (!string.IsNullOrEmpty(originalName))
-                        DumpUntranslatedStrings($"Zombie[{__instance.currentZombieType}]_name", originalName);
-                    if (!string.IsNullOrEmpty(originalIntroduce))
-                        DumpUntranslatedStrings($"Zombie[{__instance.currentZombieType}]_introduce", originalIntroduce);
-                    if (!string.IsNullOrEmpty(originalInfo))
-                        DumpUntranslatedStrings($"Zombie[{__instance.currentZombieType}]_info", originalInfo);
+                    Log.LogInfo($"[AlmanacZombieWindow_Patch] No data found for zombie {zombieTypeInt}, translating current UI text via StringStore");
+                    if (__instance.showedZombieName != null)
+                    {
+                        foreach (TextMeshProUGUI text in __instance.showedZombieName)
+                        {
+                            if (text != null && !string.IsNullOrEmpty(text.text))
+                            {
+                                text.text = StringStore.TranslateText(text.text);
+                                text.font = FontStore.LoadTMPFont(currentLanguage);
+                                text.fontSizeMax = 21;
+                                text.autoSizeTextContainer = false;
+                            }
+                        }
+                    }
+                    if (__instance.showedZombieIntroduce != null && !string.IsNullOrEmpty(__instance.showedZombieIntroduce.text))
+                    {
+                        __instance.showedZombieIntroduce.text = StringStore.TranslateText(__instance.showedZombieIntroduce.text);
+                        __instance.showedZombieIntroduce.font = FontStore.LoadTMPFont(currentLanguage);
+                        __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
+                        __instance.showedZombieIntroduce.enableWordWrapping = true;
+                        __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
+                        Canvas.ForceUpdateCanvases();
+                        __instance.showedZombieIntroduce.ForceMeshUpdate();
+                        if (__instance.zombieTextContent != null)
+                        {
+                            float textHeight = __instance.showedZombieIntroduce.preferredHeight;
+                            __instance.zombieTextContent.sizeDelta = new Vector2(__instance.zombieTextContent.sizeDelta.x, textHeight);
+                        }
+                    }
+                    return;
                 }
+
+                if (!string.IsNullOrEmpty(originalName))
+                    DumpUntranslatedStrings(originalName, originalName);
+                if (!string.IsNullOrEmpty(originalIntroduce))
+                    DumpUntranslatedStrings(originalIntroduce, originalIntroduce);
+                if (!string.IsNullOrEmpty(originalInfo))
+                    DumpUntranslatedStrings(originalInfo, originalInfo);
 
                 Log.LogInfo($"[AlmanacZombieWindow_Patch] Final values - name='{finalName}', introduce='{finalIntroduce?.Substring(0, Math.Min(50, finalIntroduce?.Length ?? 0))}', info='{finalInfo?.Substring(0, Math.Min(50, finalInfo?.Length ?? 0))}'");
 
-                // Step 4: Font setup
+                // Step 5: Font setup
                 TMP_FontAsset fontAsset = null;
                 if (FontStore.fontAssetDictSecondary != null &&
                     (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") ||
@@ -183,21 +273,21 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     fontAsset = FontStore.LoadTMPFont(currentLanguage);
                 }
 
-                // Step 5: Update showedZombieName (List<TextMeshProUGUI>)
+                // Step 6: Update showedZombieName (List<TextMeshProUGUI>)
                 if (__instance.showedZombieName != null)
                 {
                     foreach (TextMeshProUGUI text in __instance.showedZombieName)
                     {
                         if (text == null) continue;
                         text.autoSizeTextContainer = false;
-                        text.text = $"{Utils.RemoveSizeTags(finalName)} ({(int)__instance.currentZombieType})";
+                        text.text = $"{Utils.RemoveSizeTags(finalName)} ({zombieTypeInt})";
                         text.font = fontAsset;
                         text.fontSizeMax = 21;
                         Log.LogInfo($"[AlmanacZombieWindow_Patch] Set showedZombieName[{text.name}] text: {text.text}");
                     }
                 }
 
-                // Step 6: Update showedZombieIntroduce
+                // Step 7: Update showedZombieIntroduce
                 if (__instance.showedZombieIntroduce != null)
                 {
                     string spawnInfo = "";
@@ -232,6 +322,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     __instance.showedZombieIntroduce.enableWordWrapping = true;
                     __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
 
+                    Canvas.ForceUpdateCanvases();
                     __instance.showedZombieIntroduce.ForceMeshUpdate();
 
                     Log.LogInfo($"[AlmanacZombieWindow_Patch] Set showedZombieIntroduce text length: {finalText.Length}, first 100: {finalText.Substring(0, Math.Min(100, finalText.Length))}");
@@ -243,7 +334,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     }
                 }
 
-                Log.LogInfo($"[AlmanacZombieWindow_Patch] Successfully updated UI for zombie {__instance.currentZombieType}");
+                Log.LogInfo($"[AlmanacZombieWindow_Patch] Successfully updated UI for zombie {zombieTypeInt}");
             }
             catch (Exception ex)
             {

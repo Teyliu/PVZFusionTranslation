@@ -23,6 +23,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
     public class Utils
     {
         public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+        public static Dictionary<string, string> plantIndiceStrings = new Dictionary<string, string>();
 
         public static ZombieAlmanacData CachedZombieData = null;
         public static ZombieAlmanacData CachedModdedZombieData = null;
@@ -69,6 +70,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
         public static void RegisterPlantIndices()
         {
             plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
+            plantIndiceStrings = new Dictionary<string, string>();
             string originalJson;
             string translatedJson;
 
@@ -97,6 +99,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 for (int i = 0; i < originalPlantData.plants.Count; i++)
                 {
                     var originalPlantInfo = originalPlantData.plants[i];
+                    if (!plantIndiceStrings.ContainsKey(originalPlantInfo.name))
+                    {
+                        plantIndiceStrings.Add(originalPlantInfo.name, originalPlantInfo.name);
+                    }
                     PlantInfo translatedPlantInfo = null;
 
                     foreach (var info in translatedPlantData.plants)
@@ -111,6 +117,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     {
                         var temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
                         plantIndices.Add(originalPlantInfo.seedType, temp);
+                        plantIndiceStrings[originalPlantInfo.name] = translatedPlantInfo.name;
                     }
                 }
             }

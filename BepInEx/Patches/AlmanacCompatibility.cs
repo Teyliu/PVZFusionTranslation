@@ -64,6 +64,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches
         public string introduce { get; set; }
 
         [JsonPropertyName("theZombieType")]
-        public ZombieType theZombieType { get; set; }
+        public int theZombieType { get; set; }
     }
 }

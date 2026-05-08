@@ -254,6 +254,7 @@
 		<Compile Include="Patches\Managers\CanvasUpUI_Patch.cs" />
 		<Compile Include="Patches\Managers\ChessManager_Patch.cs" />
 		<Compile Include="Patches\Managers\DifficultyMgr_Patch.cs" />
+		<Compile Include="Patches\Managers\InGameUI_Patch.cs" />
 		<!-- <Compile Include="Patches\Managers\InGameText_ShowText_Patch.cs" /> --> <!-- [MISSING 3.6] -->
 
 		<Compile Include="Patches\Managers\IZBottomMenu_Patch.cs" />

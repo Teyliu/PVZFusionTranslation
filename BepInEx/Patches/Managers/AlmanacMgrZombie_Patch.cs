@@ -90,7 +90,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 			foreach (ZombieInfo zombieInfo in zombieData.zombies)
 			{
-				if (zombieInfo.theZombieType == __instance.theZombieType)
+				if (zombieInfo.theZombieType == (int)__instance.theZombieType)
 				{
 					component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
 					component.overflowMode = TextOverflowModes.Page;
@@ -127,7 +127,7 @@ string moddedJson;
 				{
 					foreach (ZombieInfo zombieInfo in moddedZombieData.zombies)
 					{
-						if (zombieInfo.theZombieType == __instance.theZombieType)
+						if (zombieInfo.theZombieType == (int)__instance.theZombieType)
 						{
 							component.text = zombieInfo.info + "\n\n" + zombieInfo.introduce;
 							component.overflowMode = TextOverflowModes.Page;
@@ -186,6 +186,6 @@ string moddedJson;
         public string name;
         public string info;
         public string introduce;
-        public ZombieType theZombieType;
+        public int theZombieType;
     }
 }

@@ -210,6 +210,12 @@ namespace PvZ_Fusion_Translator__BepInEx_
                         }
                     }
                 }
+
+                string detailStringsPath = Path.Combine(almanacDir, "DetailStringsTranslate.json");
+                if (File.Exists(detailStringsPath))
+                {
+                    LoadDetailStrings(File.ReadAllText(detailStringsPath));
+                }
 #endif
             }
             catch (Exception e)
@@ -625,6 +631,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
             File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
             File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
+            DumpDetailStrings();
+
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true,
@@ -848,6 +856,89 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 Log.LogError("Error loading FS strings: " + e.Message);
             }
+        }
+
+internal static void LoadDetailStrings(string content)
+        {
+            try
+            {
+                string detailStringsPath = Path.Combine(GetAssetDir(AssetType.Dumps), "DetailStrings.json");
+                if (!File.Exists(detailStringsPath))
+                {
+                    DumpDetailStrings();
+                }
+
+                if (!File.Exists(detailStringsPath))
+                {
+                    Log.LogWarning("[LoadDetailStrings] DetailStrings.json not found after dump");
+                    return;
+                }
+
+                string detailStringsJson = File.ReadAllText(detailStringsPath);
+                var detailStringsDump = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(detailStringsJson);
+                var translatedDetailStrings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+
+                foreach (var detailString in detailStringsDump)
+                {
+                    if (translatedDetailStrings.ContainsKey(detailString.Key))
+                    {
+                        if (!AlmanacSelectMenu_Patch.detailTranslateStrings.ContainsKey(detailString.Value))
+                        {
+                            AlmanacSelectMenu_Patch.detailTranslateStrings.Add(detailString.Value, translatedDetailStrings[detailString.Key]);
+                        }
+                        else
+                        {
+                            AlmanacSelectMenu_Patch.detailTranslateStrings[detailString.Value] = translatedDetailStrings[detailString.Key];
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.LogError($"Error loading detail strings: {ex.Message}");
+            }
+        }
+
+        internal static Dictionary<string, string> DumpDetailStrings()
+        {
+            Dictionary<string, string> detailStringsDump = new Dictionary<string, string>();
+            try
+            {
+                string detailStringsData = Resources.Load<TextAsset>("detailstrings").text;
+                var parsed = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(detailStringsData);
+                if (parsed.TryGetProperty("details", out var details) && details.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    foreach (var detail in details.EnumerateArray())
+                    {
+                        string title = detail.TryGetProperty("title", out var titleProp) ? titleProp.GetString() : "";
+                        string text = detail.TryGetProperty("text", out var textProp) ? textProp.GetString() : "";
+                        if (!string.IsNullOrEmpty(title))
+                        {
+                            if (detailStringsDump.ContainsKey(title))
+                            {
+                                detailStringsDump[title] = text;
+                            }
+                            else
+                            {
+                                detailStringsDump.Add(title, text);
+                            }
+                        }
+                    }
+                }
+
+                string dumpDir = GetAssetDir(AssetType.Dumps);
+                if (!Directory.Exists(dumpDir))
+                {
+                    Directory.CreateDirectory(dumpDir);
+                }
+                var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+                File.WriteAllText(Path.Combine(dumpDir, "DetailStrings.json"), System.Text.Json.JsonSerializer.Serialize(detailStringsDump, options));
+            }
+            catch (Exception ex)
+            {
+                Log.LogError($"Error dumping detail strings: {ex.Message}");
+            }
+            return detailStringsDump;
         }
 #endif
     }
