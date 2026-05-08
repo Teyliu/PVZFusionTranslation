@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,11 +57,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
                 {
                     ableToUpdate = false;
                     unableReason = "Incorrect game version...";
-                }
-                else if (Core.Instance != null && Core.Instance.configAlwaysDownloadOnline?.Value == true)
-                {
-                    Log.LogInfo("DllStore: Same version but AlwaysDownloadOnline is enabled, will download latest files.");
-                    ableToUpdate = true;
                 }
                 else if (!sameVersion)
                 {

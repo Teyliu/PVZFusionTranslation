@@ -141,6 +141,7 @@ BepInEx/Patches/GameObjects/changes.txt
 BepInEx/Utils.cs.backup
 /3.5
 /3.6
+/3.6.1
 /Trans_ML
 MelonLoader/bin
 MelonLoader/obj

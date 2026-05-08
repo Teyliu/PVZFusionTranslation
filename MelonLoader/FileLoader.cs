@@ -1,10 +1,10 @@
 ﻿using Il2Cpp;
+using Il2CppAlmanacData;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using JetBrains.Annotations;
 using MelonLoader;
 using MelonLoader.TinyJSON;
 using Newtonsoft.Json;
-using NVorbis.Contracts;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
@@ -41,6 +41,10 @@ namespace PvZ_Fusion_Translator
 		internal static void LoadStrings(Utils.LanguageEnum language)
 		{
 			string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
+			if (!Directory.Exists(stringDir))
+			{
+				Directory.CreateDirectory(stringDir);
+			}
 
 			if(!Utils.useLocal)
 			{
@@ -73,22 +77,6 @@ namespace PvZ_Fusion_Translator
 					if(File.Exists(translationRegexsPath))
 					{
 						LoadTranslationRegexs(File.ReadAllText(translationRegexsPath));
-					}
-				}
-
-				// load travel_buffs
-				string travelBuffsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/travel_buffs.json").Result;
-			
-				if(travelBuffsContent != null)
-				{
-					TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
-				}
-				else
-				{
-					string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
-					if(File.Exists(travelBuffsPath))
-					{
-						TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
 					}
 				}
 
@@ -128,6 +116,14 @@ namespace PvZ_Fusion_Translator
 				}
 
 				// load almanacs
+				
+				string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+
+				if(!Directory.Exists(almanacDir))
+				{
+					Directory.CreateDirectory(almanacDir);
+				}
+				
 				string plantAlmanacContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/LawnStringsTranslate.json").Result;
 			
 				if(plantAlmanacContent != null)
@@ -136,7 +132,6 @@ namespace PvZ_Fusion_Translator
 				}
 				else
 				{
-					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 					string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 					if(File.Exists(path))
 					{
@@ -152,11 +147,24 @@ namespace PvZ_Fusion_Translator
 				}
 				else
 				{
-					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 					string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
 					if(File.Exists(path))
 					{
 						AlmanacZombieMenu_Patch.almanacJson = File.ReadAllText(path);
+					}
+				}
+
+				string detailStringsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Almanac/DetailStringsTranslate.json").Result;
+				if(detailStringsContent != null)
+				{
+					LoadDetailStrings(detailStringsContent);
+				}
+				else
+				{
+					string path = Path.Combine(almanacDir, "DetailStringsTranslate.json");
+					if(File.Exists(path))
+					{
+						LoadDetailStrings(File.ReadAllText(path));
 					}
 				}
 
@@ -200,10 +208,6 @@ namespace PvZ_Fusion_Translator
 						{
 							LoadTranslationRegexs(jsonString);
 						}
-						else if(fileName.EndsWith("travel_buffs"))
-						{
-							TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
-						}
 						else if(fileName.EndsWith("tips_iz"))
 						{
 							LoadIZStrings(jsonString);
@@ -219,16 +223,29 @@ namespace PvZ_Fusion_Translator
 					}
 
 					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+					
+					if(!Directory.Exists(almanacDir))
+					{
+						Directory.CreateDirectory(almanacDir);
+					}
+
 					string plantAlmanacPath = Path.Combine(almanacDir, "LawnStringsTranslate.json");
+					
 					if(File.Exists(plantAlmanacPath))
 					{
 						AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(plantAlmanacPath);
 					}
 
-					string zombieAlmanacPlant = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
-					if(File.Exists(zombieAlmanacPlant))
+					string zombieAlmanacPath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
+					if(File.Exists(zombieAlmanacPath))
 					{
-						AlmanacZombieMenu_Patch.almanacJson = File.ReadAllText(zombieAlmanacPlant);
+						AlmanacZombieMenu_Patch.almanacJson = File.ReadAllText(zombieAlmanacPath);
+					}
+
+					string detailStringsPath = Path.Combine(almanacDir, "DetailStringsTranslate.json");
+					if(File.Exists(detailStringsPath))
+					{
+						LoadDetailStrings(File.ReadAllText(detailStringsPath));
 					}
 
 					SaveStrings();
@@ -309,6 +326,31 @@ namespace PvZ_Fusion_Translator
             }
 		}
 
+		internal static void LoadDetailStrings(string content)
+		{
+			var detailStringsDump = DumpDetailStrings();
+			var detailStringsData = detailStringsDump.Item1;
+			var detailStrings = detailStringsDump.Item2;
+
+            var translatedDetailStrings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+			AlmanacSelectMenu_Patch.detailStrings = translatedDetailStrings;
+
+            foreach (var detailString in detailStringsData.details)
+            {
+				if (translatedDetailStrings.ContainsKey(detailString.title))
+                {
+					if(!AlmanacSelectMenu_Patch.detailTranslateStrings.ContainsKey(detailString.text))
+					{
+						AlmanacSelectMenu_Patch.detailTranslateStrings.Add(detailString.text, translatedDetailStrings[detailString.title]);
+					}
+					else
+					{
+						AlmanacSelectMenu_Patch.detailTranslateStrings[detailString.text] = translatedDetailStrings[detailString.title];
+					}
+                }
+            }
+		}
+
 		internal static void LoadChangelogText()
 		{
 			string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
@@ -332,6 +374,41 @@ namespace PvZ_Fusion_Translator
             }
 
 			NoticePauseMenu_Patch.changelogText = changelogText;
+		}
+
+		internal static void LoadTravelBuffs()
+		{
+			if (!Utils.useLocal)
+			{
+				string travelBuffsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/travel_buffs.json").Result;
+
+				if (travelBuffsContent != null)
+				{
+					TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.GenerateTranslatedTravelBuffs(travelBuffsContent);
+				}
+				else
+				{
+					string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
+					if (File.Exists(travelBuffsPath))
+					{
+						TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.GenerateTranslatedTravelBuffs(File.ReadAllText(travelBuffsPath));
+					}
+				}
+			}
+			else
+			{
+				string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
+
+				foreach (string filepath in Directory.EnumerateFiles(stringDir, "*.json", SearchOption.AllDirectories))
+				{
+					string fileName = Path.GetFileNameWithoutExtension(filepath);
+					string jsonString = File.ReadAllText(filepath);
+					if (fileName.EndsWith("travel_buffs"))
+					{
+						TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.GenerateTranslatedTravelBuffs(jsonString);
+					}
+				}
+			}
 		}
 
 		public static bool loadDefaultTextures = MelonPreferences.GetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultTextures");
@@ -422,12 +499,16 @@ namespace PvZ_Fusion_Translator
 							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 							string url = baseUrl + path;
 
-							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 							if(imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
 								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.textureDict[fileName] = imageData;
+								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+								{
+									Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+								}
 								File.WriteAllBytes(downloadPath, imageData);
 							}
 						}
@@ -531,12 +612,16 @@ namespace PvZ_Fusion_Translator
 							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 							string url = baseUrl + path;
 
-							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 							if(imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
 								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.spriteDict[fileName] = imageData;
+								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+								{
+									Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+								}
 								File.WriteAllBytes(downloadPath, imageData);
 							}
 						}
@@ -641,12 +726,16 @@ namespace PvZ_Fusion_Translator
 								string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 								string url = baseUrl + path;
 
-								byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+								byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 								if (imageData != null)
 								{
 									string fileName = Path.GetFileName(downloadPath);
 									Texture2D texture2D = Utils.LoadImage(imageData);
 									TextureStore.textureDict[fileName] = imageData;
+									if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+									{
+										Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+									}
 									File.WriteAllBytes(downloadPath, imageData);
 								}
 							}
@@ -743,12 +832,16 @@ namespace PvZ_Fusion_Translator
 							string baseUrl = $"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/";
 							string url = baseUrl + path;
 
-							byte[] imageData = Utils.GetImageDataFromWeb(url).Result;
+							byte[] imageData = Utils.GetByteDataFromWeb(url).Result;
 							if (imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
 								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.textureDict[fileName] = imageData;
+								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
+								{
+									Directory.CreateDirectory(Path.GetDirectoryName(downloadPath));
+								}
 								File.WriteAllBytes(downloadPath, imageData);
 							}
 						}
@@ -817,12 +910,6 @@ namespace PvZ_Fusion_Translator
 
 			File.WriteAllText(Path.Combine(stringDir, "tips_fs.json"), fsLevelTipDictionary);
 
-			// save travel buffs
-
-			string travelBuffs = SerializeWithIndentation(TravelMgr_Patch.translatedTravelBuffs);
-
-			File.WriteAllText(Path.Combine(stringDir, "travel_buffs.json"), travelBuffs);
-
 			// save changelog
 
 			if(NoticePauseMenu_Patch.changelogText != "")
@@ -854,6 +941,13 @@ namespace PvZ_Fusion_Translator
 				string zombieAlmanac = SerializeWithIndentation(AlmanacZombieMenu_Patch.almanacJson);
 
 				File.WriteAllText(Path.Combine(almanacDir, "ZombieStringsTranslate.json"), AlmanacZombieMenu_Patch.almanacJson);
+			}
+
+			if(AlmanacSelectMenu_Patch.detailStrings != new Dictionary<string, string>())
+			{
+				string detailStrings = SerializeWithIndentation(AlmanacSelectMenu_Patch.detailStrings);
+
+				File.WriteAllText(Path.Combine(almanacDir, "DetailStringsTranslate.json"), detailStrings);
 			}
 		}
 
@@ -911,7 +1005,18 @@ namespace PvZ_Fusion_Translator
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
 
-            Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
+			// dump almanac mechanics
+            var detailStringsDump = DumpDetailStrings();
+			var detailStringsData = detailStringsDump.Item1;
+			var detailStrings = detailStringsDump.Item2;
+
+            File.WriteAllText(Path.Combine(dumpDir, "DetailStrings.json"), System.Text.Json.JsonSerializer.Serialize(detailStrings, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
+
+            /*Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
 			foreach (Il2CppSystem.Collections.Generic.KeyValuePair<Achievement, Il2CppSystem.Tuple<string, string>> entry in AchievementClip.achievementsText)
 			{
 				achievementsList.Add(entry.Key, new AchievementObject(entry.Key, entry.Value.Item1, entry.Value.Item2));
@@ -920,7 +1025,7 @@ namespace PvZ_Fusion_Translator
 			{
 				WriteIndented = true,
 				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			}));
+			}));*/
         }
 
 		public static ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>> DumpIZStrings()
@@ -953,6 +1058,26 @@ namespace PvZ_Fusion_Translator
                 }
             }
 			return new ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>>(fusionShowcaseData, fusionShowcaseDataDump);
+		}
+
+		public static ValueTuple<Il2CppAlmanacData.AlmanacData, Dictionary<string, string>> DumpDetailStrings()
+		{
+			string detailStringsData = Resources.Load<TextAsset>("detailstrings").text;
+			Il2CppAlmanacData.AlmanacData detailStrings = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(detailStringsData);
+
+            Dictionary<string, string> detailStringsDump = new Dictionary<string, string>();
+			foreach (var detailString in detailStrings.details)
+            {
+				if(detailStringsDump.ContainsKey(detailString.title))
+				{
+					detailStringsDump[detailString.title] = detailString.text;
+				}
+				else
+				{
+					detailStringsDump.Add(detailString.title, detailString.text);
+				}
+            }
+			return new ValueTuple<Il2CppAlmanacData.AlmanacData, Dictionary<string, string>>(detailStrings, detailStringsDump);
 		}
 
 		#if DEBUG

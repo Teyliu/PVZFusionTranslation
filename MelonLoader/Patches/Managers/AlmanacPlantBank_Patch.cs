@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+﻿/*using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
@@ -197,4 +197,4 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             __instance.skinButton.transform.GetChild(2).Translate(new Vector3(-0.35f, 0));
         }
     }
-}
+}*/

@@ -15,9 +15,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     {
         public static void AnimOver(BaseMenu __instance)
         {
-            Transform changelogObj = __instance.transform.Find("Grave/UpdateInfo");
+            Transform changelogObj = __instance.transform.Find("Grave/UpdateInfoButton");
             Transform langObj = UnityEngine.Object.Instantiate(changelogObj, changelogObj.position + new Vector3(0.0f, 0.855f), changelogObj.rotation, __instance.transform.Find("Grave"));
-            langObj.name = "Languages";
+            langObj.name = "LanguagesButton";
             __instance.collider2Ds.Add(langObj.GetComponent<Collider2D>());
             UIButton langBtn = langObj.GetComponent<UIButton>();
 

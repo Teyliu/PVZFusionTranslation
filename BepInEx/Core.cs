@@ -33,7 +33,6 @@ public class Core : BasePlugin
 	public ConfigEntry<bool> configDefaultAudio;
 	public ConfigEntry<string> configLanguage;
 	public ConfigEntry<bool> configUseLocal;
-	public ConfigEntry<bool> configAlwaysDownloadOnline;
 	public ConfigEntry<bool> configEnableDllUpdate;
 
     private static float lastCheck = 0f;
@@ -194,12 +193,6 @@ public class Core : BasePlugin
 			configUseLocal = Config.Bind(new ConfigDefinition(mainCategory, "UseLocal"), false, new ConfigDescription("Use Local Translation Data", new AcceptableValueList<bool>(true, false)));
 		}
 		bool useLocal = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "UseLocal"), out configUseLocal);
-
-		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "AlwaysDownloadOnline"), out configAlwaysDownloadOnline) == false)
-		{
-			configAlwaysDownloadOnline = Config.Bind(new ConfigDefinition(mainCategory, "AlwaysDownloadOnline"), false, new ConfigDescription("Always download online files even when game version matches (for refreshing translations)", new AcceptableValueList<bool>(true, false)));
-		}
-		bool alwaysDownloadOnline = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "AlwaysDownloadOnline"), out configAlwaysDownloadOnline);
 
 		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "EnableDllUpdate"), out configEnableDllUpdate) == false)
 		{

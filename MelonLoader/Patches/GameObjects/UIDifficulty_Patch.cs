@@ -14,11 +14,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		[HarmonyPostfix]
 		private static void Update(UIDifficulty __instance)
 		{
+			if (!Utils.CheckForUntranslatedText(__instance.t.text)) return;
 			__instance.t.text = StringStore.TranslateText(__instance.t.text);
-			foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
-			{
-				text.text = StringStore.TranslateText(text.text);
-			}
 		}
 	}
 }
