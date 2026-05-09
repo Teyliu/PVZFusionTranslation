@@ -14,8 +14,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void RefeshOptions(TravelBuffMenu __instance)
         {
-            // [3.6 OBSOLETE] TravelBuffOptionButton_Patch.TranslateOptionButton(button);
-            // The buffType/buffIndex fields no longer exist in 3.6's TravelBuffOptionButton
+            Log.LogInfo("==== [TravelBuffMenu.RefeshOptions] ====");
+            Log.LogInfo($"[TravelBuffMenu] RefeshOptions called, options count: {(__instance.options != null ? __instance.options.Count : 0)}");
+            foreach (TravelBuffOptionButton button in __instance.options)
+            {
+                TravelBuffOptionButton_Patch.TranslateOptionButton(button);
+            }
         }
 
         [HarmonyPatch(nameof(TravelBuffMenu.Awake))]

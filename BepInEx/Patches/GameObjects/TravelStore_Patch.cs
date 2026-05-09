@@ -1,11 +1,9 @@
 using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using UnityEngine;
-using System.Linq;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -15,6 +13,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Start(TravelStore __instance)
         {
+            Log.LogInfo("==== [TravelStore.Start] ====");
             Log.LogInfo($"[TravelStore_Patch] Start called. investText: {__instance.investText?.text}");
             TranslateStoreText(__instance);
         }
@@ -83,6 +82,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static void TranslateStoreText(TravelStore __instance)
         {
+            Log.LogInfo("==== [TravelStore_Patch.TranslateStoreText] ====");
             if (__instance.investText != null)
             {
                 string original = __instance.investText.text;
@@ -107,10 +107,19 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     textMesh.text = StringStore.TranslateText(textMesh.text);
                 }
             }
+            Transform quitTransform = __instance.transform.Find("Quit");
+            if (quitTransform != null)
+            {
+                foreach (TextMeshProUGUI text in quitTransform.GetComponentsInChildren<TextMeshProUGUI>())
+                {
+                    text.text = StringStore.TranslateText("合上");
+                }
+            }
         }
 
         public static string TranslateInvestText(string investText)
         {
+            Log.LogInfo("==== [TravelStore_Patch.TranslateInvestText] ====");
             if (string.IsNullOrEmpty(investText))
                 return investText;
 
@@ -153,27 +162,26 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         [HarmonyPatch(typeof(TravelStoreWindow), nameof(TravelStoreWindow.SetType))]
         [HarmonyPostfix]
-        private static void SetType(TravelStoreWindow __instance, int index, BuffType buffType)
+        private static void SetType(TravelStoreWindow __instance, object buff)
         {
-            Log.LogInfo($"[TravelStore_Patch] SetType called. buffType: {buffType}, index: {index}");
-            
-            if (__instance.set && __instance.buttonText != null)
-            {
-                string originalText = TravelMgr.Instance.GetText((int)buffType, index);
-                string translatedText = Managers.TravelMgr_Patch.ResolveBuffTranslation(buffType, index, originalText);
-                
-                Log.LogInfo($"[TravelStore_Patch] SetType original: '{originalText}', translated: '{translatedText}'");
+            if (!__instance.set || __instance.buttonText == null)
+                return;
 
-                if (!string.IsNullOrEmpty(translatedText) && translatedText != originalText)
+            string introduceOriginal = __instance.introduce != null ? __instance.introduce.text : "(null)";
+
+            foreach (var textMesh in __instance.buttonText)
+            {
+                if (textMesh != null)
                 {
-                    foreach (var textMesh in __instance.buttonText)
-                    {
-                        if (textMesh != null)
-                        {
-                            textMesh.text = translatedText;
-                        }
-                    }
+                    string original = textMesh.text;
+                    textMesh.text = StringStore.TranslateText(textMesh.text);
                 }
+            }
+
+            if (__instance.introduce != null)
+            {
+                __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
+                Log.LogInfo($"[TravelStoreWindow.SetType] introduce: \"{introduceOriginal}\" -> \"{__instance.introduce.text}\"");
             }
         }
     }

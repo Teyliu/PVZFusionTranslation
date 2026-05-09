@@ -6,6 +6,7 @@
 /.vs
 /bin
 /obj
+/CustomizeLib.BepInEx
 /MelonLoader/obj
 /BepInEx/obj/Debug/net6.0
 /BepInEx/obj

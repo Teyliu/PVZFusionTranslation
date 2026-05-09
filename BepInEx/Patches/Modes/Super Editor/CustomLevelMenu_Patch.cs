@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Newtonsoft.Json;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
@@ -32,9 +32,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
             }
         }
 
-        [HarmonyPatch(nameof(CustomLevelMenu.InitWindows))]
+        [HarmonyPatch(nameof(CustomLevelMenu.InitLocalWindows))]
         [HarmonyPostfix]
         public static void InitWindows(CustomLevelMenu __instance)
+        {
+            TranslateLevelButtons(__instance);
+        }
+
+        [HarmonyPatch(nameof(CustomLevelMenu.InitOnlineWindow))]
+        [HarmonyPostfix]
+        public static void InitOnlineWindow(CustomLevelMenu __instance)
         {
             TranslateLevelButtons(__instance);
         }
@@ -48,44 +55,56 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 
         public static void TranslateLevelButtons(CustomLevelMenu __instance)
         {
+            string dumpPath = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "custom_level_data.json");
             Dictionary<string, TranslatedLevelData> dumpData = new Dictionary<string, TranslatedLevelData>();
 
-            foreach(CustomButton_enterGame level in __instance.levels)
+            if (!File.Exists(dumpPath))
             {
-                string levelId = level.levelData.levelId;
-                if(levelId != null)
+                File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
                 {
-                    if(translatedLevelData.ContainsKey(levelId))
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                }));
+            }
+
+            foreach (CustomButton_enterGame level in __instance.levels)
+            {
+                if (level.onlineLevelInfo != null)
+                {
+                    string levelId = level.onlineLevelInfo.levelId;
+                    if (levelId != null)
                     {
-                        TranslatedLevelData levelData = translatedLevelData[levelId];
-                        level.levelName.text = levelData.name;
-                        level.levelData.Name = levelData.name;
-                        level.serializedLevel.boardConfig.startTip = levelData.startTip;
-                    }
-                    else
-                    {
-                        TranslatedLevelData dumpedLevelData = new TranslatedLevelData(level.levelData.Name, level.serializedLevel.boardConfig.startTip);
-                        dumpData.Add(levelId, dumpedLevelData);
+                        if (translatedLevelData.ContainsKey(levelId))
+                        {
+                            TranslatedLevelData levelData = translatedLevelData[levelId];
+                            level.levelName.text = levelData.name;
+                            level.serializedLevel.name = levelData.name;
+                            level.serializedLevel.boardConfig.startTip = levelData.startTip;
+                        }
+                        else
+                        {
+                            TranslatedLevelData dumpedLevelData = new TranslatedLevelData(level.onlineLevelInfo.levelName, level.serializedLevel.boardConfig.startTip);
+                            dumpData.Add(levelId, dumpedLevelData);
+                        }
                     }
                 }
                 else
                 {
-                    level.levelName.text = StringStore.TranslateText(level.levelData.Name);
+                    level.levelName.text = StringStore.TranslateText(level.levelName.text);
                 }
             }
 
-            string dumpPath = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "custom_level_data.json");
             File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			}));
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            }));
         }
 
         public static async Task<Dictionary<string, TranslatedLevelData>> GetTranslatedLevelData()
         {
             string levelDataString = await Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/custom_level_data.json");
-            if(levelDataString != null)
+            if (levelDataString != null)
             {
                 Dictionary<string, TranslatedLevelData> levelDataJson = JsonConvert.DeserializeObject<Dictionary<string, TranslatedLevelData>>(levelDataString);
                 return levelDataJson;
@@ -104,7 +123,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 
                 translatedLevelData = new Dictionary<string, TranslatedLevelData>();
 
-                var translatedLevelDataRequest = GetTranslatedLevelData();
+                var translatedLevelDataRequest = Task.Run(() => GetTranslatedLevelData());
 
                 if (translatedLevelDataRequest.Result != null)
                 {

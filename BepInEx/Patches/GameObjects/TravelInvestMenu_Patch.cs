@@ -13,6 +13,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Start(TravelInvestMenu __instance)
         {
+            Log.LogInfo("==== [TravelInvestMenu.Start] ====");
             Log.LogInfo("[TravelInvestMenu_Patch] Start called");
             
             Transform titleText = __instance.transform.Find("Title");

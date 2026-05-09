@@ -42,6 +42,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             { "synergies", new SortedDictionary<int, string>() }
         };
 
+        public static Dictionary<string, string> travelBuffString = new Dictionary<string, string>();
+
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -154,6 +156,53 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 res = res.Substring(firstColon + 1);
             }
             return res;
+        }
+
+        [HarmonyPatch(nameof(TravelMgr.GetText))]
+        [HarmonyPostfix]
+        public static void GetText(TravelMgr __instance, object buff, ref string __result)
+        {
+            if (string.IsNullOrEmpty(__result))
+                return;
+
+            string original = __result;
+            string buffInfo = buff != null ? $"{buff.GetType().Name}:{buff}" : "null";
+
+            Log.LogInfo("==== [TravelMgr.GetText] buff={buffInfo} ====");
+            Log.LogInfo($"[TravelMgr.GetText] Input: \"{original}\"");
+
+            if (travelBuffString.ContainsKey(__result))
+            {
+                __result = travelBuffString[__result];
+                Log.LogInfo($"[TravelMgr.GetText] travelBuffString HIT: \"{original}\" -> \"{__result}\"");
+            }
+            else if (travelBuffString.ContainsKey(RemoveBuffName(__result)))
+            {
+                __result = travelBuffString[RemoveBuffName(__result)];
+                Log.LogInfo($"[TravelMgr.GetText] travelBuffString (RemoveBuffName) HIT: \"{original}\" -> \"{__result}\"");
+            }
+            else
+            {
+                string translated = StringStore.TranslateColorText(__result);
+                if (translated != __result)
+                {
+                    __result = translated;
+                    Log.LogInfo($"[TravelMgr.GetText] TranslateColorText HIT: \"{original}\" -> \"{__result}\"");
+                }
+                else
+                {
+                    translated = StringStore.TranslateText(__result);
+                    if (translated != __result)
+                    {
+                        __result = translated;
+                        Log.LogInfo($"[TravelMgr.GetText] TranslateText HIT: \"{original}\" -> \"{__result}\"");
+                    }
+                    else
+                    {
+                        Log.LogInfo($"[TravelMgr.GetText] NO TRANSLATION: \"{original}\"");
+                    }
+                }
+            }
         }
 
         private static TravelMgr GetTravelMgrInstance()
@@ -420,6 +469,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     foreach (var pair in TravelDictionary.advancedBuffsText)
                     {
                         AddOrUpdate(dumpedTravelBuffs, "advancedBuffs", (int)pair.Key, pair.Value);
+                        if (!travelBuffString.ContainsKey(pair.Value))
+                            travelBuffString.Add(pair.Value, pair.Value);
                     }
                 }
 
@@ -429,6 +480,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     foreach (var pair in TravelDictionary.ultimateBuffsText)
                     {
                         AddOrUpdate(dumpedTravelBuffs, "ultimateBuffs", (int)pair.Key, pair.Value);
+                        if (!travelBuffString.ContainsKey(pair.Value))
+                            travelBuffString.Add(pair.Value, pair.Value);
                     }
                 }
 
@@ -438,6 +491,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     foreach (var pair in TravelDictionary.debuffData)
                     {
                         AddOrUpdate(dumpedTravelBuffs, "debuffs", (int)pair.Key, pair.Value.Item1);
+                        if (!travelBuffString.ContainsKey(pair.Value.Item1))
+                            travelBuffString.Add(pair.Value.Item1, pair.Value.Item1);
                     }
                 }
 
@@ -447,6 +502,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     foreach (var pair in TravelDictionary.unlocksText)
                     {
                         AddOrUpdate(dumpedTravelBuffs, "unlocks", (int)pair.Key, pair.Value);
+                        if (!travelBuffString.ContainsKey(pair.Value))
+                            travelBuffString.Add(pair.Value, pair.Value);
                     }
                 }
 
@@ -457,6 +514,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     {
                         string desc = pair.Value.GetDescription();
                         AddOrUpdate(dumpedTravelBuffs, "investmentBuffs", (int)pair.Key, desc);
+                        if (!travelBuffString.ContainsKey(desc))
+                            travelBuffString.Add(desc, desc);
                     }
                 }
 
@@ -505,6 +564,38 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     {
                         var loaded = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffs);
                         translatedTravelBuffs = MergeWithDumped(loaded);
+
+                        foreach (var cat in dumpedTravelBuffs)
+                        {
+                            foreach (var entry in cat.Value)
+                            {
+                                string originalBuff = entry.Value;
+                                if (translatedTravelBuffs.TryGetValue(cat.Key, out SortedDictionary<int, string> translatedSet)
+                                    && translatedSet != null
+                                    && translatedSet.TryGetValue(entry.Key, out string translatedBuff)
+                                    && !string.IsNullOrEmpty(translatedBuff))
+                                {
+                                    if (travelBuffString.ContainsKey(originalBuff))
+                                        travelBuffString[originalBuff] = translatedBuff;
+                                    else
+                                        travelBuffString.Add(originalBuff, translatedBuff);
+
+                                    string withoutName = RemoveBuffName(originalBuff);
+                                    if (withoutName != originalBuff)
+                                    {
+                                        if (travelBuffString.ContainsKey(withoutName))
+                                            travelBuffString[withoutName] = translatedBuff;
+                                        else
+                                            travelBuffString.Add(withoutName, translatedBuff);
+                                    }
+                                }
+                                else
+                                {
+                                    if (!travelBuffString.ContainsKey(originalBuff))
+                                        travelBuffString.Add(originalBuff, originalBuff);
+                                }
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {

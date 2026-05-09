@@ -1,10 +1,6 @@
 using HarmonyLib;
-using System;
-using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
-using UnityEngine;
-using System.Collections.Generic;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -30,31 +26,39 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             if (button.introduce == null)
                 return;
 
-            Log.LogInfo($"[TravelBuffOptionButton_Patch] TranslateOptionButton called. buffType: {button.buffType}, buffIndex: {button.buffIndex}");
-            Log.LogInfo($"[TravelBuffOptionButton_Patch] Original text: {button.introduce.text}");
-
             string originalText = button.introduce.text;
             if (string.IsNullOrEmpty(originalText))
                 return;
 
-            if (button.introduce.text == "词条已选完")
-            {
-                button.introduce.text = StringStore.TranslateText("词条已选完");
-                return;
-            }
+            string buffInfo = button.buff != null ? $"{button.buff.GetType().Name}:{button.buff}" : "null";
+            string buffIndexInfo = button.refreshedbuffIndex != null ? $"{button.refreshedbuffIndex.GetType().Name}:{button.refreshedbuffIndex}" : "null";
+            bool isSet = button.set;
 
-            string resolved = ResolveBuffTranslation(button.buffType, button.buffIndex, originalText);
-            if (resolved != originalText)
+            Log.LogInfo("==== [TravelBuffOptionButton] ====");
+
+            if (travelBuffString.ContainsKey(originalText))
             {
-                Log.LogInfo($"[TravelBuffOptionButton_Patch] Resolved translation: '{resolved}'");
+                button.introduce.text = travelBuffString[originalText];
+                Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} travelBuffString HIT: \"{originalText}\" -> \"{button.introduce.text}\"");
+            }
+            else if (travelBuffString.ContainsKey(RemoveBuffName(originalText)))
+            {
+                button.introduce.text = travelBuffString[RemoveBuffName(originalText)];
+                Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} travelBuffString (RemoveBuffName) HIT: \"{originalText}\" -> \"{button.introduce.text}\"");
+            }
+            else if (Utils.CheckForUntranslatedText(originalText))
+            {
+                string translated = StringStore.TranslateText(originalText);
+                button.introduce.text = translated;
+                if (translated != originalText)
+                    Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} TranslateText fallback HIT: \"{originalText}\" -> \"{translated}\"");
+                else
+                    Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} NO TRANSLATION: \"{originalText}\"");
             }
             else
             {
-                Log.LogWarning($"[TravelBuffOptionButton_Patch] Translation unchanged for ({button.buffType}, {button.buffIndex}).");
+                Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} SKIPPED (no CJK): \"{originalText}\"");
             }
-
-            button.introduce.text = resolved;
         }
     }
 }
-

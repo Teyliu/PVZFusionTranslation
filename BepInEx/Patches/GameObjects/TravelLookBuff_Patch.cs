@@ -1,6 +1,4 @@
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
@@ -15,10 +13,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_Clear(TravelLookBuff __instance)
         {
+            Log.LogInfo("==== [TravelLookBuff.Clear] ====");
+            Log.LogInfo("[TravelLookBuff] Clear called");
             __instance.introduce.text = StringStore.TranslateText("无");
             __instance.set = false;
 
-            foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
+            foreach (TextMeshProUGUI text in __instance.transform.Find("Images").Find("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {
                 text.text = StringStore.TranslateText(text.text);
             }
@@ -28,7 +28,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_OnMouseUpAsButton(TravelLookBuff __instance)
         {
-            foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
+            foreach (TextMeshProUGUI text in __instance.transform.Find("Images").Find("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {
                 text.text = StringStore.TranslateText(text.text);
             }
@@ -38,29 +38,50 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_SetBuff(TravelLookBuff __instance)
         {
-            // Log.LogInfo($"[TravelLookBuff_Patch] SetBuff called. buffType: {__instance.buffType}, buffIndex: {__instance.buffIndex}");
-            // Log.LogInfo($"[TravelLookBuff_Patch] Original introduce text: {__instance.introduce?.text}");
+            string introduceText = __instance.introduce != null ? __instance.introduce.text : "(null)";
+            Log.LogInfo("==== [TravelLookBuff.SetBuff] ====");
 
-            CaptureBuffFromLookMenu(__instance.buffType, __instance.buffIndex, __instance.introduce?.text);
-
-            if (buffLinks == null || !buffLinks.ContainsKey(__instance.buffType))
+            foreach (TextMeshProUGUI text in __instance.transform.Find("Images").Find("Introduce").GetComponentsInChildren<TextMeshProUGUI>())
             {
-                Log.LogWarning($"[TravelLookBuff_Patch] buffType {__instance.buffType} not found in buffLinks!");
-                __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
-                return;
+                string original = text.text;
+                if (string.IsNullOrEmpty(original)) continue;
+
+                if (travelBuffString.ContainsKey(original))
+                {
+                    text.text = travelBuffString[original];
+                    Log.LogInfo($"[TravelLookBuff.SetBuff] travelBuffString HIT: \"{original}\" -> \"{text.text}\"");
+                }
+                else if (travelBuffString.ContainsKey(RemoveBuffName(original)))
+                {
+                    text.text = travelBuffString[RemoveBuffName(original)];
+                    Log.LogInfo($"[TravelLookBuff.SetBuff] travelBuffString (RemoveBuffName) HIT: \"{original}\" -> \"{text.text}\"");
+                }
+                else if (Utils.CheckForUntranslatedText(original))
+                {
+                    string translated = StringStore.TranslateColorText(original);
+                    if (translated != original)
+                    {
+                        text.text = translated;
+                        Log.LogInfo($"[TravelLookBuff.SetBuff] TranslateColorText fallback HIT: \"{original}\" -> \"{translated}\"");
+                    }
+                    else
+                    {
+                        translated = StringStore.TranslateText(original);
+                        text.text = translated;
+                        if (translated != original)
+                            Log.LogInfo($"[TravelLookBuff.SetBuff] TranslateText fallback HIT: \"{original}\" -> \"{translated}\"");
+                        else
+                            Log.LogInfo($"[TravelLookBuff.SetBuff] NO TRANSLATION: \"{original}\"");
+                    }
+                }
             }
 
-            string category = buffLinks[__instance.buffType];
-            // Log.LogInfo($"[TravelLookBuff_Patch] Category: {category}");
-
-            string buffText = ResolveBuffTranslation(__instance.buffType, __instance.buffIndex, __instance.introduce?.text);
-            // Log.LogInfo($"[TravelLookBuff_Patch] Resolved translation: '{buffText}'");
-            __instance.introduce.text = buffText;
-
-            foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Button").GetComponentsInChildren<TextMeshProUGUI>())
+            foreach (TextMeshProUGUI text in __instance.transform.Find("Images").Find("Button").GetComponentsInChildren<TextMeshProUGUI>())
             {
                 text.text = StringStore.TranslateText(text.text);
             }
+
+            Log.LogInfo($"[TravelLookBuff.SetBuff] introduce.text = \"{introduceText}\" -> \"{__instance.introduce?.text}\"");
         }
     }
 }

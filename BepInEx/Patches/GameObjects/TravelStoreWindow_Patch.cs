@@ -15,27 +15,23 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void SetType(TravelStoreWindow __instance)
         {
-            Log.LogInfo($"[TravelStoreWindow_Patch] SetType called. buffType: {__instance.buffType}, buffIndex: {__instance.buffIndex}");
-            
+            Log.LogInfo("==== [TravelStoreWindow.SetType] ====");
             if (!__instance.set || __instance.introduce == null)
                 return;
 
             string originalText = __instance.introduce.text;
-            Log.LogInfo($"[TravelStoreWindow_Patch] Original text: '{originalText}'");
-
-            string translatedText = TravelMgr_Patch.ResolveBuffTranslation(__instance.buffType, __instance.buffIndex, originalText);
-
-            string affinities = TranslateAffinities(originalText);
-
-            if (!string.IsNullOrEmpty(translatedText) && translatedText != originalText)
+            string affinityPattern = "([\\s\\S]+)(\\\n<color=red>)([\\s\\S]+)(<\\/color>)";
+            if (Regex.IsMatch(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline))
             {
-                Log.LogInfo($"[TravelStoreWindow_Patch] Found translation: '{translatedText}'");
-                __instance.introduce.text = translatedText + affinities;
+                Match match = Regex.Match(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline);
+                string startText = match.Groups[1].Value;
+                string affinityText = match.Groups[3].Value;
+                string affinities = TranslateAffinities(affinityText);
+                __instance.introduce.text = startText + affinities;
             }
             else
             {
-                Log.LogWarning($"[TravelStoreWindow_Patch] Translation unchanged for ({__instance.buffType}, {__instance.buffIndex}).");
-                __instance.introduce.text = StringStore.TranslateText(originalText) + affinities;
+                __instance.introduce.text = originalText;
             }
 
             if (__instance.buttonText != null)
@@ -62,60 +58,37 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static string TranslateAffinities(string originalText)
         {
-            if (string.IsNullOrEmpty(originalText))
-                return "";
-
-            string discolored = Utils.RemoveColorTags(originalText);
-            int firstNewlineIndex = discolored.IndexOf('\n');
-
             string result = "";
             List<string> translatedAffinities = new List<string>();
 
-            if (firstNewlineIndex >= 0)
+            string[] lines = originalText.Split('\n');
+
+            foreach (string line in lines)
             {
-                string affinityString = discolored.Substring(firstNewlineIndex);
-                string[] affinities = affinityString.Split('\n');
+                if (string.IsNullOrEmpty(line)) continue;
 
                 string fStr = StringStore.translationStringRegex.ContainsKey("【([^\\s]+)】_IV") ? StringStore.translationStringRegex["【([^\\s]+)】_IV"] : "[{0}]";
-                string originalPattern = "【([^\\s]+)】";
 
-                foreach (string affinity in affinities)
+                var regex = new Regex("【([^\\s]+)】");
+                var match = regex.Match(line);
+                int groupCount = match.Groups.Count;
+
+                List<string> dynamicParts = new List<string>();
+
+                for (int i = 1; i < groupCount; i++)
                 {
-                    if (affinity != "")
-                    {
-                        string translatedAffinity = affinity;
-                        if (StringStore.TestRegex(affinity, originalPattern))
-                        {
-                            var regex = new Regex(originalPattern);
-                            var match = regex.Match(affinity);
-                            int groupCount = match.Groups.Count;
-
-                            List<string> dynamicParts = new List<string>();
-
-                            for (int i = 1; i < groupCount; i++)
-                            {
-                                string groupValue = match.Groups[i].Value;
-                                string translatedValue = StringStore.translationString.ContainsKey(groupValue)
-                                    ? StringStore.translationString[groupValue]
-                                    : groupValue;
-                                dynamicParts.Add(translatedValue);
-                            }
-
-                            try
-                            {
-                                translatedAffinity = string.Format(fStr, dynamicParts.ToArray());
-                            }
-                            catch
-                            {
-                                translatedAffinity = affinity;
-                            }
-                        }
-
-                        translatedAffinities.Add(translatedAffinity);
-                    }
+                    string groupValue = match.Groups[i].Value;
+                    string translatedValue = StringStore.translationString.ContainsKey(groupValue)
+                        ? StringStore.translationString[groupValue]
+                        : groupValue;
+                    dynamicParts.Add(translatedValue);
                 }
-                result = "\n" + "<color=red>" + string.Join("\n", translatedAffinities) + "</color>";
+
+                string translatedAffinity = string.Format(fStr, dynamicParts.ToArray());
+                translatedAffinities.Add(translatedAffinity);
             }
+
+            result = "\n" + "<color=red>" + string.Join("\n", translatedAffinities) + "</color>";
 
             return result;
         }

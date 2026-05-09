@@ -132,6 +132,7 @@
 		<Compile Include="Patches\BaseTextObjects\TextMeshPro_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TextMeshProUGUI_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_InputField_Patch.cs" />
+		<Compile Include="Patches\BaseTextObjects\TMP_Dropdown_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssCheckInBag_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssDevelopMenu_Patch.cs" />
@@ -227,13 +228,14 @@
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffMenu_Patch.cs" />
-		<!-- <Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" /> --> <!-- [3.6 OUTDATED - buffType/buffIndex no longer exist] -->
-		
-		<!-- <Compile Include="Patches\GameObjects\TravelInvestMenu_Patch.cs" /> --> <!-- [3.6 OUTDATED] -->
-		<!-- <Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" /> --> <!-- [3.6 OUTDATED] -->
+		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelInvestMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelLookBuff_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelLookMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelRefresh_Patch.cs" />
-		<!-- <Compile Include="Patches\GameObjects\TravelStore_Patch.cs" /> --> <!-- [3.6 OUTDATED] -->
+		<Compile Include="Patches\GameObjects\TravelStore_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelStoreWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelAdvantureMenu_Patch.cs" />
 		
 		<Compile Include="Patches\GameObjects\TravelSynergyMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\SynergyDisplay_Patch.cs" />
@@ -245,7 +247,6 @@
 		<Compile Include="Patches\GameObjects\TreasureStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureWarehouseMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\UIDifficulty_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIZombieNum_Patch.cs" />
 		<Compile Include="Patches\Managers\AbyssBuffData_Patch.cs" />
 		<Compile Include="Patches\Managers\AbyssInfo_Patch.cs" />
