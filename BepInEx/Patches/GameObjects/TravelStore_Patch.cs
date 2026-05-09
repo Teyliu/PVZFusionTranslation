@@ -14,7 +14,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         private static void Start(TravelStore __instance)
         {
             Log.LogInfo("==== [TravelStore.Start] ====");
-            Log.LogInfo($"[TravelStore_Patch] Start called. investText: {__instance.investText?.text}");
             TranslateStoreText(__instance);
         }
 
@@ -22,28 +21,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Update(TravelStore __instance)
         {
-            if (__instance.pointText != null)
-            {
-                foreach (var textMesh in __instance.pointText)
-                {
-                    textMesh.text = StringStore.TranslateText(textMesh.text);
-                }
-            }
-            
-            if (__instance.refreshText != null)
-            {
-                foreach (var textMesh in __instance.refreshText)
-                {
-                    textMesh.text = StringStore.TranslateText(textMesh.text);
-                }
-            }
+            TranslateStoreText(__instance);
         }
 
         [HarmonyPatch(nameof(TravelStore.RefreshBuff))]
         [HarmonyPostfix]
         private static void RefreshBuff(TravelStore __instance)
         {
-            Log.LogInfo("[TravelStore_Patch] RefreshBuff called");
             TranslateStoreText(__instance);
         }
 
@@ -51,7 +35,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void SelectBuff(TravelStore __instance, ref TravelStoreWindow window)
         {
-            Log.LogInfo($"[TravelStore_Patch] SelectBuff called. window: {window != null}");
             TranslateStoreText(__instance);
 
             if (window != null && window.buttonText != null)
@@ -62,32 +45,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
             }
 
-            if (__instance.investText != null)
-            {
-                string original = __instance.investText.text;
-                __instance.investText.text = TranslateInvestText(__instance.investText.text);
-                Log.LogInfo($"[TravelStore_Patch] investText translated: '{original}' -> '{__instance.investText.text}'");
-#if DEBUG
-                if (__instance.investText.text != original)
-                {
-                    FileLoader.DumpUntranslatedStrings(original);
-                }
-#endif
-            }
-            if (__instance.investTextshadow != null)
-            {
-                __instance.investTextshadow.text = TranslateInvestText(__instance.investTextshadow.text);
-            }
+            __instance.investText.text = TranslateInvestText(__instance.investText.text);
+            __instance.investTextshadow.text = TranslateInvestText(__instance.investTextshadow.text);
         }
 
         public static void TranslateStoreText(TravelStore __instance)
         {
             Log.LogInfo("==== [TravelStore_Patch.TranslateStoreText] ====");
+            
             if (__instance.investText != null)
             {
-                string original = __instance.investText.text;
                 __instance.investText.text = TranslateInvestText(__instance.investText.text);
-                Log.LogInfo($"[TravelStore_Patch] TranslateStoreText - investText: '{original}' -> '{__instance.investText.text}'");
             }
             if (__instance.investTextshadow != null)
             {
@@ -95,16 +63,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             }
             if (__instance.pointText != null)
             {
-                foreach (var textMesh in __instance.pointText)
+                foreach (var text in __instance.pointText)
                 {
-                    textMesh.text = StringStore.TranslateText(textMesh.text);
+                    text.text = StringStore.TranslateText(text.text);
                 }
             }
             if (__instance.refreshText != null)
             {
-                foreach (var textMesh in __instance.refreshText)
+                foreach (var text in __instance.refreshText)
                 {
-                    textMesh.text = StringStore.TranslateText(textMesh.text);
+                    text.text = StringStore.TranslateText(text.text);
                 }
             }
             Transform quitTransform = __instance.transform.Find("Quit");
@@ -119,13 +87,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static string TranslateInvestText(string investText)
         {
-            Log.LogInfo("==== [TravelStore_Patch.TranslateInvestText] ====");
             if (string.IsNullOrEmpty(investText))
                 return investText;
 
-            Log.LogInfo($"[TravelStore_Patch] TranslateInvestText input: '{investText}'");
-
-            string[] investStats = investText.Split("&&");
+            string[] investStats = investText.Split("\n\n");
             List<string> translatedInvestStats = new List<string>();
 
             foreach (string investStat in investStats)
@@ -135,54 +100,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                 foreach (string line in lines)
                 {
-                    string translatedLine = Managers.TravelMgr_Patch.MatchTravelBuff(line);
-                    if (string.IsNullOrEmpty(translatedLine))
-                    {
-                        translatedLine = StringStore.TranslateColorText(line);
-                    }
-                    translatedLines.Add(translatedLine);
+                    translatedLines.Add(TravelMgr_Patch.TranslateTravelText(line));
                 }
 
                 string translatedInvestStat = string.Join("\n", translatedLines);
                 translatedInvestStats.Add(translatedInvestStat);
             }
 
-            string result = string.Join("&&", translatedInvestStats);
-            Log.LogInfo($"[TravelStore_Patch] TranslateInvestText output: '{result}'");
-
-#if DEBUG
-            if (result != investText)
-            {
-                FileLoader.DumpUntranslatedStrings(investText);
-            }
-#endif
+            string result = string.Join("\n\n", translatedInvestStats);
+            Log.LogInfo($"[TravelStore_Patch] TranslateInvestText: \"{investText}\" -> \"{result}\"");
 
             return result;
-        }
-
-        [HarmonyPatch(typeof(TravelStoreWindow), nameof(TravelStoreWindow.SetType))]
-        [HarmonyPostfix]
-        private static void SetType(TravelStoreWindow __instance, object buff)
-        {
-            if (!__instance.set || __instance.buttonText == null)
-                return;
-
-            string introduceOriginal = __instance.introduce != null ? __instance.introduce.text : "(null)";
-
-            foreach (var textMesh in __instance.buttonText)
-            {
-                if (textMesh != null)
-                {
-                    string original = textMesh.text;
-                    textMesh.text = StringStore.TranslateText(textMesh.text);
-                }
-            }
-
-            if (__instance.introduce != null)
-            {
-                __instance.introduce.text = StringStore.TranslateText(__instance.introduce.text);
-                Log.LogInfo($"[TravelStoreWindow.SetType] introduce: \"{introduceOriginal}\" -> \"{__instance.introduce.text}\"");
-            }
         }
     }
 }

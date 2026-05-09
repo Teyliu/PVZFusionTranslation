@@ -93,6 +93,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                         {
                             var loaded = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
                             TravelMgr_Patch.translatedTravelBuffs = loaded;
+                            TravelMgr_Patch.RebuildTravelBuffString();
                         }
                         catch
                         {
@@ -100,6 +101,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                             if (flexibleLoaded != null)
                             {
                                 TravelMgr_Patch.translatedTravelBuffs = flexibleLoaded;
+                                TravelMgr_Patch.RebuildTravelBuffString();
                             }
                         }
                     }
@@ -235,10 +237,12 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     try
                     {
                         TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
+                        TravelMgr_Patch.RebuildTravelBuffString();
                     }
                     catch
                     {
                         TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.LoadTravelBuffsFlexible(File.ReadAllText(travelBuffsPath));
+                        TravelMgr_Patch.RebuildTravelBuffString();
                     }
                 }
 #endif

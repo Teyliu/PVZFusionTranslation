@@ -1,7 +1,8 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using TMPro;
 using System;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -25,7 +26,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     {
                         text.text = "合上";
                     }
-                    text.text = StringStore.TranslateText(text.text);
+                    text.text = TravelMgr_Patch.TranslateTravelText(text.text);
                     text.font = font;
                 }
             }
@@ -36,7 +37,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 {
                     foreach (TextMeshProUGUI text in __instance.transform.GetComponentsInChildren<TextMeshProUGUI>())
                     {
-                        text.text = StringStore.TranslateText("合上");
+                        text.text = TravelMgr_Patch.TranslateTravelText("合上");
                     }
                 }
             }
@@ -57,12 +58,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
                         TextMeshProUGUI[] extraTexts = __instance.transform.GetChild(1).GetComponentsInChildren<TextMeshProUGUI>();
 
-                        text.text = StringStore.TranslateText(text.text, false);
+                        text.text = TravelMgr_Patch.TranslateTravelText(text.text);
                         text.font = fontAsset;
 
                         foreach (TextMeshProUGUI extraText in extraTexts)
                         {
-                            extraText.text = StringStore.TranslateText(extraText.text, false);
+                            extraText.text = TravelMgr_Patch.TranslateTravelText(extraText.text);
                             extraText.font = fontAsset;
                         }
                     }
@@ -71,8 +72,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
                         TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
 
-                        text.text = StringStore.TranslateText(text.text, false);
-                        textShadow.text = StringStore.TranslateText(textShadow.text, false);
+                        text.text = TravelMgr_Patch.TranslateTravelText(text.text);
+                        textShadow.text = TravelMgr_Patch.TranslateTravelText(textShadow.text);
 
                         text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
                         textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());

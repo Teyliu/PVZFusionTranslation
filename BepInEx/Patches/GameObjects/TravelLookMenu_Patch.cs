@@ -1,7 +1,8 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
@@ -17,7 +18,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                txt.text = StringStore.TranslateText(txt.text);
+                txt.text = TravelMgr_Patch.TranslateTravelText(txt.text);
                 txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
             }
 
@@ -28,7 +29,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
             }
 
-            __instance.treasureText.text = StringStore.TranslateText(__instance.treasureText.text);
+            __instance.treasureText.text = TravelMgr_Patch.TranslateTravelText(__instance.treasureText.text);
             savedAssetString = __instance.treasureText.text;
         }
 
@@ -38,7 +39,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             if (savedAssetString != __instance.treasureText.text)
             {
-                __instance.treasureText.text = StringStore.TranslateText(__instance.treasureText.text);
+                __instance.treasureText.text = TravelMgr_Patch.TranslateTravelText(__instance.treasureText.text);
                 savedAssetString = __instance.treasureText.text;
             }
         }

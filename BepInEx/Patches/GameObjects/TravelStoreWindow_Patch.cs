@@ -13,12 +13,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     {
         [HarmonyPatch(nameof(TravelStoreWindow.SetType))]
         [HarmonyPostfix]
-        private static void SetType(TravelStoreWindow __instance)
+        private static void SetType(TravelStoreWindow __instance, object buff)
         {
             Log.LogInfo("==== [TravelStoreWindow.SetType] ====");
-            if (!__instance.set || __instance.introduce == null)
-                return;
-
+            
             string originalText = __instance.introduce.text;
             string affinityPattern = "([\\s\\S]+)(\\\n<color=red>)([\\s\\S]+)(<\\/color>)";
             if (Regex.IsMatch(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline))
@@ -34,11 +32,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 __instance.introduce.text = originalText;
             }
 
+            __instance.introduce.text = TravelMgr_Patch.TranslateTravelText(__instance.introduce.text);
+            if (TravelMgr_Patch.TryGetTranslatedBuff(buff, out string translatedBuff))
+                __instance.introduce.text = translatedBuff;
+
             if (__instance.buttonText != null)
             {
                 foreach (var text in __instance.buttonText)
                 {
-                    text.text = StringStore.TranslateText(text.text);
+                    text.text = TravelMgr_Patch.TranslateTravelText(text.text);
                 }
             }
         }
@@ -51,7 +53,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             {
                 foreach (var text in __instance.buttonText)
                 {
-                    text.text = StringStore.TranslateText(text.text);
+                    text.text = TravelMgr_Patch.TranslateTravelText(text.text);
                 }
             }
         }

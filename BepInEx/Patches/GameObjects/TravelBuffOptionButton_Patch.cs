@@ -1,6 +1,8 @@
 using HarmonyLib;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using static PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
+using TravelMgr_Patch = PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch;
+using TMPro;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -23,41 +25,31 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static void TranslateOptionButton(TravelBuffOptionButton button)
         {
-            if (button.introduce == null)
+            Log.LogInfo("==== [TravelBuffOptionButton.TranslateOptionButton] ====");
+
+            if (button == null)
+            {
                 return;
-
-            string originalText = button.introduce.text;
-            if (string.IsNullOrEmpty(originalText))
-                return;
-
-            string buffInfo = button.buff != null ? $"{button.buff.GetType().Name}:{button.buff}" : "null";
-            string buffIndexInfo = button.refreshedbuffIndex != null ? $"{button.refreshedbuffIndex.GetType().Name}:{button.refreshedbuffIndex}" : "null";
-            bool isSet = button.set;
-
-            Log.LogInfo("==== [TravelBuffOptionButton] ====");
-
-            if (travelBuffString.ContainsKey(originalText))
-            {
-                button.introduce.text = travelBuffString[originalText];
-                Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} travelBuffString HIT: \"{originalText}\" -> \"{button.introduce.text}\"");
             }
-            else if (travelBuffString.ContainsKey(RemoveBuffName(originalText)))
+
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+            if (button.introduce != null
+                && TravelMgr_Patch.TryGetTranslatedBuff(button.buff, out string translatedBuff))
             {
-                button.introduce.text = travelBuffString[RemoveBuffName(originalText)];
-                Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} travelBuffString (RemoveBuffName) HIT: \"{originalText}\" -> \"{button.introduce.text}\"");
+                button.introduce.text = translatedBuff;
             }
-            else if (Utils.CheckForUntranslatedText(originalText))
+
+            foreach (TextMeshProUGUI text in button.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                string translated = StringStore.TranslateText(originalText);
-                button.introduce.text = translated;
-                if (translated != originalText)
-                    Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} TranslateText fallback HIT: \"{originalText}\" -> \"{translated}\"");
-                else
-                    Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} NO TRANSLATION: \"{originalText}\"");
-            }
-            else
-            {
-                Log.LogInfo($"[TravelBuffOptionButton] buff={buffInfo} buffIndex={buffIndexInfo} set={isSet} SKIPPED (no CJK): \"{originalText}\"");
+                if (text == null || string.IsNullOrEmpty(text.text))
+                    continue;
+
+                string translated = TravelMgr_Patch.TranslateTravelText(text.text);
+                if (translated != text.text)
+                    Log.LogInfo($"[TravelBuffOptionButton] TranslateTravelText: \"{text.text}\" -> \"{translated}\"");
+
+                text.text = translated;
+                text.font = fontAsset;
             }
         }
     }

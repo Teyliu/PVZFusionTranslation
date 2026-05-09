@@ -10,6 +10,22 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     [HarmonyPatch(typeof(TravelBuffMenu))]
     public static class TravelBuffMenu_Patch
     {
+        private static void TranslateMenuText(TravelBuffMenu instance)
+        {
+            if (instance == null)
+                return;
+
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+            foreach (TextMeshProUGUI text in instance.GetComponentsInChildren<TextMeshProUGUI>())
+            {
+                if (text == null || string.IsNullOrEmpty(text.text))
+                    continue;
+
+                text.text = PvZ_Fusion_Translator__BepInEx_.Patches.Managers.TravelMgr_Patch.TranslateTravelText(text.text);
+                text.font = fontAsset;
+            }
+        }
+
         [HarmonyPatch(nameof(TravelBuffMenu.RefeshOptions))]
         [HarmonyPostfix]
         private static void RefeshOptions(TravelBuffMenu __instance)
@@ -20,20 +36,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             {
                 TravelBuffOptionButton_Patch.TranslateOptionButton(button);
             }
+            TranslateMenuText(__instance);
         }
 
         [HarmonyPatch(nameof(TravelBuffMenu.Awake))]
         [HarmonyPostfix]
         private static void Awake(TravelBuffMenu __instance)
         {
-            Transform refreshTransform = __instance.transform.Find("Refresh");
-            if (refreshTransform != null)
-            {
-                foreach (TextMeshProUGUI text in refreshTransform.GetComponentsInChildren<TextMeshProUGUI>())
-                {
-                    text.text = StringStore.TranslateText(text.text);
-                }
-            }
+            TranslateMenuText(__instance);
         }
     }
 }
