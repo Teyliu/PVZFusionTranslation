@@ -58,7 +58,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     finalTitle = StringStore.TranslateText(title);
                 }
                 __instance.synergyTitle.text = "<size=95%>" + finalTitle + "\n" + translatedDescription;
-                
+
                 // Log.LogInfo($"[SynergyNode_Patch] Translated to: '{__instance.synergyTitle.text}'");
 #if DEBUG
                 FileLoader.DumpUntranslatedStrings(title);
@@ -85,32 +85,24 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 string[] lines = part.Split('\n');
                 if (lines.Length > 1)
                 {
-                    string translated1 = StringStore.TranslateColorText(lines[0]);
-                    if (translated1 == lines[0])
-                        translated1 = StringStore.TranslateText(lines[0]);
+                    string translated1 = StringStore.TranslateText(lines[0]);
+                    string translated2 = StringStore.TranslateText(lines[1]);
 
-                    string translated2 = StringStore.TranslateColorText(lines[1]);
-                    if (translated2 == lines[1])
-                        translated2 = StringStore.TranslateText(lines[1]);
-                    
-                    string matched1 = Managers.TravelMgr_Patch.MatchTravelBuff(lines[0]);
-                    string matched2 = Managers.TravelMgr_Patch.MatchTravelBuff(lines[1]);
-                    
-                    temp = (!string.IsNullOrEmpty(matched1) ? matched1 : translated1) + "\n" + 
+                    string matched1 = translated1 == lines[0] ? Managers.TravelMgr_Patch.MatchTravelBuff(lines[0]) : null;
+                    string matched2 = translated2 == lines[1] ? Managers.TravelMgr_Patch.MatchTravelBuff(lines[1]) : null;
+
+                    temp = (!string.IsNullOrEmpty(matched1) ? matched1 : translated1) + "\n" +
                            (!string.IsNullOrEmpty(matched2) ? matched2 : translated2);
                 }
                 else
                 {
-                    string translated = StringStore.TranslateColorText(part);
-                    if (translated == part)
-                        translated = StringStore.TranslateText(part);
-
-                    string matched = Managers.TravelMgr_Patch.MatchTravelBuff(part);
+                    string translated = StringStore.TranslateText(part);
+                    string matched = translated == part ? Managers.TravelMgr_Patch.MatchTravelBuff(part) : null;
                     temp = !string.IsNullOrEmpty(matched) ? matched : translated;
                 }
                 res += temp + "\n";
             }
-            
+
             return res.Length > 0 ? res.Substring(0, res.Length - 1) : res;
         }
 

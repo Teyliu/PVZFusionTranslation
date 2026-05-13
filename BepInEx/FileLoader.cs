@@ -601,22 +601,23 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 Log.LogInfo($"[SaveAlmanacFiles] Saved ZombieStringsTranslate.json, length: {AlmanacZombieMenu_Patch.almanacJson.Length}");
             }
 
-            string langCode = Utils.Language.ToString();
-            string moddedPlantContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{langCode}/Almanac/ModdedPlantsTranslate.json").Result;
-            if (!string.IsNullOrEmpty(moddedPlantContent))
-            {
-                string moddedPlantPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
-                File.WriteAllText(moddedPlantPath, moddedPlantContent);
-                Log.LogInfo($"[SaveAlmanacFiles] Saved ModdedPlantsTranslate.json");
-            }
+            // Online sync disabled for modded plants/zombies
+            // string langCode = Utils.Language.ToString();
+            // string moddedPlantContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{langCode}/Almanac/ModdedPlantsTranslate.json").Result;
+            // if (!string.IsNullOrEmpty(moddedPlantContent))
+            // {
+            //     string moddedPlantPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
+            //     File.WriteAllText(moddedPlantPath, moddedPlantContent);
+            //     Log.LogInfo($"[SaveAlmanacFiles] Saved ModdedPlantsTranslate.json");
+            // }
 
-            string moddedZombieContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{langCode}/Almanac/ModdedZombiesTranslate.json").Result;
-            if (!string.IsNullOrEmpty(moddedZombieContent))
-            {
-                string moddedZombiePath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
-                File.WriteAllText(moddedZombiePath, moddedZombieContent);
-                Log.LogInfo($"[SaveAlmanacFiles] Saved ModdedZombiesTranslate.json");
-            }
+            // string moddedZombieContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{langCode}/Almanac/ModdedZombiesTranslate.json").Result;
+            // if (!string.IsNullOrEmpty(moddedZombieContent))
+            // {
+            //     string moddedZombiePath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
+            //     File.WriteAllText(moddedZombiePath, moddedZombieContent);
+            //     Log.LogInfo($"[SaveAlmanacFiles] Saved ModdedZombiesTranslate.json");
+            // }
 #endif
         }
 

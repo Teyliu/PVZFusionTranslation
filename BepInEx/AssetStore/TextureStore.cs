@@ -11,12 +11,15 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
 		internal static Dictionary<string, byte[]> spriteDict = new Dictionary<string, byte[]>();
 
+		private static HashSet<string> replacedTextures = new HashSet<string>();
+
 		internal static void Init() => FileLoader.LoadTextures();
 
 		internal static void Reload()
 		{
 			textureDict.Clear();
 			spriteDict.Clear();
+			replacedTextures.Clear();
 			#if MULTI_LANGUAGE
 			RestoreTextures();
 			#endif
@@ -32,20 +35,19 @@ namespace PvZ_Fusion_Translator__BepInEx_
 			yield return null;
 
 #if MULTI_LANGUAGE
-			// Restore all textures first (remove "replaced_" prefix)
 			RestoreTextures();
 #endif
 
-			// Load default textures first if needed
-            if (!Utils.customTextures)
-            {
-                FileLoader.LoadDefaultTextures();
-            }
+			if (!Utils.customTextures)
+			{
+				FileLoader.LoadDefaultTextures();
+			}
 
-			// Load all language textures
-            FileLoader.LoadTextures();
+			FileLoader.LoadTextures();
+			ReplaceTextures();
 
-			// Replace existing textures
+			yield return new WaitForSeconds(2f);
+
 			ReplaceTextures();
 
 			Log.LogInfo("Texture replacement completed.");
@@ -56,11 +58,22 @@ namespace PvZ_Fusion_Translator__BepInEx_
 			Texture2D[] textures = Resources.FindObjectsOfTypeAll<Texture2D>();
 			foreach (Texture2D texture in textures)
 			{
-				// Skip already replaced textures
-				if (texture.name.StartsWith("replaced_"))
+				if (texture == null)
 					continue;
 
-				Utils.TryReplaceTexture2D(texture);
+				if (replacedTextures.Contains(texture.name))
+					continue;
+
+				if (texture.name.StartsWith("replaced_"))
+				{
+					replacedTextures.Add(texture.name.Replace("replaced_", ""));
+					continue;
+				}
+
+				if (Utils.TryReplaceTexture2D(texture))
+				{
+					replacedTextures.Add(texture.name);
+				}
 			}
 
 			Utils.RebuildAllSpriteRenderers();

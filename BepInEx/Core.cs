@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
@@ -13,7 +13,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.6.0")]
+[BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.6.1.3")]
 [BepInProcess("PlantsVsZombiesRH.exe")]
 public class Core : BasePlugin
 {
@@ -50,10 +50,10 @@ public class Core : BasePlugin
         dtStart = DateTime.Now;
 
         // TODO: Get game version for DllStore - may need adjustment for BepInEx
-        string gameVersion = "3.6.0";
+        string gameVersion = "3.6.1";
         if (configEnableDllUpdate.Value)
         {
-            DllStore.Init(gameVersion);
+            //DllStore.Init(gameVersion);
         }
 
         FileLoader.LoadLanguage();
@@ -83,7 +83,7 @@ public class Core : BasePlugin
 		FileLoader.SaveLanguage();
 		if (configEnableDllUpdate.Value)
 		{
-			DllStore.UpdateNewDll();
+			//DllStore.UpdateNewDll();
 		}
 		
 		#if OBFUSCATE && !RELEASE

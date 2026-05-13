@@ -1,8 +1,7 @@
 using HarmonyLib;
-using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TMPro;
+using PvZ_Fusion_Translator__BepInEx_.AssetStore;
+using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
@@ -18,64 +17,29 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         [HarmonyPostfix]
         private static void Awake(OppositeBuffManager __instance)
         {
-            Log.LogInfo("==== [OppositeBuffManager.Awake] ====");
-            Log.LogInfo("[OppositeBuffManager] Awake called");
+            string goodAText = TravelMgr.Instance.GetText(__instance.buffA.goodBuff);
+            string badAText = TravelMgr.Instance.GetText(__instance.buffA.badBuff);
+            string goodBText = TravelMgr.Instance.GetText(__instance.buffB.goodBuff);
+            string badBText = TravelMgr.Instance.GetText(__instance.buffB.badBuff);
 
-            if (__instance.textA_good != null && __instance.textA_good.Count > 0)
-            {
-                string goodBuffA = TravelMgr.Instance.GetText(__instance.buffA.goodBuff);
-                Log.LogInfo($"[OppositeBuffManager] buffA.goodBuff GetText: \"{goodBuffA}\"");
-                TranslateOppositeText(__instance.textA_good, goodBuffA, false);
-            }
-            if (__instance.textA_bad != null && __instance.textA_bad.Count > 0)
-            {
-                string badBuffA = TravelMgr.Instance.GetText(__instance.buffA.badBuff);
-                Log.LogInfo($"[OppositeBuffManager] buffA.badBuff GetText: \"{badBuffA}\"");
-                TranslateOppositeText(__instance.textA_bad, badBuffA, true);
-            }
-            if (__instance.textB_good != null && __instance.textB_good.Count > 0)
-            {
-                string goodBuffB = TravelMgr.Instance.GetText(__instance.buffB.goodBuff);
-                Log.LogInfo($"[OppositeBuffManager] buffB.goodBuff GetText: \"{goodBuffB}\"");
-                TranslateOppositeText(__instance.textB_good, goodBuffB, false);
-            }
-            if (__instance.textB_bad != null && __instance.textB_bad.Count > 0)
-            {
-                string badBuffB = TravelMgr.Instance.GetText(__instance.buffB.badBuff);
-                Log.LogInfo($"[OppositeBuffManager] buffB.badBuff GetText: \"{badBuffB}\"");
-                TranslateOppositeText(__instance.textB_bad, badBuffB, true);
-            }
-        }
+            string badAFormatted = string.Format(badFormat, badAText);
+            string badBFormatted = string.Format(badFormat, badBText);
 
-        public static void TranslateOppositeText(List<TextMeshProUGUI> textList, string buffText, bool isBad = false)
-        {
-            if (textList == null || textList.Count == 0) return;
+            if (__instance.textA_good != null)
+                foreach (var t in __instance.textA_good)
+                    if (t != null) { t.text = goodAText; t.font = fontAsset; }
 
-            foreach (var text in textList)
-            {
-                if (text == null) continue;
+            if (__instance.textA_bad != null)
+                foreach (var t in __instance.textA_bad)
+                    if (t != null) { t.text = badAFormatted; t.font = fontAsset; }
 
-                string finalText;
-                if (isBad && !string.IsNullOrEmpty(badFormat) && !string.IsNullOrEmpty(buffText))
-                {
-                    try
-                    {
-                        finalText = string.Format(badFormat, buffText);
-                    }
-                    catch
-                    {
-                        finalText = buffText;
-                    }
-                }
-                else
-                {
-                    finalText = buffText;
-                }
+            if (__instance.textB_good != null)
+                foreach (var t in __instance.textB_good)
+                    if (t != null) { t.text = goodBText; t.font = fontAsset; }
 
-                Log.LogInfo($"[OppositeBuffManager] TranslateOppositeText: isBad={isBad}, buffText=\"{buffText}\" -> final=\"{finalText}\"");
-                text.text = finalText;
-                text.font = fontAsset;
-            }
+            if (__instance.textB_bad != null)
+                foreach (var t in __instance.textB_bad)
+                    if (t != null) { t.text = badBFormatted; t.font = fontAsset; }
         }
     }
 }

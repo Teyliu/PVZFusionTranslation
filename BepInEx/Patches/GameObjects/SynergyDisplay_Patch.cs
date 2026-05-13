@@ -54,11 +54,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             {
                 string originalText = __instance.text1.text;
                 Log.LogInfo($"[SynergyDisplay_Patch] UpdateText original: '{originalText}'");
-                
+
                 string translatedText = TranslateInvestDisplay(originalText);
                 __instance.text1.text = translatedText;
                 __instance.text1.font = fontAsset;
-                
+
                 Log.LogInfo($"[SynergyDisplay_Patch] UpdateText translated: '{translatedText}'");
 #if DEBUG
                 if (translatedText != originalText)
@@ -83,7 +83,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
             string[] parts = originalText.Split("\n\n");
             List<string> translatedParts = new List<string>();
-            
+
             foreach (string part in parts)
             {
                 string translated = StringStore.TranslateColorText(part);
@@ -91,7 +91,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 {
                     translated = StringStore.TranslateText(part);
                 }
-                
+
                 if (translated == part)
                 {
                     string matched = Managers.TravelMgr_Patch.MatchTravelBuff(part);
@@ -100,10 +100,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         translated = matched;
                     }
                 }
-                
+
                 translatedParts.Add(translated);
             }
-            
+
             return string.Join("\n\n", translatedParts);
         }
     }
