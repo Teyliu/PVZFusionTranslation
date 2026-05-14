@@ -39,6 +39,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             TranslateBaseMenu(__instance, "Level");
             TranslateBaseMenu(__instance, "Levels");
             TranslateBaseMenu(__instance, "CustomLevel");
+
+            StringStore.TranslateTextTransform(__instance.transform.Find("Goback"));
+            StringStore.TranslateTextTransform(__instance.transform.Find("Switich"));
         }
 
         public static void TranslateBaseMenu(BaseMenu __instance, string levelsName)
@@ -54,9 +57,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         StringStore.TranslateTextTransform(child);
                     }
                 }
-
-                StringStore.TranslateTextTransform(__instance.transform.Find("Goback"));
-                StringStore.TranslateTextTransform(__instance.transform.Find("Switich"));
             }
         }
     }

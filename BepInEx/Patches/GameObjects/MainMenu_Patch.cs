@@ -25,7 +25,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 return;
             }
             playerName.gameObject.SetActive(false);
-            GameAPP.playerName = "";
 
             Transform changelogObj = grave.Find("UpdateInfo");
             if (changelogObj == null)

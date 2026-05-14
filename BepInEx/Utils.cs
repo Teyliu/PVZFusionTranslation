@@ -464,40 +464,11 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static string GetPlantNameFromAlmanac(string theOriginalPlantName)
         {
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-            string dumpDir = GetAssetDir(AssetType.Dumps);
-            string originalPath = Path.Combine(dumpDir, "LawnStrings.json");
-            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-
-            if ((!File.Exists(path)) || (!File.Exists(originalPath)))
+            if (plantIndiceStrings.TryGetValue(theOriginalPlantName, out string translatedName))
             {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-                return theOriginalPlantName;
+                return translatedName;
             }
-
-            var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            string originalJson = File.ReadAllText(originalPath);
-            string translatedJson = File.ReadAllText(path);
-            PlantData originalPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(originalJson, jsonOptions);
-            PlantData translatedPlantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(translatedJson, jsonOptions);
-
-            for (int i = 0; i < originalPlantData.plants.Count; i++)
-            {
-                PlantInfo originalPlantInfo = originalPlantData.plants[i];
-
-                if (originalPlantInfo.name == theOriginalPlantName)
-                {
-                    if (plantIndices.TryGetValue(originalPlantInfo.seedType, out var translatedInfo))
-                    {
-                        return translatedInfo.Value;
-                    }
-
-                    return theOriginalPlantName;
-                }
-            }
-
-            return theOriginalPlantName;
+            return "";
         }
 
         public static string GetZombieNameFromAlmanac(ZombieType theZombieType, string fallback = null)
