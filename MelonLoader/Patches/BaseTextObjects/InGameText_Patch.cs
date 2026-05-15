@@ -73,6 +73,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             int godsGachaCheck = CheckGodsGachaPopup(originalText);
             string godsGachaMatch = "";
             string superEditorPlantMatch = CheckSuperEditorPopup(originalText);
+            string customLevelRegexMatch = CheckCustomLevelRegex(originalText); 
 
             switch(godsGachaCheck)
             {
@@ -119,7 +120,15 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             {
                 txt.text = lockedPlantMatch;
             }
-            else if((Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success) && (!StringStore.translationString.ContainsKey(txt.text) && !StringStore.fsTipCollectionString.ContainsKey(txt.text) && !StringStore.izTipCollectionString.ContainsKey(txt.text)))
+            else if(customLevelRegexMatch != "")
+            {
+                txt.text = customLevelRegexMatch;
+            }
+            else if((Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success) && 
+                !StringStore.translationString.ContainsKey(txt.text) && 
+                !StringStore.fsTipCollectionString.ContainsKey(txt.text) && 
+                !StringStore.izTipCollectionString.ContainsKey(txt.text) && 
+                !StringStore.customLevelString.ContainsKey(txt.text))
             {
                 txt.text = StringStore.TranslateColorText(txt.text, true);
                 if (txt.gameObject.name.Contains("main"))
@@ -346,6 +355,20 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 }
             }
 
+            return res;
+        }
+
+        public static string CheckCustomLevelRegex(string originalText)
+        {
+            string res = "";
+
+            foreach(var pair in StringStore.customLevelStringRegex)
+            {
+                if(StringStore.TestRegex(originalText, pair.Key))
+                {
+                    res = StringStore.TranslateText(originalText, pair.Key);
+                }
+            }
             return res;
         }
     }

@@ -549,7 +549,7 @@ namespace PvZ_Fusion_Translator
 			//Javanese, 
 			//Filipino,
 			Vietnamese,
-			//Indonesian,
+			Indonesian,
 			//Russian, //NOTE: legacy language
 			Japanese,
 			
@@ -574,6 +574,7 @@ namespace PvZ_Fusion_Translator
 			{ LanguageEnum.German, "Deutsch"},
 			{ LanguageEnum.Spanish, "Español"},
 			{ LanguageEnum.Vietnamese, "Tiếng Việt"},
+			{ LanguageEnum.Indonesian, "Bahasa Indonesia"},
 			{ LanguageEnum.Japanese, "日本語"},
 			{ LanguageEnum.Korean, "한국어"},
 			{ LanguageEnum.Ukrainian, "українська"},

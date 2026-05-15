@@ -26,6 +26,8 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
         [HarmonyPostfix]
         public static void Awake(RuntimeNodeUI __instance)
         {
+            if (!__instance.isActiveAndEnabled) return;
+
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
             if(__instance.dropdownPrefab)
@@ -56,6 +58,8 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
         [HarmonyPostfix]
         public static void UpdateDisplay(RuntimeNodeUI __instance)
         {
+            if (!__instance.isActiveAndEnabled) return;
+
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
             if(__instance.Node.nodeType == "PlantTypeValueNode")

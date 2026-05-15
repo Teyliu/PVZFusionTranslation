@@ -27,7 +27,14 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 foreach(TextMeshProUGUI txt in window.GetComponentsInChildren<TextMeshProUGUI>())
                 {
                     txt.font = fontAsset;
-                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_MC") ? StringStore.TranslateText(txt.text + "_MC") : StringStore.TranslateText(txt.text);
+                    if(StringStore.customLevelString.ContainsKey(txt.text))
+                    {
+                        txt.text = StringStore.customLevelString[txt.text];
+                    }
+                    else
+                    {
+                        txt.text = StringStore.translationString.ContainsKey(txt.text + "_MC") ? StringStore.TranslateText(txt.text + "_MC") : StringStore.TranslateText(txt.text);
+                    }
                 }
             }
         }
