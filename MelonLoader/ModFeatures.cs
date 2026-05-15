@@ -1,4 +1,6 @@
 ﻿//#if DEBUG
+using Il2Cpp;
+using Il2CppGameLevel;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using UnityEngine;
@@ -10,7 +12,8 @@ namespace PvZ_Fusion_Translator
 		public enum ModType
 		{
 			ReloadStrings,
-			ReloadTextures
+			ReloadTextures,
+			ExportLevelStrings
 		}
 
 		private class ModFeature
@@ -43,13 +46,26 @@ namespace PvZ_Fusion_Translator
 					Core.ShowToast("Textures Reloaded!");
 					return;
 				}
+
+				if (this.ModType == ModType.ExportLevelStrings)
+				{
+					CustomMenu customMenu = UnityEngine.Object.FindObjectOfType<CustomMenu>();
+					if (!customMenu) return;
+					if(customMenu.isActiveAndEnabled)
+					{
+						Patches.Modes.Super_Editor.GameLevel.LevelManager_Patch.ExportLevelStrings(customMenu.LevelData);
+						Core.ShowToast("Dumped level strings!");
+					}
+					return;
+				}
 			}
 		}
 
 		private static Dictionary<ModType, ModFeature> featureLists = new()
 		{
 			{ModType.ReloadStrings,new ModFeature("Reload Strings",ModType.ReloadStrings,KeyCode.Home, true)},
-			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)}
+			{ModType.ReloadTextures,new ModFeature("Reload Textures",ModType.ReloadTextures,KeyCode.End, true)},
+			{ModType.ExportLevelStrings,new ModFeature("Export Level Strings",ModType.ExportLevelStrings,KeyCode.N, true)}
 		};
 
 

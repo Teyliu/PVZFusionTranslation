@@ -80,6 +80,37 @@ namespace PvZ_Fusion_Translator
 					}
 				}
 
+				string customLevelStringsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/customlevel_strings.json").Result;
+			
+				if(customLevelStringsContent != null)
+				{
+					LoadCustomLevelStrings(customLevelStringsContent);
+				}
+				else
+				{
+					string customLevelStringsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "customlevel_strings.json");
+					if(File.Exists(customLevelStringsPath))
+					{
+						LoadCustomLevelStrings(File.ReadAllText(customLevelStringsPath));
+					}
+				}
+
+				// load translationRegexs
+				string customLevelRegexsContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/customlevel_regexs.json").Result;
+			
+				if(customLevelRegexsContent != null)
+				{
+					LoadCustomLevelRegexs(customLevelRegexsContent);
+				}
+				else
+				{
+					string customLevelRegexsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "customlevel_regexs.json");
+					if(File.Exists(customLevelRegexsPath))
+					{
+						LoadCustomLevelRegexs(File.ReadAllText(customLevelRegexsPath));
+					}
+				}
+
 				// load changelog
 
 				LoadChangelogText();
@@ -200,13 +231,21 @@ namespace PvZ_Fusion_Translator
 						Log.LogInfo("Loading File : " + filepath);
 						#endif
 						string jsonString = File.ReadAllText(filepath);
-						if (fileName.EndsWith("_strings"))
+						if (fileName.EndsWith("translation_strings"))
 						{
 							LoadTranslationStrings(jsonString);
 						}
-						else if (fileName.EndsWith("_regexs"))
+						else if (fileName.EndsWith("translation_regexs"))
 						{
 							LoadTranslationRegexs(jsonString);
+						}
+						else if (fileName.EndsWith("customlevel_strings"))
+						{
+							LoadCustomLevelStrings(jsonString);
+						}
+						else if (fileName.EndsWith("customlevel_regexs"))
+						{
+							LoadCustomLevelRegexs(jsonString);
 						}
 						else if(fileName.EndsWith("tips_iz"))
 						{
@@ -278,6 +317,24 @@ namespace PvZ_Fusion_Translator
 				StringStore.translationStringRegex[key] = value;
 			}
 			Zombie_Patch.LoadHPStrings();
+		}
+
+		internal static void LoadCustomLevelStrings(string content)
+		{
+			Dictionary<string, string> dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+			foreach (var (key, value) in dictionary)
+			{
+				StringStore.customLevelString[key] = value;
+			}
+		}
+
+		internal static void LoadCustomLevelRegexs(string content)
+		{
+			Dictionary<string, string> dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+			foreach (var (key, value) in dictionary)
+			{
+				StringStore.customLevelStringRegex[key] = value;
+			}
 		}
 
 		internal static void LoadIZStrings(string content)

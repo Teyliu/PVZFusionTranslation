@@ -14,6 +14,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static Dictionary<string, string> translationString = new();
 
+		public static Dictionary<string, string> customLevelStringRegex = new();
+
+		public static Dictionary<string, string> customLevelString = new();
+
 		public static Dictionary<string, string> izLevelTipDictionary = new();
 
 		public static Dictionary<string, string> izTipCollectionString = new();
@@ -80,6 +84,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 		{
 			translationString.Clear();
 			translationStringRegex.Clear();
+			customLevelString.Clear();
+			customLevelStringRegex.Clear();
 			izLevelTipDictionary.Clear();
 			izTipCollectionString.Clear();
 			fsLevelTipDictionary.Clear();
@@ -158,37 +164,70 @@ namespace PvZ_Fusion_Translator.AssetStore
 
         public static string TranslateText(string originalText, string pattern, bool isLog = false)
         {
-            if (TestRegex(originalText, pattern) && translationStringRegex.ContainsKey(pattern))
-            {
-                // Extract dynamic parts from the original text
-                var regex = new Regex(pattern);
-                var match = regex.Match(originalText);
-                int groupCount = match.Groups.Count;
+			if (TestRegex(originalText, pattern))
+			{
+				if(translationStringRegex.ContainsKey(pattern))
+				{
+					// Extract dynamic parts from the original text
+					var regex = new Regex(pattern);
+					var match = regex.Match(originalText);
+					int groupCount = match.Groups.Count;
 
-                if (isLog)
-                    Log.LogDebug("Text found in translationStringRegex {0}: {1}", match, groupCount);
+					if (isLog)
+						Log.LogDebug("Text found in translationStringRegex {0}: {1}", match, groupCount);
 
-                // List to hold formatted dynamic parts
-                List<string> dynamicParts = [];
+					// List to hold formatted dynamic parts
+					List<string> dynamicParts = [];
 
-                // Loop through each group and determine its translation
-                for (int i = 1; i < groupCount; i++)
-                {
-                    string groupValue = match.Groups[i].Value;
-                    string translatedValue = translationString.ContainsKey(groupValue)
-                        ? translationString[groupValue]
-                        : groupValue;
-                    dynamicParts.Add(translatedValue);
-                }
+					// Loop through each group and determine its translation
+					for (int i = 1; i < groupCount; i++)
+					{
+						string groupValue = match.Groups[i].Value;
+						string translatedValue = translationString.ContainsKey(groupValue)
+							? translationString[groupValue]
+							: groupValue;
+						dynamicParts.Add(translatedValue);
+					}
 
-                // Format the output string with dynamic parts
-                return string.Format(translationStringRegex[pattern], [.. dynamicParts]);
-            }
+					// Format the output string with dynamic parts
+					return string.Format(translationStringRegex[pattern], [.. dynamicParts]);
+				}
+				else if(customLevelStringRegex.ContainsKey(pattern))
+				{
+					// Extract dynamic parts from the original text
+					var regex = new Regex(pattern);
+					var match = regex.Match(originalText);
+					int groupCount = match.Groups.Count;
+
+					if (isLog)
+						Log.LogDebug("Text found in customLevelStringRegex {0}: {1}", match, groupCount);
+
+					// List to hold formatted dynamic parts
+					List<string> dynamicParts = [];
+
+					// Loop through each group and determine its translation
+					for (int i = 1; i < groupCount; i++)
+					{
+						string groupValue = match.Groups[i].Value;
+						string translatedValue = customLevelString.ContainsKey(groupValue)
+							? customLevelString[groupValue]
+							: groupValue;
+						dynamicParts.Add(translatedValue);
+					}
+
+					// Format the output string with dynamic parts
+					return string.Format(customLevelStringRegex[pattern], [.. dynamicParts]);
+				}
+				else
+				{
+					return originalText;
+				}
+			}
 			else
 			{
-                if (isLog)
-                    Log.LogDebug($"Text '{originalText}' not translated");
-                FileLoader.DumpUntranslatedStrings(originalText);
+				if (isLog)
+					Log.LogDebug($"Text '{originalText}' not translated");
+				FileLoader.DumpUntranslatedStrings(originalText);
 				return originalText;
 			}
         }
@@ -228,6 +267,15 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return fsTipCollectionString[originalText];
 			}
 
+			if(customLevelString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in customLevelString");
+				}
+				return customLevelString[originalText];
+			}
+
 			// Regex-based dynamic translation
 			foreach (var entry in translationStringRegex)
 			{
@@ -250,6 +298,36 @@ namespace PvZ_Fusion_Translator.AssetStore
 						string groupValue = match.Groups[i].Value;
 						string translatedValue = translationString.ContainsKey(groupValue)
 							? translationString[groupValue]
+							: groupValue;
+						dynamicParts.Add(translatedValue);
+					}
+
+					// Format the output string with dynamic parts
+					return string.Format(entry.Value, [.. dynamicParts]);
+				}
+			}
+
+			foreach (var entry in customLevelStringRegex)
+			{
+				if (TestRegex(originalText, entry.Key))
+				{
+					// Extract dynamic parts from the original text
+					var regex = new Regex(entry.Key);
+					var match = regex.Match(originalText);
+					int groupCount = match.Groups.Count;
+
+					if (isLog)
+						Log.LogDebug("Text found in customLevelRegex {0}: {1}", match, groupCount);
+
+					// List to hold formatted dynamic parts
+					List<string> dynamicParts = [];
+
+					// Loop through each group and determine its translation
+					for (int i = 1; i < groupCount; i++)
+					{
+						string groupValue = match.Groups[i].Value;
+						string translatedValue = customLevelString.ContainsKey(groupValue)
+							? customLevelString[groupValue]
 							: groupValue;
 						dynamicParts.Add(translatedValue);
 					}
