@@ -243,37 +243,15 @@ namespace PvZ_Fusion_Translator__BepInEx_
             if (!TextureStore.textureDict.TryGetValue(ogTexture.name, out byte[] textureData))
                 return false;
 
-            bool replaced = false;
             try
             {
-                replaced = ImageConversion.LoadImage(ogTexture, textureData);
-            }
-            catch { }
-
-            if (!replaced)
-            {
-                try
-                {
-                    Texture2D tempTex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    if (ImageConversion.LoadImage(tempTex, textureData))
-                    {
-                        ogTexture.Resize(tempTex.width, tempTex.height, TextureFormat.RGBA32, false);
-                        ogTexture.SetPixels(tempTex.GetPixels());
-                        ogTexture.Apply(false);
-                        UnityEngine.Object.Destroy(tempTex);
-                        replaced = true;
-                    }
-                    UnityEngine.Object.Destroy(tempTex);
-                }
-                catch { }
-            }
-
-            if (replaced)
-            {
+                ImageConversion.LoadImage(ogTexture, textureData);
                 Core.Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
                 ogTexture.name = "replaced_" + ogTexture.name;
                 return true;
             }
+            catch { }
+
             return false;
         }
 
@@ -629,9 +607,28 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static Dictionary<ToggleEnum, string> ToggleNames = new Dictionary<ToggleEnum, string>()
         {
-            { ToggleEnum.Textures, "Textures" },
-            { ToggleEnum.Audio, "Audio" },
-            { ToggleEnum.SwapLocal, "SwapLocal" }
+            { ToggleEnum.Textures, "<size=85%>Change Texture\nSource" },
+            { ToggleEnum.Audio, "<size=85%>Change Audio\nSource" },
+            { ToggleEnum.SwapLocal, "<size=85%>Change Translation\nSource" }
+        };
+
+        public static Dictionary<LanguageEnum, string> LanguageNames = new Dictionary<LanguageEnum, string>()
+        {
+            { LanguageEnum.English, "English"},
+            { LanguageEnum.French, "Français"},
+            { LanguageEnum.Italian, "Italiano"},
+            { LanguageEnum.German, "Deutsch"},
+            { LanguageEnum.Spanish, "Español"},
+            { LanguageEnum.Portuguese, "Português"},
+            { LanguageEnum.Javanese, "Basa Jawa"},
+            { LanguageEnum.Vietnamese, "Tiếng Việt"},
+            { LanguageEnum.Indonesian, "Bahasa Indonesia"},
+            { LanguageEnum.Russian, "Русский"},
+            { LanguageEnum.Japanese, "日本語"},
+            { LanguageEnum.Korean, "한국어"},
+            { LanguageEnum.Ukrainian, "українська"},
+            { LanguageEnum.Turkish, "Türkçe"},
+            { LanguageEnum.Romanian, "Română"}
         };
 
         public static void WarnLocalData()

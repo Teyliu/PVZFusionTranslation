@@ -10,6 +10,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
 		public static void LogDebug(string txt) => Logger.LogDebug(txt);
 		public static void LogDebug(string txt, params object[] args) => Logger.LogDebug(string.Format(txt, args));
 
+		public static void LogMessage(object txt) => Logger.Log(LogLevel.Message, txt);
+		public static void LogMessage(string txt) => Logger.Log(LogLevel.Message, txt);
+		public static void LogMessage(string txt, params object[] args) => Logger.Log(LogLevel.Message, string.Format(txt, args));
+
 		public static void LogInfo(object txt) => Logger.LogInfo(txt);
 		public static void LogInfo(string txt) => Logger.LogInfo(txt);
 		public static void LogInfo(string txt, params object[] args) => Logger.LogInfo(string.Format(txt, args));

@@ -86,7 +86,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			{
 				var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
 				newButton.optionType = 80 + i;
-				newButton.tag = "LangOpt";
+				newButton.gameObject.tag = "LangOpt";
 
 				float yPos = startY - i * ySpacing;
 				Vector3 pos = new(startX, yPos);
@@ -117,7 +117,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
                 newButton.optionType = 100 + i;
-                newButton.tag = "LangOpt";
+                newButton.gameObject.tag = "LangOpt";
 
                 float yPos = toggleStartY - i * ySpacing;
                 Vector3 pos = new(toggleStartX, yPos);
@@ -155,7 +155,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					data.Language = lang;
 					data.IsNextButton = false;
 					btn.gameObject.SetActive(true);
-					UpdateButtonText(btn, lang.ToString());
+					string displayName = Utils.LanguageNames.ContainsKey(lang) ? Utils.LanguageNames[lang] : lang.ToString();
+					UpdateButtonText(btn, displayName, FontStore.LoadTMPFont(lang.ToString()));
 				}
 				else
 				{
@@ -181,7 +182,26 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 						data.IsNextButton = false;
 						btn.gameObject.SetActive(true);
 						string buttonText = Utils.ToggleNames.ContainsKey(toggle) ? Utils.ToggleNames[toggle] : toggle.ToString();
-						UpdateButtonText(btn, buttonText);
+						UpdateButtonText(btn, StringStore.TranslateText(buttonText), FontStore.LoadTMPFont(Utils.Language.ToString()));
+
+						string sourceMsg = "";
+						switch(i)
+						{
+							case 0:
+								sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
+								FlashMessage(btn, sourceMsg, 0.1f, false);
+								break;
+							case 1:
+								sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
+								FlashMessage(btn, sourceMsg, 0.1f, false);
+								break;
+							case 2:
+								sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
+								FlashMessage(btn, sourceMsg, 0.1f, false);
+								break;
+							default:
+								break;
+						}
 					}
 					else
 					{
@@ -204,7 +224,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			}
 		}
 
-		public static void UpdateButtonText(OptionBtn button, string languageName)
+		public static void UpdateButtonText(OptionBtn button, string languageName, TMP_FontAsset fontAsset = null)
 		{
 			TMP_FontAsset defaultAsset = FontStore.LoadTMPFont("English");
 
@@ -228,21 +248,23 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 							text.text = languageName;
 						}
 						text.fontSize = 16;
-						text.font = defaultAsset;
+						text.font = (fontAsset != null) ? fontAsset : defaultAsset;
 						text.autoSizeTextContainer = false;
 					}
 				}
 			}
 		}
 
-		private static void FlashMessage(OptionBtn button, string message, float yShift = 0.0f)
+		private static void FlashMessage(OptionBtn button, string message, float yShift = 0.0f, bool useTimer = true)
 		{
 			var child = button.transform.GetChild(0);
 			if (child != null)
 			{
 				var text = child.GetComponent<TextMeshProUGUI>();
+				string originalMsg = "";
 				if (text != null)
                 {
+					originalMsg = text.text;
                     text.text = message;
 					OptionButtonData data;
                     bool isToggle = ToggleBtnDict.TryGetValue(button.GetInstanceID(), out data);
@@ -260,13 +282,33 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 				}
 				child.gameObject.SetActive(true);
 
-                System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
+				if(useTimer)
 				{
-					if (button != null && child != null && child.gameObject.activeSelf)
+					System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
 					{
-						child.gameObject.SetActive(false);
-					}
-				});
+						if (button != null && child != null && child.gameObject.activeSelf)
+						{
+							OptionButtonData buttonData = ToggleBtnDict[button.GetInstanceID()];
+							if(buttonData.Toggle != null)
+							{
+								string sourceMsg = originalMsg;
+								switch(buttonData.Toggle)
+								{
+									case Utils.ToggleEnum.Textures:
+										sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
+										break;
+									case Utils.ToggleEnum.Audio:
+										sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
+										break;
+									default:
+										break;
+								}
+								text.text = sourceMsg;
+							}
+							
+						}
+					});
+				}
 			}
 		}
 
@@ -372,11 +414,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 					ToggleCustomAssets(toggleType);
 					if (toggleType == "Textures")
 					{
-						FlashMessage(toggleData.Button, "<size=10>Toggled custom textures!\n(Restart Required)", 0.1f);
+						string sourceMsg = "<size=10>" + (!(Utils.customTextures) ? "Texture Source:\nDefault" : "Texture Source:\nCustom");
+						FlashMessage(toggleData.Button, sourceMsg, 0.1f);
 					}
 					else if (toggleType == "Audio")
 					{
-						FlashMessage(toggleData.Button, "<size=10>Toggled custom audio!", 0.1f);
+						string sourceMsg = "<size=10>" + (!(Utils.customAudio) ? "Audio Source:\nDefault" : "Audio Source:\nCustom");
+						FlashMessage(toggleData.Button, sourceMsg, 0.1f);
+					}
+					else if (toggleType == "SwapLocal")
+					{
+						string sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
+						FlashMessage(toggleData.Button, sourceMsg, 0.1f);
 					}
 				}
 			}

@@ -76,7 +76,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
 				}
 			}
 
-			Utils.RebuildAllSpriteRenderers();
 		}
 
 #if MULTI_LANGUAGE

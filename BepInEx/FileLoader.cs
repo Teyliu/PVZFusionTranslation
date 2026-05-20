@@ -180,7 +180,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
                             var plantData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(moddedContent);
                             if (plantData.TryGetProperty("plants", out var plants) && plants.ValueKind == System.Text.Json.JsonValueKind.Array)
                             {
-                                AlmanacPlantMenu_Patch.almanacJson = AlmanacPlantMenu_Patch.almanacJson + "\n" + moddedContent;
                                 Log.LogInfo($"[LoadAlmanac] Loaded modded plants");
                             }
                         }
@@ -202,7 +201,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
                             var zombieData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(moddedContent);
                             if (zombieData.TryGetProperty("zombies", out var zombies) && zombies.ValueKind == System.Text.Json.JsonValueKind.Array)
                             {
-                                AlmanacZombieMenu_Patch.almanacJson = AlmanacZombieMenu_Patch.almanacJson + "\n" + moddedContent;
                                 Log.LogInfo($"[LoadAlmanac] Loaded modded zombies");
                             }
                         }
@@ -345,13 +343,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
             ConfigEntry<bool> defaultTextureEntry;
             Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
 
-            string textureDir = GetAssetDir(AssetType.Textures, language);
-
-            if (!Directory.Exists(textureDir))
-            {
-                Directory.CreateDirectory(textureDir);
-            }
-
             string spritesDir = GetAssetDir(AssetType.Sprites, language);
             if (!Directory.Exists(spritesDir))
             {
@@ -360,39 +351,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
             try
             {
-                foreach (string filepath in Directory.EnumerateFiles(textureDir, "*.png", SearchOption.AllDirectories))
-                {
-                    if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
-                    {
-                        continue;
-                    }
-
-#if OBFUSCATE
-                    if (CheckSumStore.IsModified(filepath))
-                    {
-                        continue;
-                    }
-#endif
-
-                    string key = Path.GetFileNameWithoutExtension(filepath);
-
-#if DEBUG
-                    Log.LogDebug("Loading Sprite : " + filepath);
-#endif
-
-                    byte[] textureData = File.ReadAllBytes(filepath);
-
-                    try
-                    {
-                        Texture2D testTexture = Utils.LoadImage(textureData);
-                        if (testTexture != null)
-                        {
-                            TextureStore.spriteDict[key] = textureData;
-                        }
-                    }
-                    catch { }
-                }
-
                 foreach (string filepath in Directory.EnumerateFiles(spritesDir, "*.png", SearchOption.AllDirectories))
                 {
                     if (filepath.Contains("[Custom Textures]", StringComparison.OrdinalIgnoreCase) && defaultTextureEntry.Value)
@@ -453,7 +411,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
                             if (testTexture != null)
                             {
                                 TextureStore.textureDict[key] = textureData;
-                                TextureStore.spriteDict[key] = textureData;
                             }
                         }
                         catch (Exception ex)
@@ -500,7 +457,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
                         if (testTexture != null)
                         {
                             TextureStore.textureDict[key] = textureData;
-                            TextureStore.spriteDict[key] = textureData;
                         }
                     }
                     catch (Exception ex)
