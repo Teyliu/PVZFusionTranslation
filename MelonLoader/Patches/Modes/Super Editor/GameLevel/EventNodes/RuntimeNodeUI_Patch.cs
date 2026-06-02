@@ -62,7 +62,7 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            if(__instance.Node.nodeType == "PlantTypeValueNode")
+            if(__instance.Node.nodeType == "PlantTypeValueNode" || __instance.Node.nodeType == "SinglePlantTypeListNode")
             {
                 foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
                 {
