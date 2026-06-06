@@ -278,7 +278,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                                     travelBuffString[withoutName] = viText;
 
                                 titleMatchCount++;
+#if DEBUG
                                 Log.LogInfo($"[TravelMgr_Patch][TitleMatch:GameDump] {cat.Key}[{translatedEntry.Key}]: \"{dumpEntry.Value}\" -> \"{viText}\" (title: \"{foundChineseTitle}\" <-> \"{viTitle}\")");
+#endif
                                 matched = true;
                                 break;
                             }
@@ -306,7 +308,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
                                 titleMatchCount++;
                                 matched = true;
+#if DEBUG
                                 Log.LogInfo($"[TravelMgr_Patch][TitleMatch:StringStore] {cat.Key}[{translatedEntry.Key}]: \"{ss.Key}\" -> \"{viText}\" (title: \"{foundChineseTitle}\" <-> \"{viTitle}\")");
+#endif
                                 break;
                             }
                         }
@@ -314,7 +318,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 }
             }
 
+#if DEBUG
             Log.LogInfo($"[TravelMgr_Patch] Rebuilt travelBuffString: {travelBuffString.Count} entries ({titleMatchCount} title-matched)");
+#endif
         }
 
         public static string ResolveBuffTranslation(BuffType buffType, int buffIndex, string originalText)
@@ -540,7 +546,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 {
                     if (GetBuffTitle(tbs.Key) == runtimeTitle && !ContainsChinese(tbs.Value))
                     {
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch][RuntimeTitleMatch] \"{originalText}\" -> \"{tbs.Value}\" (title: \"{runtimeTitle}\")");
+#endif
                         return tbs.Value;
                     }
                 }
@@ -564,7 +572,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         {
                             if (ss.Value == viTitle && GetBuffTitle(ss.Key) == runtimeTitle)
                             {
+#if DEBUG
                                 Log.LogInfo($"[TravelMgr_Patch][DirectTitleMatch] \"{originalText}\" -> \"{viText}\" (cat:{cat.Key}[{entry.Key}], title:\"{runtimeTitle}\")");
+#endif
                                 return viText;
                             }
                         }
@@ -621,14 +631,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 && descVi != description)
             {
                 string result = (titleVi ?? title) + "：" + descVi;
+#if DEBUG
                 Log.LogInfo($"[TravelMgr_Patch][SplitTranslate] \"{originalText}\" -> \"{result}\"");
+#endif
                 return result;
             }
 
             if (titleVi != null)
             {
                 string result = titleVi + "：" + description;
+#if DEBUG
                 Log.LogInfo($"[TravelMgr_Patch][SplitTranslate] \"{originalText}\" -> \"{result}\" (title only)");
+#endif
                 return result;
             }
 
@@ -662,8 +676,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     original = foundText;
             }
 
+#if DEBUG
             Log.LogMessage($"==== TravelMgr.GetText | buff={buffDebug} ====");
+#endif
+#if DEBUG
             Log.LogInfo($"Input: \"{original}\"");
+#endif
 
             string travelTranslated = TryGetTranslatedBuff(buff, out string translatedByBuff)
                 ? translatedByBuff
@@ -671,11 +689,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             if (travelTranslated != original)
             {
                 __result = travelTranslated;
+#if DEBUG
                 Log.LogInfo($"Travel HIT: \"{original}\" -> \"{__result}\"");
+#endif
             }
             else
             {
+#if DEBUG
                 Log.LogWarning($"NO TRANSLATION: \"{original}\"");
+#endif
             }
         }
 
@@ -772,7 +794,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 }
                 catch (System.Exception ex)
                 {
+#if DEBUG
                     Log.LogWarning($"[TravelMgr_Patch] Failed to load buff file {path}: {ex.Message}");
+#endif
                     return null;
                 }
             }
@@ -862,7 +886,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             }
             catch (System.Exception ex)
             {
+#if DEBUG
                 Log.LogWarning($"[TravelMgr_Patch] LoadTravelBuffsFlexible failed: {ex.Message}");
+#endif
                 return null;
             }
         }
@@ -894,7 +920,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             }
             catch (System.Exception ex)
             {
+#if DEBUG
                 Log.LogWarning($"[TravelMgr_Patch] Failed to save dump file: {ex.Message}");
+#endif
             }
         }
 
@@ -933,12 +961,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             translatedTravelBuffs = MergeWithDumped(translatedLoaded);
             RebuildTravelBuffString();
 
+#if DEBUG
             Log.LogInfo("[TravelMgr_Patch] Loaded buff data from file fallback.");
+#endif
         }
 
         public static void DumpTravelBuffs()
         {
+#if DEBUG
             Log.LogInfo("[TravelMgr_Patch] DumpTravelBuffs called");
+#endif
 
             ResetBuffCache(dumpedTravelBuffs);
             ResetBuffCache(translatedTravelBuffs);
@@ -946,7 +978,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             TravelMgr instance = GetTravelMgrInstance();
             if (instance == null && !HasRuntimeTravelData())
             {
+#if DEBUG
                 Log.LogWarning("[TravelMgr_Patch] TravelMgr instance is null! Using file fallback and TravelLookMenu capture.");
+#endif
                 LoadFromFilesFallback();
                 return;
             }
@@ -961,13 +995,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     }
                     catch (System.Exception ex)
                     {
+#if DEBUG
                         Log.LogWarning($"[TravelMgr_Patch] TravelMgr warmup failed, continuing with TravelDictionary data: {ex.Message}");
+#endif
                     }
                 }
 
                 if (TravelDictionary.advancedBuffsText != null)
                 {
+#if DEBUG
                     Log.LogInfo($"[TravelMgr_Patch] Dumping advancedBuffs: {TravelDictionary.advancedBuffsText.Count} items");
+#endif
                     foreach (var pair in TravelDictionary.advancedBuffsText)
                     {
                         int enumId = (int)pair.Key;
@@ -975,13 +1013,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         AddOrUpdate(dumpedTravelBuffs, "advancedBuffs", enumId, advBuffText);
                         if (!travelBuffString.ContainsKey(advBuffText))
                             travelBuffString.Add(advBuffText, advBuffText);
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch][Dump] advancedBuffs[{enumId}] = \"{advBuffText}\"");
+#endif
                     }
                 }
 
                 if (TravelDictionary.ultimateBuffsText != null)
                 {
+#if DEBUG
                     Log.LogInfo($"[TravelMgr_Patch] Dumping ultimateBuffs: {TravelDictionary.ultimateBuffsText.Count} items");
+#endif
                     foreach (var pair in TravelDictionary.ultimateBuffsText)
                     {
                         int enumId = (int)pair.Key;
@@ -989,13 +1031,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         AddOrUpdate(dumpedTravelBuffs, "ultimateBuffs", enumId, ultBuffText);
                         if (!travelBuffString.ContainsKey(ultBuffText))
                             travelBuffString.Add(ultBuffText, ultBuffText);
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch][Dump] ultimateBuffs[{enumId}] = \"{ultBuffText}\"");
+#endif
                     }
                 }
 
                 if (TravelDictionary.debuffData != null)
                 {
+#if DEBUG
                     Log.LogInfo($"[TravelMgr_Patch] Dumping debuffs: {TravelDictionary.debuffData.Count} items");
+#endif
                     foreach (var pair in TravelDictionary.debuffData)
                     {
                         int enumId = (int)pair.Key;
@@ -1003,13 +1049,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         AddOrUpdate(dumpedTravelBuffs, "debuffs", enumId, debuffText);
                         if (!travelBuffString.ContainsKey(debuffText))
                             travelBuffString.Add(debuffText, debuffText);
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch][Dump] debuffs[{enumId}] = \"{debuffText}\"");
+#endif
                     }
                 }
 
                 if (TravelDictionary.unlocksText != null)
                 {
+#if DEBUG
                     Log.LogInfo($"[TravelMgr_Patch] Dumping unlocks: {TravelDictionary.unlocksText.Count} items");
+#endif
                     foreach (var pair in TravelDictionary.unlocksText)
                     {
                         int enumId = (int)pair.Key;
@@ -1017,13 +1067,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         AddOrUpdate(dumpedTravelBuffs, "unlocks", enumId, unlockText);
                         if (!travelBuffString.ContainsKey(unlockText))
                             travelBuffString.Add(unlockText, unlockText);
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch][Dump] unlocks[{enumId}] = \"{unlockText}\"");
+#endif
                     }
                 }
 
                 if (TravelMgr.InvestBuffsData != null)
                 {
+#if DEBUG
                     Log.LogInfo($"[TravelMgr_Patch] Dumping investmentBuffs: {TravelMgr.InvestBuffsData.Count} items");
+#endif
                     foreach (var pair in TravelMgr.InvestBuffsData)
                     {
                         int enumId = (int)pair.Key;
@@ -1031,13 +1085,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         AddOrUpdate(dumpedTravelBuffs, "investmentBuffs", enumId, desc);
                         if (!travelBuffString.ContainsKey(desc))
                             travelBuffString.Add(desc, desc);
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch][Dump] investmentBuffs[{enumId}] = \"{desc}\"");
+#endif
                     }
                 }
 
                 if (TravelMgr.SynergysData != null)
                 {
+#if DEBUG
                     Log.LogInfo($"[TravelMgr_Patch] Dumping synergies: {TravelMgr.SynergysData.Count} items");
+#endif
                     foreach (var pair in TravelMgr.SynergysData)
                     {
                         string synergyDesc = "";
@@ -1051,14 +1109,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                         }
                         catch (System.Exception ex)
                         {
+#if DEBUG
                             Log.LogWarning($"[TravelMgr_Patch] Error getting synergy description: {ex.Message}");
+#endif
                         }
 
                         if (!string.IsNullOrEmpty(synergyDesc))
                         {
                             int synEnumId = (int)pair.Key;
                             AddOrUpdate(dumpedTravelBuffs, "synergies", synEnumId, synergyDesc);
+#if DEBUG
                             Log.LogInfo($"[TravelMgr_Patch][Dump] synergies[{synEnumId}] = \"{synergyDesc}\"");
+#endif
                         }
                     }
                 }
@@ -1067,7 +1129,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 string jsonPath = Path.Combine(dumpDir, "travel_buffs.json");
                 File.WriteAllText(jsonPath, JsonSerializer.Serialize(dumpedTravelBuffs, JsonOptions));
                 _lastDumpWriteTime = System.DateTime.Now;
+#if DEBUG
                 Log.LogInfo($"[TravelMgr_Patch] Dumped travel_buffs.json to {jsonPath}");
+#endif
 
                 string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
                 string travelBuffDir = Path.Combine(stringDir, "travel_buffs.json");
@@ -1110,34 +1174,48 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                                             travelBuffString.Add(withoutName, translatedBuff);
                                     }
                                     indexMatchCount++;
+#if DEBUG
                                     Log.LogInfo($"[TravelMgr_Patch][IndexMatch] {cat.Key}[{entry.Key}]: FOUND -> \"{translatedBuff}\"");
+#endif
                                 }
                                 else
                                 {
                                     if (!travelBuffString.ContainsKey(originalBuff))
                                         travelBuffString.Add(originalBuff, originalBuff);
                                     indexMismatchCount++;
+#if DEBUG
                                     Log.LogInfo($"[TravelMgr_Patch][IndexMismatch] {cat.Key}[{entry.Key}]: \"{originalBuff}\" has NO translation at index {entry.Key}");
+#endif
                                 }
                             }
                         }
+#if DEBUG
                         Log.LogInfo($"[TravelMgr_Patch] Index matching: {indexMatchCount} matched, {indexMismatchCount} unmatched");
+#endif
                     }
                     catch (System.Exception ex)
                     {
+#if DEBUG
                         Log.LogError($"[TravelMgr_Patch] Failed to deserialize translation file: {ex.Message}");
+#endif
                         translatedTravelBuffs = MergeWithDumped(null);
                     }
                 }
 
                 RebuildTravelBuffString();
                 _runtimeTravelBuffsDumped = true;
+#if DEBUG
                 Log.LogInfo("[TravelMgr_Patch] DumpTravelBuffs completed");
+#endif
             }
             catch (System.Exception ex)
             {
+#if DEBUG
                 UnityEngine.Debug.LogError($"[TravelMgr_Patch] Error dumping travel buffs: {ex.Message}");
+#endif
+#if DEBUG
                 Log.LogError($"[TravelMgr_Patch] Stack trace: {ex.StackTrace}");
+#endif
             }
         }
     }
