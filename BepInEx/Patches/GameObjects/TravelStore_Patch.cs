@@ -90,6 +90,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             if (string.IsNullOrEmpty(investText))
                 return investText;
 
+            if (!Utils.CheckForUntranslatedText(investText))
+            {
+                return investText;
+            }
+
             string[] investStats = investText.Split("\n\n");
             List<string> translatedInvestStats = new List<string>();
 

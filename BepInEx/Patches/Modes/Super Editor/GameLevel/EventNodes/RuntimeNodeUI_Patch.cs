@@ -51,13 +51,22 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor.GameLevel.E
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            if (__instance.Node.nodeType == "PlantTypeValueNode")
+            if (__instance.Node.nodeType == "PlantTypeValueNode" || __instance.Node.nodeType == "SinglePlantTypeListNode")
             {
                 foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
                 {
                     if (txt.gameObject.name.Contains("Label"))
                     {
-                        string plantName = Utils.GetPlantNameFromAlmanac(__instance.Node.GetPortValue<PlantType>(__instance.Node.nodeName, PlantType.Nothing));
+                        string plantName = "";
+                        if (__instance.Node.nodeType == "PlantTypeValueNode")
+                        {
+                            plantName = Utils.GetPlantNameFromAlmanac(__instance.Node.GetPortValue<PlantType>(__instance.Node.nodeName, PlantType.Nothing));
+                        }
+                        else if (__instance.Node.nodeType == "SinglePlantTypeListNode")
+                        {
+                            SinglePlantTypeListNode tempNode = __instance.Node.TryCast<SinglePlantTypeListNode>();
+                            plantName = Utils.GetPlantNameFromAlmanac(tempNode.plantType);
+                        }
                         txt.text = (plantName != "") ? plantName : StringStore.TranslateText(txt.text);
                         txt.font = fontAsset;
                     }

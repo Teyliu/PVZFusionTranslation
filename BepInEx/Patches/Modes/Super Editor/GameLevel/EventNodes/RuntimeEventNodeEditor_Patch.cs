@@ -39,7 +39,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor.GameLevel.E
             {
                 RuntimeNodeUI nodeUI = node.value;
 
-                if (nodeUI.Node.nodeType == "PlantTypeValueNode")
+                if (nodeUI.Node.nodeType == "PlantTypeValueNode" || nodeUI.Node.nodeType == "SinglePlantTypeListNode")
                 {
                     Transform buttonTransform = nodeUI.transform.Find("Header/ValueEditContainer/Button(Clone)/Label");
                     if (buttonTransform == null) continue;
@@ -48,7 +48,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor.GameLevel.E
                     if (!txt.gameObject.name.Contains("Label")) continue;
                     if (!Utils.CheckForUntranslatedText(txt.text)) continue;
 
-                    string plantName = Utils.GetPlantNameFromAlmanac(nodeUI.Node.GetPortValue<PlantType>(nodeUI.Node.GetOutputPorts()[0].portName, PlantType.Nothing));
+                    string plantName = "";
+                    if (nodeUI.Node.nodeType == "PlantTypeValueNode")
+                    {
+                        plantName = Utils.GetPlantNameFromAlmanac(nodeUI.Node.GetPortValue<PlantType>(nodeUI.Node.GetOutputPorts()[0].portName, PlantType.Nothing));
+                    }
+                    else if (nodeUI.Node.nodeType == "SinglePlantTypeListNode")
+                    {
+                        SinglePlantTypeListNode tempNode = nodeUI.Node.TryCast<SinglePlantTypeListNode>();
+                        plantName = Utils.GetPlantNameFromAlmanac(tempNode.plantType);
+                    }
                     txt.text = (plantName != "") ? plantName : StringStore.TranslateText(txt.text);
                     txt.font = fontAsset;
                 }
