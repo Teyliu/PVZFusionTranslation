@@ -5,12 +5,12 @@ using PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(LevelResultMenu))]
-    public static class LevelResultMenu_Patch
+    [HarmonyPatch(typeof(RogueSelectMenu))]
+    public static class RogueSelectMenu_Patch
     {
-        [HarmonyPatch(nameof(LevelResultMenu.ShowResult))]
+        [HarmonyPatch(nameof(RogueSelectMenu.ShowCards))]
         [HarmonyPostfix]
-        public static void ShowResult(LevelResultMenu __instance)
+        public static void ShowCards(RogueSelectMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 

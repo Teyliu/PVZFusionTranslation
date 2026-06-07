@@ -15,11 +15,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
         [HarmonyPatch(nameof(GameLose.UpdateSecondChanceTimer))]
         public static void UpdateSecondChanceTimer(GameLose __instance)
         {
-            if (InGameText.Instance == null) return;
+            if (Core.InGameText.Instance == null) return;
 
-            if (InGameText.Instance.timer < 0) return;
+            if (Core.InGameText.Instance.timer < 0) return;
 
-            InGameText_Patch.TranslateInGameText(InGameText.Instance);
+            InGameText_Patch.TranslateInGameText(Core.InGameText.Instance);
         }
     }
 }

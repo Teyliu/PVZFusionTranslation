@@ -1,17 +1,16 @@
 using HarmonyLib;
-using System;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using UnityEngine;
+using PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(ShootingMenu))]
-    public static class ShootingMenu_Patch
+    [HarmonyPatch(typeof(RogueCrisisMenu))]
+    public static class RogueCrisisMenu_Patch
     {
-        [HarmonyPatch(nameof(ShootingMenu.Update))]
+        [HarmonyPatch(nameof(RogueCrisisMenu.ShowCrisis))]
         [HarmonyPostfix]
-        private static void Update(ShootingMenu __instance)
+        public static void ShowCrisis(RogueCrisisMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 

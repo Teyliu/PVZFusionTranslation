@@ -5,27 +5,28 @@ using System.Text.RegularExpressions;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
+using PvZ_Fusion_Translator__BepInEx_;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
 {
-    [HarmonyPatch(typeof(InGameText))]
+    [HarmonyPatch(typeof(global::Core.InGameText))]
     public static class InGameText_Patch
     {
         public static string currentText = "";
 
-        [HarmonyPatch(nameof(InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool) })]
+        [HarmonyPatch(nameof(global::Core.InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool) })]
         [HarmonyPrefix]
-        private static void ShowText_Pre(InGameText __instance, ref string text) => text = StringStore.TranslateText(text, true);
+        private static void ShowText_Pre(global::Core.InGameText __instance, ref string text) => text = StringStore.TranslateText(text, true);
 
-        [HarmonyPatch(nameof(InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool) })]
+        [HarmonyPatch(nameof(global::Core.InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool) })]
         [HarmonyPostfix]
-        private static void ShowText_Post(InGameText __instance)
+        private static void ShowText_Post(global::Core.InGameText __instance)
         {
             TranslateInGameText(__instance);
         }
 
-        public static void TranslateInGameText(InGameText __instance)
+        public static void TranslateInGameText(global::Core.InGameText __instance)
         {
             TextMeshProUGUI txt = null;
 
@@ -134,6 +135,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
                     }
                 }
             }
+            txt.text = StringStore.ReplaceOppositeBuffBut(txt.text);
             txt.font = fontAsset;
 
             currentText = txt.text;

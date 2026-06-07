@@ -135,6 +135,7 @@
 		<Compile Include="Patches\GameObjects\AbyssDevelopMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSelectBuffWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
 		
@@ -150,7 +151,6 @@
 		<Compile Include="Patches\GameObjects\AlmanacSelectMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacZombieWindow_Patch.cs" />
-		<Compile Include="Patches\GameObjects\LevelResultMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MultipleChoiceMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIDifficulty_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AdvantureEvolutionMenu_Patch.cs" />
@@ -161,7 +161,19 @@
 		<Compile Include="Patches\GameObjects\AdvantureStarMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\BaseMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\Board_Patch.cs" />
+		<Compile Include="Patches\HealthSlider_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssBuffButton_Patch.cs" />
+		<!-- <Compile Include="Patches\GameObjects\CardWithDamage_Patch.cs" /> -->
+		<Compile Include="Patches\GameObjects\InGameUI_IZ_Patch.cs" />
+		<Compile Include="Patches\GameObjects\LevelResultMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\LevelSaveEnter_Patch.cs" />
+		<Compile Include="Patches\GameObjects\OppsiteBuff_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PropCard_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ReNameMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\RogueCrisisMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\RogueSelectMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TheCard_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssLevelEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
@@ -181,7 +193,7 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
 		
 		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\CreatePlayerSaveMenu_Patch.cs" />
+		<!-- <Compile Include="Patches\GameObjects\CreatePlayerSaveMenu_Patch.cs" /> -->
 		<Compile Include="Patches\GameObjects\CrisisZombieWindow_Patch.cs" />
 		
 		
@@ -218,12 +230,11 @@
 		<Compile Include="Patches\GameObjects\PlayerShootingWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\RogueCardWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\RogueStartMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" />
+		<!-- <Compile Include="Patches\GameObjects\ShootingMenu_Patch.cs" /> -->
+		<!-- <Compile Include="Patches\GameObjects\ShootingSelectWindow_Patch.cs" /> -->
 		<Compile Include="Patches\GameObjects\SpriteRenderer_patch.cs" />
 		<Compile Include="Patches\GameObjects\SeedLibrary_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerOption_Patch.cs" />
-		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelBuffOptionButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TravelInvestMenu_Patch.cs" />
@@ -292,6 +303,9 @@
 	</Reference>
 	<Reference Include="Assembly-CSharp">
 	  <HintPath>$(GamePath)\BepInEx\interop\Assembly-CSharp.dll</HintPath>
+	</Reference>
+	<Reference Include="Core">
+	  <HintPath>$(GamePath)\BepInEx\interop\Core.dll</HintPath>
 	</Reference>
 	<Reference Include="AssetRipper.CIL">
 	  <HintPath>$(GamePath)\BepInEx\core\AssetRipper.CIL.dll</HintPath>

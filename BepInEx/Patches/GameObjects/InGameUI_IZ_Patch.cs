@@ -5,12 +5,12 @@ using PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(LevelResultMenu))]
-    public static class LevelResultMenu_Patch
+    [HarmonyPatch(typeof(InGameUI_IZ))]
+    public static class InGameUI_IZ_Patch
     {
-        [HarmonyPatch(nameof(LevelResultMenu.ShowResult))]
+        [HarmonyPatch(nameof(InGameUI_IZ.Update))]
         [HarmonyPostfix]
-        public static void ShowResult(LevelResultMenu __instance)
+        public static void Update(InGameUI_IZ __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
@@ -19,6 +19,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 txt.text = StringStore.TranslateText(txt.text);
                 txt.font = fontAsset;
             }
+        }
+
+        [HarmonyPatch(nameof(InGameUI_IZ.ShowZombieCard))]
+        [HarmonyPostfix]
+        public static void ShowZombieCard(InGameUI_IZ __instance)
+        {
+            Update(__instance);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             Transform grave = __instance.transform.Find("Grave");
             if (grave == null)
             {
-                Core.Log.LogWarning("[MainMenu_Patch] Could not find 'Grave' in MainMenu, skipping language button creation");
+                PluginCore.Log.LogWarning("[MainMenu_Patch] Could not find 'Grave' in MainMenu, skipping language button creation");
                 return;
             }
             Transform playerName = __instance.transform.Find("Playername");
@@ -42,7 +42,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                 if (templateButton == null)
                 {
-                    Core.Log.LogWarning("[MainMenu_Patch] Could not find 'UpdateInfo' or any UIButton template in Grave, skipping language button creation");
+                    PluginCore.Log.LogWarning("[MainMenu_Patch] Could not find 'UpdateInfo' or any UIButton template in Grave, skipping language button creation");
                     return;
                 }
 
@@ -62,7 +62,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             UIButton langBtn = langObj.GetComponent<UIButton>();
             if (langBtn == null)
             {
-                Core.Log.LogWarning("[MainMenu_Patch] Language button missing UIButton component");
+                PluginCore.Log.LogWarning("[MainMenu_Patch] Language button missing UIButton component");
                 return;
             }
 

@@ -15,7 +15,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
             fontAssetDict.Clear();
             fontAssetDictSecondary.Clear();
             
-            string fontsDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Fonts]");
+            string fontsDir = Path.Combine(PluginCore.Instance.modsDirectory, "[Custom Fonts]");
 
 #if MULTI_LANGUAGE
             foreach (string file in Directory.GetFiles(fontsDir))
@@ -52,7 +52,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
         internal static void InitFallback()
         {
-            string fontsDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Fonts]");
+            string fontsDir = Path.Combine(PluginCore.Instance.modsDirectory, "[Custom Fonts]");
             foreach (string file in Directory.GetFiles(fontsDir))
             {
                 string fileName = Path.GetFileNameWithoutExtension(file);

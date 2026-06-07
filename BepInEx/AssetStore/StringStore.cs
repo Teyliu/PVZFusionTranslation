@@ -510,5 +510,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			Log.LogInfo("Regex Entries: {0}", translationStringRegex.Count);
 			Log.LogInfo("String Entries: {0}", translationString.Count);
 		}
+
+		public static string ReplaceOppositeBuffBut(string text)
+		{
+			if (string.IsNullOrEmpty(text) || !text.Contains("但")) return text;
+			string translatedBut = TranslateText("但");
+			if (string.IsNullOrEmpty(translatedBut) || translatedBut == "但") return text;
+			return text.Replace("但", translatedBut);
+		}
 	}
 }

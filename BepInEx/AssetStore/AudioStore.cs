@@ -20,7 +20,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
     {
         public static Dictionary<string, AudioClip> AudioClips = [];
         public static Dictionary<string, (string, string)> AudioClipNames = [];
-        public static ManualLogSource Log = Core.Log;
+        public static ManualLogSource Log = PluginCore.Log;
 
         public static ConfigEntry<bool> LogSounds;
         public static ConfigEntry<string> category;

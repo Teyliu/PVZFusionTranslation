@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
-using UnityEngine;
-using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
@@ -19,27 +17,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             if (string.IsNullOrEmpty(__result))
                 return;
 
-            Log.LogInfo($"[SynergyDisplay_Patch] GetText called with: '{__result}'");
-
-            string translatedText = Managers.TravelMgr_Patch.MatchTravelBuff(__result);
+            string translatedText = TravelMgr_Patch.MatchTravelBuff(__result);
             if (!string.IsNullOrEmpty(translatedText) && translatedText != __result)
             {
-                Log.LogInfo($"[SynergyDisplay_Patch] Found translation via MatchTravelBuff: '{translatedText}'");
                 __result = translatedText;
-#if DEBUG
-                FileLoader.DumpUntranslatedStrings(__result);
-#endif
             }
             else
             {
                 string translatedColorText = StringStore.TranslateColorText(__result);
                 if (translatedColorText != __result)
                 {
-                    Log.LogInfo($"[SynergyDisplay_Patch] Found translation via TranslateColorText: '{translatedColorText}'");
                     __result = translatedColorText;
-#if DEBUG
-                    FileLoader.DumpUntranslatedStrings(__result);
-#endif
                 }
             }
         }
@@ -50,29 +38,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            if (__instance.text1 != null)
+            if (__instance.text != null)
             {
-                string originalText = __instance.text1.text;
-                Log.LogInfo($"[SynergyDisplay_Patch] UpdateText original: '{originalText}'");
-
+                string originalText = __instance.text.text;
                 string translatedText = TranslateInvestDisplay(originalText);
-                __instance.text1.text = translatedText;
-                __instance.text1.font = fontAsset;
-
-                Log.LogInfo($"[SynergyDisplay_Patch] UpdateText translated: '{translatedText}'");
-#if DEBUG
-                if (translatedText != originalText)
-                {
-                    FileLoader.DumpUntranslatedStrings(originalText);
-                }
-#endif
-            }
-
-            if (__instance.text_shadow != null)
-            {
-                string translatedShadowText = Utils.RemoveColorTags(__instance.text_shadow.text);
-                __instance.text_shadow.text = translatedShadowText;
-                __instance.text_shadow.font = fontAsset;
+                __instance.text.text = translatedText;
+                __instance.text.font = fontAsset;
             }
         }
 

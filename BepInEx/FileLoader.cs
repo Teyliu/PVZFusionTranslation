@@ -31,7 +31,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
         public static string GetAssetDir(AssetType assetType, Utils.LanguageEnum? language = null)
         {
             string languagePath = language.HasValue ? ("Localization" + Path.DirectorySeparatorChar + language.ToString()) : string.Empty;
-            return Path.Combine(Core.Instance.modsDirectory, languagePath, assetType.ToString());
+            return Path.Combine(PluginCore.Instance.modsDirectory, languagePath, assetType.ToString());
         }
 
 #if MULTI_LANGUAGE
@@ -283,7 +283,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
         internal static void LoadLocalizedTextures(Utils.LanguageEnum? language = null)
         {
             ConfigEntry<bool> defaultTextureEntry;
-            Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
+            PluginCore.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
 
             string textureDir = GetAssetDir(AssetType.Textures, language);
 
@@ -341,7 +341,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
         internal static void LoadLocalizedSprites(Utils.LanguageEnum? language = null)
         {
             ConfigEntry<bool> defaultTextureEntry;
-            Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
+            PluginCore.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out defaultTextureEntry);
 
             string spritesDir = GetAssetDir(AssetType.Sprites, language);
             if (!Directory.Exists(spritesDir))
@@ -382,9 +382,9 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         internal static void LoadDefaultTextures()
         {
-            if (Core.Instance.configDefaultTextures.Value)
+            if (PluginCore.Instance.configDefaultTextures.Value)
             {
-                string textureDefaultDir = Path.Combine(Core.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
+                string textureDefaultDir = Path.Combine(PluginCore.Instance.modsDirectory, AssetType.Dumps.ToString(), "Default Textures [Do Not Remove]");
                 if (!Directory.Exists(textureDefaultDir))
                 {
                     Directory.CreateDirectory(textureDefaultDir);
@@ -430,7 +430,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         internal static void LoadCustomTextures()
         {
-            string texturePackDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Textures]");
+            string texturePackDir = Path.Combine(PluginCore.Instance.modsDirectory, "[Custom Textures]");
 
             if (!Directory.Exists(texturePackDir))
             {
@@ -694,7 +694,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             try
             {
                 ConfigEntry<string> languageEntry;
-                Core.Instance.Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out languageEntry);
+                PluginCore.Instance.Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out languageEntry);
                 string languageName = languageEntry.Value;
                 if (Enum.TryParse(languageName, out Utils.LanguageEnum loadedLanguage))
                 {
@@ -720,9 +720,9 @@ namespace PvZ_Fusion_Translator__BepInEx_
             try
             {
                 ConfigEntry<string> languageEntry;
-                Core.Instance.Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out languageEntry);
+                PluginCore.Instance.Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out languageEntry);
                 languageEntry.Value = Utils.Language.ToString();
-                Core.Instance.Config.Save();
+                PluginCore.Instance.Config.Save();
             }
             catch (Exception e)
             {

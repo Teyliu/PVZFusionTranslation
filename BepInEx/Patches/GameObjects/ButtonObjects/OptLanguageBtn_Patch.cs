@@ -319,17 +319,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
             if (type == "Textures")
             {
                 ConfigEntry<bool> customTexturesEntry;
-                Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out customTexturesEntry);
+                PluginCore.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out customTexturesEntry);
                 customTexturesEntry.BoxedValue = !customTexturesEntry.Value;
                 TextureStore.Reload();
-                if (Core.MonoInstance != null)
-                    Core.MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
+                if (PluginCore.MonoInstance != null)
+                    PluginCore.MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
             }
 
             if (type == "Audio")
             {
                 ConfigEntry<bool> customAudioEntry;
-                Core.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out customAudioEntry);
+                PluginCore.Instance.Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out customAudioEntry);
                 customAudioEntry.BoxedValue = !customAudioEntry.Value;
             }
 
@@ -338,7 +338,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
                 Utils.WarnLocalData();
             }
 
-            Core.Instance.Config.Save();
+            PluginCore.Instance.Config.Save();
         }
 
         [HarmonyPatch(typeof(OptionBtn))]

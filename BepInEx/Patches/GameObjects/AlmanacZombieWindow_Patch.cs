@@ -250,12 +250,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     return;
                 }
 
-                //if (!string.IsNullOrEmpty(originalName))
-                //    DumpUntranslatedStrings(originalName, originalName);
-                //if (!string.IsNullOrEmpty(originalIntroduce))
-                //    DumpUntranslatedStrings(originalIntroduce, originalIntroduce);
-                //if (!string.IsNullOrEmpty(originalInfo))
-                //    DumpUntranslatedStrings(originalInfo, originalInfo);
+                if (!foundInJson)
+                {
+                    Log.LogMessage($"[UNTRANSLATED-ALMANAC] Zombie type={zombieTypeInt}:");
+                    if (!string.IsNullOrEmpty(originalName))
+                        Log.LogMessage($"[UNTRANSLATED-ALMANAC]   name: {originalName}");
+                    if (!string.IsNullOrEmpty(originalIntroduce))
+                        Log.LogMessage($"[UNTRANSLATED-ALMANAC]   introduce: {originalIntroduce}");
+                    if (!string.IsNullOrEmpty(originalInfo))
+                        Log.LogMessage($"[UNTRANSLATED-ALMANAC]   info: {originalInfo}");
+                }
 
                 Log.LogInfo($"[AlmanacZombieWindow_Patch] Final values - name='{finalName}', introduce='{finalIntroduce?.Substring(0, Math.Min(50, finalIntroduce?.Length ?? 0))}', info='{finalInfo?.Substring(0, Math.Min(50, finalInfo?.Length ?? 0))}'");
 

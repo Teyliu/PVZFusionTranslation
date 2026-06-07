@@ -33,7 +33,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
         public static void Start(Zombie __instance)
         {
             TranslateHpUI(__instance.healthText, __instance);
-            TranslateHpUI(__instance.healthTextShadow, __instance);
 
             if (__instance.healthText.transform.rotation != Quaternion.Euler(0, 0, 0))
                 __instance.healthText.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
@@ -46,10 +45,9 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
             if (__instance.theZombieType == ZombieType.TrainingDummy || !Board.Instance.showZombieHealth)
                 return;
 
-            if (__instance.healthText == null || __instance.healthTextShadow == null) return;
+            if (__instance.healthText == null) return;
 
             TranslateHpUI(__instance.healthText, __instance);
-            TranslateHpUI(__instance.healthTextShadow, __instance);
 
             if (__instance.healthText.transform.rotation != Quaternion.Euler(0f, 0f, 0f))
                 __instance.healthText.transform.rotation = Quaternion.Euler(0f, 0f, 0f);

@@ -15,7 +15,7 @@ using UnityEngine;
 
 [BepInPlugin("PVZFusionTranslator_BepInEx", "PvZ Fusion Translator", "3.6.1.3")]
 [BepInProcess("PlantsVsZombiesRH.exe")]
-public class Core : BasePlugin
+public class PluginCore : BasePlugin
 {
 	public string modsDirectory => Path.Combine(Paths.PluginPath, "PvZ_Fusion_Translator");
 
@@ -24,7 +24,7 @@ public class Core : BasePlugin
 	private static string toast_txt;
 
 	public new static ManualLogSource Log;
-	public static Core Instance { get; private set; }
+	public static PluginCore Instance { get; private set; }
 	public static MonoBehaviour MonoInstance { get; private set; }
 
 	private Coroutine replaceTextureRoutine = null;
@@ -125,7 +125,7 @@ public class Core : BasePlugin
 		{
 			stringreloaded = !stringreloaded;
 		}
-		Core.DebugStringReload();
+		PluginCore.DebugStringReload();
     }
 
 	public static void DebugStringReload()

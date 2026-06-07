@@ -22,6 +22,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 {
                     txt.font = fontAsset;
                     txt.text = StringStore.translationString.ContainsKey(txt.text + "_MC") ? StringStore.TranslateText(txt.text + "_MC") : StringStore.TranslateText(txt.text);
+                    txt.text = StringStore.ReplaceOppositeBuffBut(txt.text);
                 }
             }
         }

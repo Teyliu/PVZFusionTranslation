@@ -246,7 +246,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             try
             {
                 ImageConversion.LoadImage(ogTexture, textureData);
-                Core.Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
+                PluginCore.Log.LogDebug("OK! Replaced Texture " + ogTexture.name);
                 ogTexture.name = "replaced_" + ogTexture.name;
                 return true;
             }
@@ -324,7 +324,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 }
                 catch { }
             }
-            Core.Log.LogDebug($"Rebuilt {rebuiltCount} SpriteRenderers");
+            PluginCore.Log.LogDebug($"Rebuilt {rebuiltCount} SpriteRenderers");
         }
 
         internal static Texture2D LoadImage(string path)
@@ -563,8 +563,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
         public static string mainCategory = "PvZ_Fusion_Translator";
 
-        public static bool customTextures => Core.Instance != null && !Core.Instance.configDefaultTextures.Value;
-        public static bool customAudio => Core.Instance != null && !Core.Instance.configDefaultAudio.Value;
+        public static bool customTextures => PluginCore.Instance != null && !PluginCore.Instance.configDefaultTextures.Value;
+        public static bool customAudio => PluginCore.Instance != null && !PluginCore.Instance.configDefaultAudio.Value;
 
         public enum LanguageEnum
         {

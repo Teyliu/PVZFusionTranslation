@@ -37,20 +37,20 @@ namespace PvZ_Fusion_Translator__BepInEx_
 				if (ModType == ModType.ReloadStrings)
 				{
 					StringStore.Reload();
-					Core.ShowToast("Strings Reloaded!");
+					PluginCore.ShowToast("Strings Reloaded!");
 					return;
 				}
 
 				if (ModType == ModType.ReloadTextures)
 				{
 					TextureStore.Reload();
-					Core.ShowToast("Textures Reloaded!");
+					PluginCore.ShowToast("Textures Reloaded!");
 					return;
 				}
 				if (ModType == ModType.DumpTravelBuffs)
 				{
 					TravelMgr_Patch.DumpTravelBuffs();
-					Core.ShowToast("Travel Buffs Dumped!");
+					PluginCore.ShowToast("Travel Buffs Dumped!");
 					return;
                 }
             }

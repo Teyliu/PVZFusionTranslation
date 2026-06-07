@@ -11,7 +11,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		[HarmonyPrefix]
 		private static bool Update(GameAPP __instance)
 		{
-            Core.Instance.OnUpdate();
+            PluginCore.Instance.OnUpdate();
 
             if (EventSystem.current?.currentSelectedGameObject != null)
             {
