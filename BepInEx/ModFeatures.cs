@@ -44,6 +44,8 @@ namespace PvZ_Fusion_Translator__BepInEx_
 				if (ModType == ModType.ReloadTextures)
 				{
 					TextureStore.Reload();
+					TextureStore.ReplaceTextures();
+					Utils.RebuildAllSpriteRenderers();
 					PluginCore.ShowToast("Textures Reloaded!");
 					return;
 				}

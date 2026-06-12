@@ -32,8 +32,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
 		public static IEnumerator ReplaceTexturesCoroutine()
 		{
-			yield return null;
-
 #if MULTI_LANGUAGE
 			RestoreTextures();
 #endif
@@ -45,10 +43,12 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
 			FileLoader.LoadTextures();
 			ReplaceTextures();
+			Utils.RebuildAllSpriteRenderers();
 
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(0.5f);
 
 			ReplaceTextures();
+			Utils.RebuildAllSpriteRenderers();
 
 			Log.LogInfo("Texture replacement completed.");
 		}

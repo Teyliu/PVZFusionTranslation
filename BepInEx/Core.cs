@@ -60,6 +60,8 @@ public class PluginCore : BasePlugin
 
         AudioStore.Init();
         TextureStore.Init();
+        TextureStore.ReplaceTextures();
+        Utils.RebuildAllSpriteRenderers();
         StringStore.Init();
         FontStore.Init();
         Utils.RegisterPlantIndices();
