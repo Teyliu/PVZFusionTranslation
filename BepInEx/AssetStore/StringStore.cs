@@ -169,7 +169,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 			}
 
 			string checkText;
-			#if DEBUG
+			#if MULTI_LANGUAGE
 			Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
 			Match match = regex.Match(text);
 
@@ -217,7 +217,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
             {
                 if (isLog)
                     Log.LogDebug($"Text '{originalText}' not translated");
-#if DEBUG
+#if MULTI_LANGUAGE
 				FileLoader.DumpUntranslatedStrings(originalText);
 #endif
                 return originalText;

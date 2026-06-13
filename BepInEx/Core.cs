@@ -80,7 +80,7 @@ public class PluginCore : BasePlugin
 		if (replaceTextureRoutine != null)
 		{
 			MonoInstance.StopCoroutine(replaceTextureRoutine);
-			Log.LogDebug("Coroutine Stopped");
+			Log.LogInfo("Coroutine Stopped");
 		}
 		FileLoader.SaveLanguage();
 		if (configEnableDllUpdate.Value)
@@ -107,6 +107,13 @@ public class PluginCore : BasePlugin
 	public void OnUpdate()
 	{
 		ModFeatures.OnLateUpdate();
+
+		if (Input.GetKeyDown(KeyCode.Semicolon))
+		{
+			Log.LogInfo("Semicolon press - reloading strings");
+			StringStore.Reload();
+			ShowToast("Strings Reloaded!");
+		}
 
 		if (Input.GetKeyDown(KeyCode.Insert))
 		{
@@ -146,7 +153,7 @@ public class PluginCore : BasePlugin
 
     public void OnGUI()
 	{
-		#if DEBUG
+		#if MULTI_LANGUAGE
 		if (dtStartToast != null)
 		{
 			try
@@ -211,5 +218,29 @@ public class UnityCoroutineHelper : MonoBehaviour
 	public void Awake()
 	{
 		Instance = this;
+	}
+
+	public void Update()
+	{
+		ModFeatures.OnLateUpdate();
+
+		if (Input.GetKeyDown(KeyCode.Insert))
+		{
+			Log.LogInfo("Insert press");
+			Utils.OpenSaveDirectory();
+		}
+
+		if (Input.GetKeyDown(KeyCode.Delete))
+		{
+			Log.LogInfo("del del");
+			Utils.OpenOnlineAlmanac();
+		}
+
+		if (Input.GetKeyDown(KeyCode.Home))
+		{
+			Log.LogInfo("Home press - reloading strings");
+			StringStore.Reload();
+			PluginCore.ShowToast("Strings Reloaded!");
+		}
 	}
 }

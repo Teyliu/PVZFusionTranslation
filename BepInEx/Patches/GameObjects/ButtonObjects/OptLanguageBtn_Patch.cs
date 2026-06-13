@@ -8,13 +8,9 @@ using TMPro;
 using PvZ_Fusion_Translator__BepInEx_;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using BepInEx.Configuration;
-using BepInEx;
-using UnityEngine.Experimental.Rendering.RenderGraphModule;
 using BepInEx.Unity.IL2CPP.Utils;
-using Unity.VisualScripting.FullSerializer;
 
 public class OptionButtonData
 {
@@ -37,11 +33,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
         public static OptionBtn cachedTemplateButton;
         public static OptionBtn cachedTemplateToggleButton;
 
-        private const float startX = 4.3241f + 2.56f;
+        private const float startX = 4.3241f + 4.12f;
 		private const float startY = 2.7769f;
 		private const float ySpacing = 1.2505f;
 
-		private const float toggleStartX = 4.3241f;
+		private const float toggleStartX = 4.3241f + 1.48f;
 		private const float toggleStartY = -0.9746f;
 
         private static List<Utils.LanguageEnum> AvailableLanguages;
@@ -86,7 +82,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 			{
 				var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
 				newButton.optionType = 80 + i;
-				newButton.gameObject.tag = "LangOpt";
 
 				float yPos = startY - i * ySpacing;
 				Vector3 pos = new(startX, yPos);
@@ -117,7 +112,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
             {
                 var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
                 newButton.optionType = 100 + i;
-                newButton.gameObject.tag = "LangOpt";
 
                 float yPos = toggleStartY - i * ySpacing;
                 Vector3 pos = new(toggleStartX, yPos);
@@ -227,31 +221,23 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 		public static void UpdateButtonText(OptionBtn button, string languageName, TMP_FontAsset fontAsset = null)
 		{
 			TMP_FontAsset defaultAsset = FontStore.LoadTMPFont("English");
+			TMP_FontAsset useFont = fontAsset != null ? fontAsset : defaultAsset;
 
-			for (int i = 0; i < 3; i++)
+			TextMeshProUGUI[] texts = button.GetComponentsInChildren<TextMeshProUGUI>(true);
+			for (int i = 0; i < texts.Length; i++)
 			{
-				Transform textTransform = button.transform.GetChild(i);
-				if (textTransform != null)
-				{
-					if (i == 0) textTransform.gameObject.SetActive(false);
+				texts[i].gameObject.SetActive(true);
+				texts[i].font = useFont;
+				texts[i].fontSize = 16;
+				texts[i].autoSizeTextContainer = false;
+				texts[i].text = languageName;
+			}
 
-					TextMeshProUGUI text = textTransform.GetComponent<TextMeshProUGUI>();
-					if (text != null)
-					{
-						if (i == 0)
-						{
-							text.text = "";
-							text.color = Color.red;
-						}
-						else
-						{
-							text.text = languageName;
-						}
-						text.fontSize = 16;
-						text.font = (fontAsset != null) ? fontAsset : defaultAsset;
-						text.autoSizeTextContainer = false;
-					}
-				}
+			if (texts.Length > 1)
+			{
+				texts[0].gameObject.SetActive(false);
+				texts[0].text = "";
+				texts[0].color = Color.red;
 			}
 		}
 

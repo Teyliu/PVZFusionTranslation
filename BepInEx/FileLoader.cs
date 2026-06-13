@@ -655,7 +655,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), JsonSerializer.Serialize(fusionShowcaseDataDump, options));
         }
 
-#if DEBUG
+#if MULTI_LANGUAGE
         public static void DumpUntranslatedStrings(string key, string originalValue = null)
         {
             string dumpDir = GetAssetDir(AssetType.Dumps);

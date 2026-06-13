@@ -79,24 +79,52 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             UIMgr.EnterOptionMenu();
             GameObject optionMenu = GameAPP.canvasUp.Find("OptionMenu(Clone)").gameObject;
-            optionMenu.name = "LanguageMenu";
+			optionMenu.name = "LanguageMenu";
 
-            List<string> toKeep = new List<string>() { "Background", "F", "Goback" };
-            foreach(Transform child in optionMenu.GetComponentsInChildren<Transform>())
-            {
-                bool shouldKeep = toKeep.Contains(child.name) || toKeep.Contains(child.parent.name) || child.name == "LanguageMenu";
-                if (!shouldKeep)
-                {
-                    child.gameObject.SetActive(false);
-                }
-            }
+			Transform buttonsParent = optionMenu.transform.Find("Buttons");
 
-            Transform fBtn = optionMenu.transform.Find("F");
-            if (fBtn != null)
-            {
-                OptionBtn optionBtn = fBtn.GetComponent<OptionBtn>();
-                OptLanguageBtn_Patch.InitializeLanguageMenu(optionBtn);
-            }
+			List<string> toKeep = new List<string>() { "Background", "Goback" };
+			if (buttonsParent != null)
+				toKeep.Add("Buttons");
+			foreach(Transform child in optionMenu.GetComponentsInChildren<Transform>())
+			{
+				bool shouldKeep = toKeep.Contains(child.name) || toKeep.Contains(child.parent.name) || child.name == "LanguageMenu";
+				if (!shouldKeep)
+				{
+					child.gameObject.SetActive(false);
+				}
+			}
+
+			if (buttonsParent != null)
+			{
+				foreach (Transform btn in buttonsParent)
+				{
+					if (btn.name == "F")
+					{
+						foreach (Transform child in btn)
+							child.gameObject.SetActive(true);
+					}
+					else
+					{
+						btn.gameObject.SetActive(false);
+					}
+				}
+			}
+
+			Transform fBtn = optionMenu.transform.Find("F");
+			if (fBtn == null)
+				fBtn = optionMenu.transform.Find("Buttons/F");
+			if (fBtn == null)
+			{
+				OptionBtn fallback = optionMenu.GetComponentInChildren<OptionBtn>(true);
+				if (fallback != null)
+					fBtn = fallback.transform;
+			}
+			if (fBtn != null)
+			{
+				OptionBtn optionBtn = fBtn.GetComponent<OptionBtn>();
+				OptLanguageBtn_Patch.InitializeLanguageMenu(optionBtn);
+			}
 
             Transform goBackBtn = optionMenu.transform.Find("Goback");
             if (goBackBtn != null)

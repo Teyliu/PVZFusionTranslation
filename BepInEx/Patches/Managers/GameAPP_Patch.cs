@@ -12,15 +12,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 		private static bool Update(GameAPP __instance)
 		{
             PluginCore.Instance.OnUpdate();
-
-            if (EventSystem.current?.currentSelectedGameObject != null)
-            {
-                if (EventSystem.current.currentSelectedGameObject.TryGetComponent<TMP_InputField>(out TMP_InputField field))
-                {
-                    __instance.MusicUpdate();
-                    return false;
-                }
-            }
             return true;
 		}
 	}

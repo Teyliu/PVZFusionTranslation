@@ -60,7 +60,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
 		private static readonly Dictionary<ModType, ModFeature> featureLists = new()
 		{
-			{ ModType.ReloadStrings, new ModFeature("Reload Strings", ModType.ReloadStrings, KeyCode.Home, true) },
+			{ ModType.ReloadStrings, new ModFeature("Reload Strings", ModType.ReloadStrings, KeyCode.Keypad0, true) },
 			{ ModType.ReloadTextures, new ModFeature("Reload Textures", ModType.ReloadTextures, KeyCode.End, true) },
 			{ ModType.DumpTravelBuffs, new ModFeature("Dump Travel Buffs", ModType.DumpTravelBuffs, KeyCode.Minus, true) },
         };
@@ -81,7 +81,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 				{
 					if (Input.GetKeyDown(feature.KeyCode))
 					{
-						Log.LogDebug(feature.KeyCode);
+						Log.LogInfo(feature.KeyCode);
 						feature.ToggleFeature();
 					}
 				}
