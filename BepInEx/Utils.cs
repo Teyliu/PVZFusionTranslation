@@ -532,6 +532,9 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 Log.LogInfo("Applying texture replacements...");
                 try { TextureStore.ReplaceTextures(); } catch (Exception ex) { Log.LogError($"ReplaceTextures error: {ex.Message}"); }
 
+                Log.LogInfo("Rebuilding sprite renderers...");
+                try { Utils.RebuildAllSpriteRenderers(); } catch (Exception ex) { Log.LogError($"RebuildAllSpriteRenderers error: {ex.Message}"); }
+
                 Log.LogInfo("Loading Almanac...");
                 try { FileLoader.LoadAlmanac(); } catch (Exception ex) { Log.LogError($"LoadAlmanac error: {ex.Message}"); }
                 

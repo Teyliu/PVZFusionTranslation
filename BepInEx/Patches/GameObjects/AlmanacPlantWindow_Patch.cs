@@ -162,7 +162,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     Log.LogWarning($"[AlmanacPlantWindow_Patch] JSON file not found: {jsonPath}");
                 }
 
-                // Step 3: Check modded plants override
+                // Step 3: Check modded plants override (only if NOT already in LawnStrings)
                 string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
                 if (File.Exists(moddedPath))
                 {
@@ -180,6 +180,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                 {
                                     if (moddedInfo != null && moddedInfo.seedType == (int)thePlantType)
                                     {
+                                        if (foundTranslation)
+                                        {
+                                            // Plant exists in both LawnStrings and ModdedPlantsTranslate
+                                            // Keep LawnStrings as priority, log warning for translator
+                                            Log.LogWarning($"[Plant ID Conflict] Plant type (ID={(int)thePlantType}) has 2 text profiles in LawnStrings and ModdedPlantTranslate: LawnStrings: [name={finalName}, introduce={finalIntroduce}] and ModdedPlant: [name={moddedInfo.name}, introduce={moddedInfo.introduce}]");
+                                            Log.LogWarning($"[Plant ID Conflict] LawnStrings takes priority. Translator should check if mod plant type ID {(int)thePlantType} conflicts with an existing lawn plant and assign a new unique ID.");
+                                            break;
+                                        }
+
+                                        // Only use modded data if NOT already in LawnStrings
                                         finalName = moddedInfo.name ?? finalName;
                                         finalIntroduce = moddedInfo.introduce ?? finalIntroduce;
                                         finalInfo = moddedInfo.info ?? finalInfo;
@@ -213,6 +223,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         Log.LogMessage($"[UNTRANSLATED-ALMANAC]   cost: {originalCost}");
                 }
 
+                bool hasData = foundTranslation || !string.IsNullOrEmpty(originalName) ||
+                    !string.IsNullOrEmpty(originalIntroduce) || !string.IsNullOrEmpty(originalInfo) ||
+                    !string.IsNullOrEmpty(originalCost);
+
                 Log.LogInfo($"[AlmanacPlantWindow_Patch] Final values - name='{finalName}', introduce='{finalIntroduce?.Substring(0, Math.Min(50, finalIntroduce?.Length ?? 0))}', info='{finalInfo?.Substring(0, Math.Min(50, finalInfo?.Length ?? 0))}', cost='{finalCost}'");
 
                 // Step 4: Font setup
@@ -230,7 +244,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 // Step 5: Update showedPlantName (List<TextMeshProUGUI> - Name + Name_shadow)
-                if (__instance.showedPlantName != null)
+                if (hasData && __instance.showedPlantName != null)
                 {
                     foreach (TextMeshProUGUI text in __instance.showedPlantName)
                     {
@@ -244,7 +258,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 // Step 6: Update showedPlantIntroduce (Description)
-                if (__instance.showedPlantIntroduce != null)
+                if (hasData && __instance.showedPlantIntroduce != null)
                 {
                     char[] toTrim = Environment.NewLine.ToCharArray();
                     string finalText = Utils.RemoveSizeTags(finalInfo) + "\n\n" +

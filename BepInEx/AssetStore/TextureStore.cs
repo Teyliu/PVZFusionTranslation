@@ -45,7 +45,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 			ReplaceTextures();
 			Utils.RebuildAllSpriteRenderers();
 
-			yield return new WaitForSeconds(0.5f);
+			yield return null;
 
 			ReplaceTextures();
 			Utils.RebuildAllSpriteRenderers();
