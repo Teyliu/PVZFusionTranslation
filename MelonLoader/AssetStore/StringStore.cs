@@ -1,6 +1,5 @@
-﻿using Il2CppSystem.Runtime.Remoting.Messaging;
-using Il2CppTMPro;
-using System.Diagnostics;
+﻿using Il2CppTMPro;
+using PvZ_Fusion_Translator.Patches.BaseTextObjects;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -90,17 +89,12 @@ namespace PvZ_Fusion_Translator.AssetStore
 			izTipCollectionString.Clear();
 			fsLevelTipDictionary.Clear();
 			fsTipCollectionString.Clear();
+			InGameText_Patch.currentText = "";
 			FileLoader.LoadStrings();
 		}
 
 		public static TextMeshPro TranslateText(TextMeshPro originalTMP, bool isLog = false)
 		{
-			/*var frame = new StackTrace().GetFrame(1);
-			var method = frame.GetMethod();
-			var className = method.DeclaringType.Name;
-
-			Console.WriteLine($"TextMeshPro: {className}.{method.Name}");*/
-
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
@@ -139,12 +133,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static string TranslateText(string originalText, bool isLog = false)
 		{
-			/*var frame = new StackTrace().GetFrame(1);
-			var method = frame.GetMethod();
-			var className = method.DeclaringType.Name;
-        
-			Console.WriteLine($"string: {className}.{method.Name}");*/
-
 			string text = DoTranslateText(originalText, false);
 			string checkText;
 			#if DEBUG
@@ -183,9 +171,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 					for (int i = 1; i < groupCount; i++)
 					{
 						string groupValue = match.Groups[i].Value;
-						string translatedValue = translationString.ContainsKey(groupValue)
-							? translationString[groupValue]
-							: groupValue;
+						string translatedValue = DoTranslateString(groupValue);
 						dynamicParts.Add(translatedValue);
 					}
 
@@ -232,7 +218,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 			}
         }
 
-        public static string DoTranslateText(string originalText, bool isLog = false)
+		public static string DoTranslateString(string originalText, bool isLog = false)
 		{
 			if (string.IsNullOrEmpty(originalText))
 			{
@@ -275,6 +261,73 @@ namespace PvZ_Fusion_Translator.AssetStore
 				}
 				return customLevelString[originalText];
 			}
+			
+			if (Utils.plantIndiceString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in plantIndiceString");
+				}
+				return Utils.plantIndiceString[originalText];
+			}
+
+			return originalText;
+		}
+
+        public static string DoTranslateText(string originalText, bool isLog = false)
+		{
+			if (string.IsNullOrEmpty(originalText))
+			{
+				if (isLog)
+					Log.LogError("Text Null or Empty");
+
+				return string.Empty;
+			}
+
+			if (!Utils.CheckForUntranslatedText(originalText) && !(originalText).Contains("_")) return originalText;
+
+			if (translationString.ContainsKey(originalText))
+			{
+				if (isLog)
+					Log.LogDebug($"Text '{originalText} found in translationString");
+				return translationString[originalText];
+			}
+
+			if(izTipCollectionString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in izTipCollectionString");
+				}
+				return izTipCollectionString[originalText];
+			}
+
+			if(fsTipCollectionString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in fsTipCollectionString");
+				}
+				return fsTipCollectionString[originalText];
+			}
+
+			if(customLevelString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in customLevelString");
+				}
+				return customLevelString[originalText];
+			}
+
+			if (Utils.plantIndiceString.ContainsKey(originalText))
+			{
+				if(isLog)
+				{
+					Log.LogDebug($"Text '{originalText}' found in plantIndiceString");
+				}
+				return Utils.plantIndiceString[originalText];
+			}
 
 			// Regex-based dynamic translation
 			foreach (var entry in translationStringRegex)
@@ -296,9 +349,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 					for (int i = 1; i < groupCount; i++)
 					{
 						string groupValue = match.Groups[i].Value;
-						string translatedValue = translationString.ContainsKey(groupValue)
-							? translationString[groupValue]
-							: groupValue;
+						string translatedValue = DoTranslateString(groupValue);
 						dynamicParts.Add(translatedValue);
 					}
 

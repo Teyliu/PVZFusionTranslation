@@ -45,12 +45,13 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 }
             }
 
-            OptionBtn templateButton = newOptionsMenu.transform.Find("F").GetComponent<OptionBtn>();
+            OptionBtn templateButton = newOptionsMenu.transform.Find("Buttons/F").GetComponent<OptionBtn>();
             OptLanguageBtn_Patch.OptLangBtn_Patch.Awake(templateButton);
 
             UIButton goBackButton = newOptionsMenu.transform.Find("Goback").GetComponent<UIButton>();
 
-            newOptionsMenu.transform.Find("F").gameObject.SetActive(false);
+            newOptionsMenu.transform.Find("Buttons/F").gameObject.SetActive(false);
+            newOptionsMenu.transform.Find("Buttons").gameObject.SetActive(true);
 
             foreach (TextMeshProUGUI text in newOptionsMenu.transform.Find("Background").GetComponentsInChildren<TextMeshProUGUI>())
             {

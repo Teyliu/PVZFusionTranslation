@@ -2,7 +2,9 @@
 using Il2Cpp;
 using Il2CppAlmanacData;
 using Il2CppTMPro;
+using MelonLoader.TinyJSON;
 using PvZ_Fusion_Translator.AssetStore;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Unity.Collections;
 using Unity.VisualScripting;
@@ -18,6 +20,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     public static class AlmanacPlantMenu_Patch
     {
         public static string almanacJson = "";
+        public static Dictionary<int, Il2CppAlmanacData.PlantInfo> plantInfoDict = new();
 
         [HarmonyPatch(nameof(AlmanacPlantMenu.Awake))]
         [HarmonyPostfix]
@@ -35,7 +38,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 }
             }
 
-            foreach(AlmanacCardUI almanacCardUI in __instance.GetComponentsInChildren<AlmanacCardUI>())
+            foreach (AlmanacCardUI almanacCardUI in __instance.GetComponentsInChildren<AlmanacCardUI>())
             {
                 AlmanacCardUI_Patch.Awake(almanacCardUI);
             }
@@ -44,10 +47,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             AlmanacPlantWindow window = __instance.window;
             GameObject skinButton = window.skinButton;
-            GameObject skinTextObj = skinButton.transform.GetChild(0).gameObject;
-            GameObject skinShadowTextObj = skinTextObj.transform.GetChild(0).gameObject;
-            TextMeshProUGUI skinShadowText = skinShadowTextObj.GetComponent<TextMeshProUGUI>();
-            skinShadowText.text = StringStore.TranslateText("换肤_S");
+            GameObject skinTextObj = skinButton.transform.Find("text_1").gameObject;
             skinButton.transform.localScale /= 1.75f;
             skinButton.transform.localPosition = new Vector3(0.0f, 111.345f, 0.0f);
             skinButton.transform.GetChild(1).Translate(new Vector3(-0.35f, 0));
@@ -79,6 +79,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                     {
                         searchedPlants.Add((PlantType)plantInfo.seedType);
                     }
+                    else if ($"{plantInfo.seedType}".ToLower().StartsWith(search.ToLower()))
+                    {
+                        searchedPlants.Add((PlantType)plantInfo.seedType);
+                    }
                 }
 
                 __instance.ShowPlants(searchedPlants);
@@ -87,6 +91,47 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             }
 
             return true;
+        }
+
+        [HarmonyPatch(nameof(AlmanacPlantMenu.ShowPlants), argumentTypes: [typeof(Il2CppSystem.Func<PlantType, bool>)])]
+        [HarmonyPostfix]
+        public static void ShowPlants(AlmanacPlantMenu __instance, ref Func<PlantType, bool> condition)
+        {
+            foreach (AlmanacCardUI cardUI in __instance.cards)
+            {
+                AlmanacCardUI_Patch.Awake(cardUI);
+            }
+        }
+
+        [HarmonyPatch(nameof(AlmanacPlantMenu.ClassicMix))]
+        [HarmonyPostfix]
+        public static void ClassicMix(AlmanacPlantMenu __instance)
+        {
+            foreach (AlmanacCardUI cardUI in __instance.cards)
+            {
+                AlmanacCardUI_Patch.Awake(cardUI);
+            }
+        }
+
+        public static void LoadPlantAlmanacData(string json)
+        {
+            if (json == null) return;
+
+            almanacJson = json;
+
+            var plantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(almanacJson);
+
+            foreach (Il2CppAlmanacData.PlantInfo plantInfo in plantData.plants)
+            {
+                if(plantInfoDict.ContainsKey(plantInfo.seedType))
+                {
+                    plantInfoDict[plantInfo.seedType] = plantInfo;
+                }
+                else
+                {
+                    plantInfoDict.Add(plantInfo.seedType, plantInfo);
+                }
+            }
         }
     }
 }

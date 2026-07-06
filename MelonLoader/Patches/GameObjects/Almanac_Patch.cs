@@ -18,12 +18,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             TranslateAlmanacMenu(__instance);
         }
 
-        [HarmonyPatch(nameof(Almanac.OldAlmanac))]
+        /*[HarmonyPatch(nameof(Almanac.OldAlmanac))]
         [HarmonyPostfix]
         private static void OldAlmanac(Almanac __instance)
         {
             TranslateAlmanacMenu(__instance);
-        }
+        }*/
 
         [HarmonyPatch(nameof(Almanac.AnimSwitch))]
         [HarmonyPostfix]

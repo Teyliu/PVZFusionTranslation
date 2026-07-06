@@ -15,8 +15,7 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         [HarmonyPostfix]
         public static void Start(SynergyDisplay __instance)
         {
-            __instance.text1.text = TranslateInvestDisplay(__instance.text1.text);
-            __instance.text_shadow.text = Utils.RemoveColorTags(__instance.text1.text);
+            __instance.text.text = TranslateInvestDisplay(__instance.text.text);
         }
 
         public static string TranslateInvestDisplay(string originalText)

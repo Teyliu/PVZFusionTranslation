@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(ShootingMenu))]
+    /*[HarmonyPatch(typeof(ShootingMenu))]
     public static class ShootingMenu_Patch
     {
         [HarmonyPatch(nameof(ShootingMenu.Update))]
@@ -21,5 +21,5 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 txt.font = fontAsset;
             }
         }
-    }
+    }*/
 }

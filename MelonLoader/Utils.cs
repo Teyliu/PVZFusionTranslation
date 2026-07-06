@@ -10,6 +10,7 @@ using PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
@@ -115,11 +116,32 @@ namespace PvZ_Fusion_Translator
             if (string.IsNullOrEmpty(text))
                 return text ?? string.Empty;
 
-            // Remove opening color tags like <color=#FF0000>
+            // Remove opening size tags like <color=#FF0000>
             string withoutOpenTags = Regex.Replace(text, @"<size=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
-            // Remove closing color tags like </color>
+            // Remove closing size tags like </color>
             string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</size>", string.Empty, RegexOptions.IgnoreCase);
             return withoutCloseTags;
+        }
+
+		public static string RemoveFormatTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            string withoutUnderlineTags = Regex.Replace(text, @"<u>", string.Empty, RegexOptions.IgnoreCase);
+            string withoutUnderlineCloseTags = Regex.Replace(withoutUnderlineTags, @"</u>", string.Empty, RegexOptions.IgnoreCase);
+			string withoutItalicTags = Regex.Replace(withoutUnderlineCloseTags, @"<i>", string.Empty, RegexOptions.IgnoreCase);
+			string withoutItalicCloseTags = Regex.Replace(withoutItalicTags, @"</i>", string.Empty, RegexOptions.IgnoreCase);
+
+            return withoutItalicCloseTags;
+        }
+
+		public static string RemoveAllTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            return RemoveColorTags(RemoveSizeTags(RemoveFormatTags(text)));
         }
 
         public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
@@ -152,7 +174,7 @@ namespace PvZ_Fusion_Translator
             newGoBackText.color = color;
         }
 
-		public static string GetPlantNameFromAlmanac(PlantType thePlantType, bool log = false)
+		public static string GetPlantNameFromAlmanac(PlantType thePlantType, bool removeTags = false, bool log = false)
 		{
             bool foundPlantName = false;
 			string thePlantName = "";
@@ -172,18 +194,20 @@ namespace PvZ_Fusion_Translator
                 thePlantName = "";
             }
 
+			thePlantName = (removeTags) ? RemoveAllTags(thePlantName) : thePlantName;
+
             return thePlantName;
         }
 
-        public static string GetPlantNameFromAlmanac(string theOriginalPlantName, bool log = false)
+        public static string GetPlantNameFromAlmanac(string theOriginalPlantName, bool removeTags = false, bool log = false)
 		{
 			bool foundPlantName = false;
 			string thePlantName = "";
 
-			if(plantIndiceStrings.ContainsKey(theOriginalPlantName))
+			if(plantIndiceString.ContainsKey(theOriginalPlantName))
 			{
 				foundPlantName = true;
-				thePlantName = plantIndiceStrings[theOriginalPlantName];
+				thePlantName = plantIndiceString[theOriginalPlantName];
 			}
 
             if (!foundPlantName)
@@ -195,10 +219,12 @@ namespace PvZ_Fusion_Translator
                 thePlantName = "";
             }
 
+			thePlantName = (removeTags) ? RemoveAllTags(thePlantName) : thePlantName;
+
             return thePlantName;
         }
 
-		public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
+		public static string GetZombieNameFromAlmanac(ZombieType theZombieType, bool removeTags = false)
 		{
 			string json;
 			string theZombieName = "";
@@ -216,16 +242,18 @@ namespace PvZ_Fusion_Translator
 				}
 			}
 
+			theZombieName = (removeTags) ? RemoveAllTags(theZombieName) : theZombieName;
+
 			return theZombieName;
 		}
 
 		public static Dictionary<int, KeyValuePair<int, string>> plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
-		public static Dictionary<string, string> plantIndiceStrings = new Dictionary<string, string>();
+		public static Dictionary<string, string> plantIndiceString = new Dictionary<string, string>();
 
 		public static void RegisterPlantIndices()
 		{
 			plantIndices = new Dictionary<int, KeyValuePair<int, string>>();
-			plantIndiceStrings = new Dictionary<string, string>();
+			plantIndiceString = new Dictionary<string, string>();
             string originalJson;
             string translatedJson;
 
@@ -241,36 +269,109 @@ namespace PvZ_Fusion_Translator
             }
             else
 			{
-				originalJson = File.ReadAllText(originalPath);
-				translatedJson = AlmanacPlantMenu_Patch.almanacJson;
-				Il2CppAlmanacData.AlmanacData originalPlantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(originalJson);
-				Il2CppAlmanacData.AlmanacData translatedPlantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(translatedJson);
-
-				for (int i = 0; i < originalPlantData.plants.Count; i++)
+				try
 				{
-					Il2CppAlmanacData.PlantInfo originalPlantInfo = originalPlantData.plants[i];
-					if(!plantIndiceStrings.ContainsKey(originalPlantInfo.name))
-					{
-						plantIndiceStrings.Add(originalPlantInfo.name, originalPlantInfo.name);
-					}
-					Il2CppAlmanacData.PlantInfo translatedPlantInfo = null;
+					originalJson = File.ReadAllText(originalPath);
+					translatedJson = AlmanacPlantMenu_Patch.almanacJson;
+					Il2CppAlmanacData.AlmanacData originalPlantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(originalJson);
+					Il2CppAlmanacData.AlmanacData translatedPlantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(translatedJson);
 
-					foreach (Il2CppAlmanacData.PlantInfo info in translatedPlantData.plants)
+					foreach (Il2CppAlmanacData.PlantInfo originalPlantInfo in originalPlantData.plants)
 					{
-						if (info.seedType == originalPlantInfo.seedType)
+						if(!plantIndiceString.ContainsKey(originalPlantInfo.name))
 						{
-							translatedPlantInfo = info;
+							plantIndiceString.Add(originalPlantInfo.name, originalPlantInfo.name);
+						}
+						Il2CppAlmanacData.PlantInfo translatedPlantInfo = null;
+
+						foreach (Il2CppAlmanacData.PlantInfo info in translatedPlantData.plants)
+						{
+							if (info.seedType == originalPlantInfo.seedType)
+							{
+								translatedPlantInfo = info;
+							}
+						}
+
+						if (translatedPlantInfo != null)
+						{
+							if(translatedPlantInfo.name != null)
+							{
+								KeyValuePair<int, string> temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
+								plantIndices.Add(originalPlantInfo.seedType, temp);
+								plantIndiceString[originalPlantInfo.name] = translatedPlantInfo.name;
+							}
 						}
 					}
-
-					if (translatedPlantInfo != null)
-					{
-						KeyValuePair<int, string> temp = new KeyValuePair<int, string>(translatedPlantInfo.seedType, translatedPlantInfo.name);
-						plantIndices.Add(originalPlantInfo.seedType, temp);
-						plantIndiceStrings[originalPlantInfo.name] = translatedPlantInfo.name;
-					}
+				}
+				catch (Exception e)
+				{
+					Log.LogError(e);
 				}
 			}
+		}
+		
+		public static void TryAdd<A, B>(Dictionary<A, B> dict, A key, B val)
+		{
+			if (dict.ContainsKey(key))
+			{
+				dict[key] = val;
+			}
+			else
+			{
+				dict.Add(key, val);
+			}
+		}
+
+		public static void TryAdd<A, B>(SortedDictionary<A, B> dict, A key, B val)
+		{
+			if (dict.ContainsKey(key))
+			{
+				dict[key] = val;
+			}
+			else
+			{
+				dict.Add(key, val);
+			}
+		}
+
+		public static AssetBundle GetAssetBundle(Assembly assembly, string assetBundlePath, bool log = false)
+        {
+            try
+            {
+                if (assembly != null)
+                {
+                    Stream manifestResourceStream = assembly.GetManifestResourceStream($"PvZ_Fusion_Translator.Resources.{assetBundlePath}");
+                    using (manifestResourceStream)
+                    {
+                        if (manifestResourceStream == null)
+                        {
+                            throw new Exception("Stream was null.");
+                        }
+
+                        byte[] array = new byte[manifestResourceStream.Length];
+                        manifestResourceStream.Read(array, 0, array.Length);
+                        AssetBundle assetBundle = AssetBundle.LoadFromMemory(array);
+                        ArgumentNullException.ThrowIfNull(assetBundle, "assetBundle");
+                        if(log)
+                        {
+                            Log.LogDebug($"AssetBundle {assetBundlePath} has successfully been loaded.");
+                        }
+                        return assetBundle;
+                    }
+                }
+
+                throw new Exception($"AssetBundle {assetBundlePath} was null.");
+            }
+            catch (Exception value)
+            {
+                throw new ArgumentException($"Failed to load {assetBundlePath}. \n{value}");
+            }
+        }
+
+		public static AssetBundle GetAssetBundle(string path)
+		{
+			AssetBundle assetBundle = AssetBundle.LoadFromFile(path);
+			return assetBundle;
 		}
 
 		/*public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
@@ -316,12 +417,13 @@ namespace PvZ_Fusion_Translator
 			}
 		}*/
 
+		public static Regex untranslatedRegex = new("\\p{IsCJKUnifiedIdeographs}+");
+
 		public static bool CheckForUntranslatedText(string text)
 		{
-            Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
-			try 
+            try 
 			{
-				Match match = regex.Match(text);
+				Match match = untranslatedRegex.Match(text);
 				return match.Success;
 			} 
 			catch(Exception e) 
@@ -346,6 +448,7 @@ namespace PvZ_Fusion_Translator
 
 			confirmButton.clickEvent = new UnityEvent();
 			confirmButton.clickEvent.AddListener(new Action(() => SwapLocalData()));
+			confirmButton.clickEvent.AddListener(new Action(() => CursorChange.SetDefaultCursor()));
 			confirmButton.clickEvent.AddListener(new Action(() => GameAPP.UIManager.Pop()));
 		}
 
@@ -356,6 +459,7 @@ namespace PvZ_Fusion_Translator
 			ChangeLanguage(Utils.Language.ToString());
 			string sourceMsg = "<size=10>" + (!(Utils.useLocal) ? "Translation Source:\nOnline" : "Translation Source:\nLocal");
 			OptLanguageBtn_Patch.FlashMessage(OptLanguageBtn_Patch.toggleSlots[2], sourceMsg, 0.1f, false);
+			CursorChange.SetDefaultCursor();
         }
 
 		public static async Task<string> GetDataFromWeb(string url, bool isLog = true)
@@ -560,8 +664,8 @@ namespace PvZ_Fusion_Translator
 			// Slovak,
 			//Polish,
 			//Turkish,
-            //Arabic,
-            Romanian,
+            Arabic,
+			Romanian,
 
             LANG_END
 		}
@@ -578,6 +682,7 @@ namespace PvZ_Fusion_Translator
 			{ LanguageEnum.Japanese, "日本語"},
 			{ LanguageEnum.Korean, "한국어"},
 			{ LanguageEnum.Ukrainian, "українська"},
+			{ LanguageEnum.Arabic, "ﺔﻴﺑﺮﻌﻟا"},
 			{ LanguageEnum.Romanian, "Română"}
 		};
 

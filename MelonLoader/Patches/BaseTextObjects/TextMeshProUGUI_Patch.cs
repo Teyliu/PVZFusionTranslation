@@ -17,6 +17,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 		{
 			if (!string.IsNullOrEmpty(__instance.text))
 			{
+				__instance.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+				if (!Utils.CheckForUntranslatedText(__instance.text) && !(__instance.text).Contains("_")) return;
+
 				if(__instance.transform.parent != null)
 				{
 					if(__instance.transform.parent.name.Contains("DrawCardsText"))

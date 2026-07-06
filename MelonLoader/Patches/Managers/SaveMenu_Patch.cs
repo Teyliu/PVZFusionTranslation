@@ -2,6 +2,8 @@
 using Il2Cpp;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
+using PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects;
+using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.Managers
 {
@@ -9,20 +11,27 @@ namespace PvZ_Fusion_Translator.Patches.Managers
     public static class SaveMenu_Patch
     {
         [HarmonyPatch(nameof(SaveMenu.Start))]
+        [HarmonyPatch(nameof(SaveMenu.CreateLevelEnter))]
+        [HarmonyPatch(nameof(SaveMenu.InitLevelSaveEnters))]
         [HarmonyPostfix]
         private static void Start(SaveMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            __instance.title.text = StringStore.TranslateText(__instance.title.text);
-            __instance.title.font = fontAsset;
-            __instance.title_shadow.text = StringStore.TranslateText(__instance.title_shadow.text);
-            __instance.title_shadow.font = fontAsset;
+            __instance.menuTitle.text = StringStore.TranslateText(__instance.menuTitle.text);
+            __instance.menuTitle.font = fontAsset;
 
-            foreach(SaveMenuBtn level in __instance.levels)
+            foreach(LevelSaveEnter enter in __instance.GetComponentsInChildren<LevelSaveEnter>())
             {
-                level.theName.text = StringStore.TranslateText(level.theName.text);
+                LevelSaveEnter_Patch.TranslateEnter(enter);
             }
+        }
+
+        [HarmonyPatch(nameof(SaveMenu.OnEditSelectedButtonClicked))]
+        [HarmonyPostfix]
+        private static void OnEditSelectedButtonClicked(SaveMenu __instance)
+        {
+            
         }
     }
 }

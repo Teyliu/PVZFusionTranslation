@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
-    [HarmonyPatch(typeof(ShootingSelectWindow))]
+    /*[HarmonyPatch(typeof(ShootingSelectWindow))]
     public static class ShootingSelectWindow_Patch
     {
         [HarmonyPatch(nameof(ShootingSelectWindow.InitPlantType))]
@@ -69,5 +69,5 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             introduceText.text = StringStore.TranslateText(introduceText.text);
             introduceText.font = fontAsset;
         }
-    }
+    }*/
 }

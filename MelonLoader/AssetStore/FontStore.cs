@@ -1,4 +1,8 @@
 ﻿using Il2CppTMPro;
+using MelonLoader;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace PvZ_Fusion_Translator.AssetStore
 {
@@ -11,28 +15,24 @@ namespace PvZ_Fusion_Translator.AssetStore
 		{
 			string fontsDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Fonts]");
 
+			AssetBundle assetBundle = Utils.GetAssetBundle(Path.Combine(fontsDir, "translation"));
+
 			#if MULTI_LANGUAGE
-			foreach (string file in Directory.GetFiles(fontsDir))
+			foreach (string file in assetBundle.GetAllAssetNames())
 			{
 				string fileName = Path.GetFileNameWithoutExtension(file);
-				string fileExtension = Path.GetExtension(file);
 
-				if (fileExtension == ".ttf" || fileExtension == ".otf")
+				if (!fileName.EndsWith("_almanac") && !fileName.EndsWith("_fallback"))
 				{
-					if (!fileName.EndsWith("_Almanac") && !fileName.EndsWith("_Fallback"))
-					{
-						string fontPath = Path.Combine("PvZ_Fusion_Translator", "[Custom Fonts]", fileName + fileExtension);
+					TMP_FontAsset fontAsset = assetBundle.LoadAsset<TMP_FontAsset>(file);
 
-						TMP_FontAsset fontAsset = FontHandler.LoadTMPFont(fontPath, true);
-						fontAsset.name = fileName;
-						fontAssetDict.Add(fileName, fontAsset);
+					fontAssetDict.Add(fileName, fontAsset);
 
-						Log.LogInfo($"Font for language '{fileName}' loaded");
-					}
+					Log.LogInfo($"Font for language '{fileName}' loaded");
 				}
 			}
 				
-			InitFallback();
+			InitFallback(assetBundle);
 			#else
 			string defaultFontDir = Path.Combine("PvZ_Fusion_Translator", "[Custom Fonts]", "English.ttf");
 
@@ -41,43 +41,38 @@ namespace PvZ_Fusion_Translator.AssetStore
 			#endif
 		}
 
-		internal static void InitFallback()
+		internal static void InitFallback(AssetBundle assetBundle)
 		{
 			string fontsDir = Path.Combine(Core.Instance.modsDirectory, "[Custom Fonts]");
-			foreach (string file in Directory.GetFiles(fontsDir))
-			{
+
+			foreach (string file in assetBundle.GetAllAssetNames())
+			{ 
 				string fileName = Path.GetFileNameWithoutExtension(file);
-				string fileExtension = Path.GetExtension(file);
 
-				if (fileExtension == ".ttf" || fileExtension == ".otf")
+				if (fileName.EndsWith("_almanac") || fileName.EndsWith("_fallback"))
 				{
-					if (fileName.EndsWith("_Almanac") || fileName.EndsWith("_Fallback"))
+					TMP_FontAsset fallbackFont = assetBundle.LoadAsset<TMP_FontAsset>(file);
+
+					string fileNameLanguage = fileName.Replace("_fallback", "").Replace("_almanac", "");
+
+					if (fontAssetDictSecondary.ContainsKey(fileNameLanguage))
 					{
-						string fallbackPath = Path.Combine("PvZ_Fusion_Translator", "[Custom Fonts]", fileName + fileExtension);
-						TMP_FontAsset fallbackFont = FontHandler.LoadTMPFont(fallbackPath, true);
-						fallbackFont.name = fileName;
-
-						string fileNameLanguage = fileName.Replace("_Fallback", "").Replace("_Almanac", "");
-
-						if (fontAssetDictSecondary.ContainsKey(fileNameLanguage))
+						if (fileName.EndsWith("_Fallback"))
 						{
-							if (fileName.EndsWith("_Fallback"))
-							{
-								fontAssetDictSecondary.Add(fileNameLanguage + "_Almanac", fontAssetDictSecondary[fileNameLanguage]);
-								fontAssetDictSecondary.Remove(fileNameLanguage);
-							}
-							else
-							{
-								fontAssetDictSecondary.Add(fileNameLanguage + "_Fallback", fontAssetDictSecondary[fileNameLanguage]);
-								fontAssetDictSecondary.Remove(fileNameLanguage);
-							}
-							fontAssetDictSecondary.Add(fileName, fallbackFont);
+							fontAssetDictSecondary.Add(fileNameLanguage + "_almanac", fontAssetDictSecondary[fileNameLanguage]);
+							fontAssetDictSecondary.Remove(fileNameLanguage);
 						}
 						else
-							fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
-
-						// Log.LogInfo($"Fallback font for language '{fileNameLanguage}' loaded");
+						{
+							fontAssetDictSecondary.Add(fileNameLanguage + "_fallback", fontAssetDictSecondary[fileNameLanguage]);
+							fontAssetDictSecondary.Remove(fileNameLanguage);
+						}
+						fontAssetDictSecondary.Add(fileName, fallbackFont);
 					}
+					else
+						fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
+
+					// Log.LogInfo($"Fallback font for language '{fileNameLanguage}' loaded");
 				}
 			}
 			AddFallback();
@@ -98,15 +93,15 @@ namespace PvZ_Fusion_Translator.AssetStore
 					Log.LogInfo("Fallback font for language '" + lang + "' added");
 					continue;
 				}
-				if (fontAssetDictSecondary.ContainsKey(lang + "_Almanac"))
+				if (fontAssetDictSecondary.ContainsKey(lang + "_almanac"))
 				{
-					fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang + "_Almanac"]);
+					fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang + "_almanac"]);
 					Log.LogInfo("Fallback font for language '" + lang + "' added");
 					continue;
 				}
-				if (fontAssetDictSecondary.ContainsKey(lang + "_Fallback"))
+				if (fontAssetDictSecondary.ContainsKey(lang + "_fallback"))
 				{
-					fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang + "_Fallback"]);
+					fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang + "_fallback"]);
 					Log.LogInfo("Fallback font for language '" + lang + "' added");
 					continue;
 				}
@@ -116,7 +111,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 		#if MULTI_LANGUAGE
 		public static TMP_FontAsset LoadTMPFont(string language)
 		{
-			if (fontAssetDict.TryGetValue(language, out TMP_FontAsset font))
+			if (fontAssetDict.TryGetValue(language.ToLower(), out TMP_FontAsset font))
 			{
 				TMP_FontAsset fontAsset = font;
 				if (fontAsset.fallbackFontAssetTable != null)
@@ -125,7 +120,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 				}
 				return fontAsset;
 			}
-			return fontAssetDict.GetValueOrDefault("English");
+			return fontAssetDict.GetValueOrDefault("english");
 		}
 		#else
 		public static TMP_FontAsset LoadTMPFont()
@@ -144,15 +139,15 @@ namespace PvZ_Fusion_Translator.AssetStore
 					return almanacAsset;
 				}
 			}
-			if (fontAssetDictSecondary.ContainsKey(language + "_Almanac"))
+			if (fontAssetDictSecondary.ContainsKey(language + "_almanac"))
 			{
-				if (fontAssetDictSecondary.TryGetValue(language + "_Almanac", out TMP_FontAsset almanacAsset))
+				if (fontAssetDictSecondary.TryGetValue(language + "_almanac", out TMP_FontAsset almanacAsset))
 				{
 					return almanacAsset;
 				}
 			}
 
-			return fontAssetDict.GetValueOrDefault("English");
+			return fontAssetDict.GetValueOrDefault("english");
 		}
 
 		#if MULTI_LANGUAGE

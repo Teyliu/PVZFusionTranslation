@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 {
-    [HarmonyPatch(typeof(OppositeBuffManager))]
+    /*[HarmonyPatch(typeof(OppositeBuffManager))]
     public static class OppositeBuffManager_Patch
     {
         public static Dictionary<BuffType, string> buffLinks = TravelMgr_Patch.buffLinks;
@@ -20,14 +20,14 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         [HarmonyPostfix]
         private static void SetText(OppositeBuffManager __instance)
         {
-            /*if (TravelMgr_Patch.travelBuffString.ContainsKey(__result))
+            *//*if (TravelMgr_Patch.travelBuffString.ContainsKey(__result))
             { 
                 __result = TravelMgr_Patch.travelBuffString[__result]; 
             }
             else if(TravelMgr_Patch.travelBuffString.ContainsKey(TravelMgr_Patch.RemoveBuffName(__result)))
             {
                 __result = TravelMgr_Patch.travelBuffString[TravelMgr_Patch.RemoveBuffName(__result)];
-            }*/
+            }*//*
         }
 
         public static void TranslateOppositeText(Il2CppSystem.Collections.Generic.List<TextMeshProUGUI> textList, Il2CppSystem.Object buff, bool isBad = false)
@@ -48,5 +48,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 text.font = fontAsset;
             }
         }
-    }
+    }*/
 }
