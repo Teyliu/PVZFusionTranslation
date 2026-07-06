@@ -21,12 +21,12 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             TranslatePlantDataMenu(__instance);
         }
 
-        [HarmonyPatch(nameof(PlantDataMenu.Update))]
+        /*[HarmonyPatch(nameof(PlantDataMenu.Update))]
         [HarmonyPostfix]
         public static void Post_Update(PlantDataMenu __instance)
         {
             TranslatePlantDataMenu(__instance);
-        }
+        }*/
 
         [HarmonyPatch(nameof(PlantDataMenu.InitDataFromPlant))]
         [HarmonyPostfix]
@@ -37,6 +37,8 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
         public static void TranslatePlantDataMenu(PlantDataMenu __instance)
         {
+            if (!__instance) return;
+
             PlantType thePlantType = __instance.plant.thePlantType;
             string plantName = Utils.GetPlantNameFromAlmanac(thePlantType);
 

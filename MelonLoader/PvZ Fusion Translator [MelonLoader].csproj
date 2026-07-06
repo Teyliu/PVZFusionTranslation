@@ -33,7 +33,6 @@
 	<ItemGroup>
 	  <None Remove=".gitattributes" />
 	  <None Remove=".gitignore" />
-	  <None Remove="Resources\ModUpdateUtil.exe" />
 	</ItemGroup>
 		
 	<ItemGroup>
@@ -307,6 +306,9 @@
 		<Reference Include="Il2CppInterop.Common">
 			<HintPath>$(GamePath)\MelonLoader\net6\Il2CppInterop.Common.dll</HintPath>
 		</Reference>
+		<Reference Include="Il2CppCore">
+			<HintPath>$(GamePath)\MelonLoader\Il2CppAssemblies\Il2CppCore.dll</HintPath>
+		</Reference>
 
 	</ItemGroup>
 
@@ -406,19 +408,26 @@
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_Dropdown_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacCardUI_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacSelectMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\LevelSaveEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ConfirmMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\LevelResultMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\LoseMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\GameLose_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\HealthSlider_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\PumpinerChestMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\SpecialCard_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlayerSaveMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
 		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\GodShootingLevelButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ReNameMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\MultipleChoiceMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\ShootingManager_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelAdvantureMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelInvestMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\SynergyDisplay_Patch.cs" />
@@ -517,13 +526,14 @@
 		<Compile Include="Patches\Managers\SaveMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\TravelBuffOptionButton_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomButton_enterGame_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_event_Patch_B.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomOnlineMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_shooting_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
-		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeNodeUI_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeEventNodeEditor_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeNodeUI_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\GameLevel\LevelManager_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\RhythmGame\RhythmGameChartEditorUI_Patch.cs" />
 		<Compile Include="Patches\Modes\Super Editor\RhythmGame\RhythmGameManager_Patch.cs" />
@@ -567,11 +577,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\ModUpdateUtil.exe" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <Folder Include="Resources\" />
 	</ItemGroup>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

@@ -10,7 +10,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
         public static void UpdateHealthText(TrainingDummy __instance)
         {
             Zombie_Patch.TranslateHpUI_T(__instance.healthText, __instance);
-            Zombie_Patch.TranslateHpUI_T(__instance.healthTextShadow, __instance);
+            //Zombie_Patch.TranslateHpUI_T(__instance.healthTextShadow, __instance);
         }
     }
 }

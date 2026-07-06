@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using Il2Cpp;
+using Il2CppCore;
 using PvZ_Fusion_Translator.Patches.BaseTextObjects;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects

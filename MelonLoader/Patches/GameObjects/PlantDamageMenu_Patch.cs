@@ -10,26 +10,27 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(PlantDamageMenu))]
     public static class PlantDamageMenu_Patch
     {
-        [HarmonyPatch(nameof(PlantDamageMenu.Awake))]
-        [HarmonyPostfix]
-        private static void Awake(PlantDamageMenu __instance)
+        public static void Awake(BaseMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
             foreach(TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                text.text = StringStore.TranslateText(text.text);
+                string originalKey = StringStore.translationString.FirstOrDefault(x => x.Value == text.text).Key;
+                text.text = StringStore.translationString.ContainsKey(originalKey + "_RM") ? StringStore.TranslateText(originalKey + "_RM") : StringStore.TranslateText(text.text);
                 text.font = fontAsset;
             }
         }
 
+        [HarmonyPatch(nameof(PlantDamageMenu.Awake))]
         [HarmonyPatch(nameof(PlantDamageMenu.InitCards))]
         [HarmonyPostfix]
-        private static void InitCards(PlantDamageMenu __instance)
+        public static void InitCards(PlantDamageMenu __instance)
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
             foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                text.text = StringStore.TranslateText(text.text);
+                string originalKey = StringStore.translationString.FirstOrDefault(x => x.Value == text.text).Key;
+                text.text = StringStore.translationString.ContainsKey(originalKey + "_RM") ? StringStore.TranslateText(originalKey + "_RM") : StringStore.TranslateText(text.text);
                 text.font = fontAsset;
             }
         }

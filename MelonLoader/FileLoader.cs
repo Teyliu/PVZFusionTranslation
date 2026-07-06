@@ -159,14 +159,14 @@ namespace PvZ_Fusion_Translator
 			
 				if(plantAlmanacContent != null)
 				{
-					AlmanacPlantMenu_Patch.almanacJson = plantAlmanacContent;
+					AlmanacPlantMenu_Patch.LoadPlantAlmanacData(plantAlmanacContent);
 				}
 				else
 				{
 					string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
 					if(File.Exists(path))
 					{
-						AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(path);
+						AlmanacPlantMenu_Patch.LoadPlantAlmanacData(File.ReadAllText(path));
 					}
 				}
 
@@ -198,6 +198,10 @@ namespace PvZ_Fusion_Translator
 						LoadDetailStrings(File.ReadAllText(path));
 					}
 				}
+
+				// load travel_buffs
+
+				LoadTravelBuffs();
 
 				// load abyss buffs
 
@@ -259,6 +263,10 @@ namespace PvZ_Fusion_Translator
 						{
 							Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
 						}
+						else if (fileName.EndsWith("travel_buffs"))
+						{
+							LoadTravelBuffs();
+						}
 					}
 
 					string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
@@ -272,7 +280,7 @@ namespace PvZ_Fusion_Translator
 					
 					if(File.Exists(plantAlmanacPath))
 					{
-						AlmanacPlantMenu_Patch.almanacJson = File.ReadAllText(plantAlmanacPath);
+						AlmanacPlantMenu_Patch.LoadPlantAlmanacData(File.ReadAllText(plantAlmanacPath));
 					}
 
 					string zombieAlmanacPath = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
@@ -429,6 +437,10 @@ namespace PvZ_Fusion_Translator
 					changelogText = changelogContent;
 				}
             }
+			else
+			{
+				changelogText = File.ReadAllText(changelogDir);
+			}
 
 			NoticePauseMenu_Patch.changelogText = changelogText;
 		}
@@ -441,14 +453,14 @@ namespace PvZ_Fusion_Translator
 
 				if (travelBuffsContent != null)
 				{
-					TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.GenerateTranslatedTravelBuffs(travelBuffsContent);
+					TravelMgr_Patch.GenerateTranslatedTravelBuffs(travelBuffsContent);
 				}
 				else
 				{
 					string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
 					if (File.Exists(travelBuffsPath))
 					{
-						TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.GenerateTranslatedTravelBuffs(File.ReadAllText(travelBuffsPath));
+						TravelMgr_Patch.GenerateTranslatedTravelBuffs(File.ReadAllText(travelBuffsPath));
 					}
 				}
 			}
@@ -462,7 +474,7 @@ namespace PvZ_Fusion_Translator
 					string jsonString = File.ReadAllText(filepath);
 					if (fileName.EndsWith("travel_buffs"))
 					{
-						TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.GenerateTranslatedTravelBuffs(jsonString);
+						TravelMgr_Patch.GenerateTranslatedTravelBuffs(jsonString);
 					}
 				}
 			}

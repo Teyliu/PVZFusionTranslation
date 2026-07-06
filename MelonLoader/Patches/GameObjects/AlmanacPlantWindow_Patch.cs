@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppAlmanacData;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Text.RegularExpressions;
@@ -34,35 +35,34 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             TMP_FontAsset fontAsset = (hasAlmanacFont) ? FontStore.LoadTMPFontAlmanac(Utils.Language.ToString()) : FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            Il2CppAlmanacData.AlmanacData plantData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(json);
+            AlmanacData plantData = JsonUtility.FromJson<AlmanacData>(json);
 
-            foreach (Il2CppAlmanacData.PlantInfo plantInfo in plantData.plants)
+            if(AlmanacPlantMenu_Patch.plantInfoDict.ContainsKey((int)__instance.currentPlantType))
             {
-                if (plantInfo.seedType == (int)__instance.currentPlantType)
+                PlantInfo plantInfo = AlmanacPlantMenu_Patch.plantInfoDict[(int)__instance.currentPlantType];
+
+                foreach (TextMeshProUGUI text in __instance.showedPlantName)
                 {
-                    foreach (TextMeshProUGUI text in __instance.showedPlantName)
-                    {
-                        text.autoSizeTextContainer = false;
-                        text.text = $"{Utils.RemoveSizeTags(plantInfo.name)} ({plantInfo.seedType})";
-                        text.font = fontAsset;
-                        text.fontSizeMax = 21;
-                    }
-
-                    char[] toTrim = Environment.NewLine.ToCharArray();
-                    __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n" + Utils.RemoveSizeTags(plantInfo.cost).TrimStart(toTrim) + "\n\n";
-                    __instance.showedPlantIntroduce.font = fontAsset;
-                    __instance.showedPlantIntroduce.fontSizeMax = 21;
-                    __instance.showedPlantIntroduce.margin = new Vector4(6, 2, 12, 0);
-
-                    __instance.showedPlantIntroduce.enableWordWrapping = true;
-                    __instance.showedPlantIntroduce.overflowMode = TextOverflowModes.ScrollRect;
-
-                    Canvas.ForceUpdateCanvases();
-                    __instance.showedPlantIntroduce.ForceMeshUpdate();
-
-                    float textHeight = __instance.showedPlantIntroduce.preferredHeight;
-                    __instance.plantTextContent.sizeDelta = new Vector2(__instance.plantTextContent.sizeDelta.x, textHeight);
+                    text.autoSizeTextContainer = false;
+                    text.text = $"{Utils.RemoveSizeTags(plantInfo.name)} ({plantInfo.seedType})";
+                    text.font = fontAsset;
+                    text.fontSizeMax = 21;
                 }
+
+                char[] toTrim = Environment.NewLine.ToCharArray();
+                __instance.showedPlantIntroduce.text = Utils.RemoveSizeTags(plantInfo.info) + "\n\n" + Utils.RemoveSizeTags(plantInfo.introduce) + "\n\n" + Utils.RemoveSizeTags(plantInfo.cost).TrimStart(toTrim) + "\n\n";
+                __instance.showedPlantIntroduce.font = fontAsset;
+                __instance.showedPlantIntroduce.fontSizeMax = 21;
+                __instance.showedPlantIntroduce.margin = new Vector4(6, 2, 12, 0);
+
+                __instance.showedPlantIntroduce.enableWordWrapping = true;
+                __instance.showedPlantIntroduce.overflowMode = TextOverflowModes.ScrollRect;
+
+                Canvas.ForceUpdateCanvases();
+                __instance.showedPlantIntroduce.ForceMeshUpdate();
+
+                float textHeight = __instance.showedPlantIntroduce.preferredHeight;
+                __instance.plantTextContent.sizeDelta = new Vector2(__instance.plantTextContent.sizeDelta.x, textHeight);
             }
         }
     }

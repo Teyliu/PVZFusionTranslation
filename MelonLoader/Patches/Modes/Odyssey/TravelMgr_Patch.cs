@@ -17,6 +17,15 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
     [HarmonyPatch(typeof(TravelMgr))]
     public static class TravelMgr_Patch
     {
+        public static readonly Dictionary<string, SortedDictionary<int, string>> templateTravelBuffs = new()
+        {
+            { "advancedBuffs", new SortedDictionary<int, string>() },
+            { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() },
+            { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }
+        };
+        
         public static Dictionary<string, SortedDictionary<int, string>> dumpedTravelBuffs = new()
         {
             { "advancedBuffs", new SortedDictionary<int, string>() },
@@ -70,35 +79,37 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         public static void DumpTravelBuffs()
         {
             TravelMgr.Instance.GetPlantBuffUnlockCount(PlantType.DoomGatling);
+            dumpedTravelBuffs = new(templateTravelBuffs);
+            travelBuffString.Clear();
 
             foreach (var pair in TravelDictionary.advancedBuffsText)
             {
-                dumpedTravelBuffs["advancedBuffs"].Add((int)pair.Key, pair.Value);
-                travelBuffString.Add(pair.Value, pair.Value);
+                Utils.TryAdd(dumpedTravelBuffs["advancedBuffs"], (int)pair.Key, pair.Value);
+                Utils.TryAdd(travelBuffString, pair.Value, pair.Value);
             }
 
             foreach (var pair in TravelDictionary.ultimateBuffsText)
             {
-                dumpedTravelBuffs["ultimateBuffs"].Add((int)pair.Key, pair.Value);
-                travelBuffString.Add(pair.Value, pair.Value);
+                Utils.TryAdd(dumpedTravelBuffs["ultimateBuffs"], (int)pair.Key, pair.Value);
+                Utils.TryAdd(travelBuffString, pair.Value, pair.Value);
             }
 
             foreach (var pair in TravelDictionary.debuffData)
             {
-                dumpedTravelBuffs["debuffs"].Add((int)pair.Key, pair.Value.Item1);
-                travelBuffString.Add(pair.Value.Item1, pair.Value.Item1);
+                Utils.TryAdd(dumpedTravelBuffs["debuffs"], (int)pair.Key, pair.Value.Item1);
+                Utils.TryAdd(travelBuffString, pair.Value.Item1, pair.Value.Item1);
             }
 
             foreach (var pair in TravelDictionary.unlocksText)
             {
-                dumpedTravelBuffs["unlocks"].Add((int)pair.Key, pair.Value);
-                travelBuffString.Add(pair.Value, pair.Value);
+                Utils.TryAdd(dumpedTravelBuffs["unlocks"], (int)pair.Key, pair.Value);
+                Utils.TryAdd(travelBuffString, pair.Value, pair.Value);
             }
 
             foreach (var pair in TravelMgr.InvestBuffsData)
             {
-                dumpedTravelBuffs["investmentBuffs"].Add((int)pair.Key, pair.Value.GetDescription());
-                travelBuffString.Add(pair.Value.GetDescription(), pair.Value.GetDescription());
+                Utils.TryAdd(dumpedTravelBuffs["investmentBuffs"], (int)pair.Key, pair.Value.GetDescription());
+                Utils.TryAdd(travelBuffString, pair.Value.GetDescription(), pair.Value.GetDescription());
             }
 
             File.WriteAllText(Path.Combine(GetAssetDir(AssetType.Dumps), "travel_buffs.json"), JsonSerializer.Serialize(dumpedTravelBuffs, new JsonSerializerOptions
@@ -121,17 +132,15 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         }
 
         //System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
-        public static Dictionary<string, SortedDictionary<int, string>> GenerateTranslatedTravelBuffs(string travelBuffsContent)
+        public static void GenerateTranslatedTravelBuffs(string travelBuffsContent)
         {
-            TravelMgr_Patch.DumpTravelBuffs();
+            if (!Core.isInitialized) return;
+            
+            DumpTravelBuffs();
 
-            Dictionary<string, SortedDictionary<int, string>> travelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
-
-            // save travel buffs
-
-			string travelBuffsToSave = SerializeWithIndentation(travelBuffs);
-            string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
-			File.WriteAllText(Path.Combine(stringDir, "travel_buffs.json"), travelBuffsToSave);
+            Dictionary<string, SortedDictionary<int, string>> travelBuffs = JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
+            translatedTravelBuffs = travelBuffs;
+            travelBuffString.Clear();
 
             foreach(var i in travelBuffs)
             {
@@ -145,28 +154,14 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                     {
                         if (translatedBuffSet.ContainsKey(j.Key))
                         {
-                            if(travelBuffString.ContainsKey(originalBuff))
-                            {
-                                travelBuffString[originalBuff] = translatedBuffSet[j.Key];
-                            }
-                            else
-                            {
-                                travelBuffString.Add(originalBuff, translatedBuffSet[j.Key]);
-                            }
+                            Utils.TryAdd(travelBuffString, originalBuff, translatedBuffSet[j.Key]);
                         }
                     }
                     else if(j.Value == RemoveBuffName(originalBuff))
                     {
                         if (translatedBuffSet.ContainsKey(j.Key))
                         {
-                            if(travelBuffString.ContainsKey(originalBuff))
-                            {
-                                travelBuffString[RemoveBuffName(originalBuff)] = translatedBuffSet[j.Key];
-                            }
-                            else
-                            {
-                                travelBuffString.Add(RemoveBuffName(originalBuff), translatedBuffSet[j.Key]);
-                            }
+                            Utils.TryAdd(travelBuffString, originalBuff, translatedBuffSet[j.Key]);
                         }
                     }
 
@@ -179,7 +174,9 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 }
             }
 
-            return travelBuffs;
+            string travelBuffsToSave = SerializeWithIndentation(TravelMgr_Patch.translatedTravelBuffs);
+			string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
+			File.WriteAllText(Path.Combine(stringDir, "travel_buffs.json"), travelBuffsToSave);
         }
 
         public static string MatchTravelBuff(string originalText)
@@ -215,6 +212,47 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
             {
                 res = res.Substring(firstColon + 1);
             }
+            return res;
+        }
+
+        public static ValueTuple<string, int, string> FindBuffData(string buffText)
+        {
+            ValueTuple<string, int, string> res = new();
+            foreach(var pair1 in translatedTravelBuffs)
+            {
+                foreach(var pair2 in pair1.Value)
+                {
+                    if(buffText == pair2.Value)
+                    {
+                        res.Item1 = pair1.Key;
+                        res.Item2 = pair2.Key;
+                    }
+                }
+            }
+
+            foreach(var pair1 in dumpedTravelBuffs)
+            {
+                foreach(var pair2 in pair1.Value)
+                {
+                    if(buffText == pair2.Value)
+                    {
+                        res.Item1 = pair1.Key;
+                        res.Item2 = pair2.Key;
+                    }
+                }
+            }
+
+            string finalBuffText = buffText;
+            if(travelBuffString.ContainsKey(buffText))
+            {
+                finalBuffText = travelBuffString[buffText];
+            }
+            else
+            {
+                finalBuffText = StringStore.TranslateText(buffText);
+            }
+            res.Item3 = finalBuffText;
+
             return res;
         }
     }

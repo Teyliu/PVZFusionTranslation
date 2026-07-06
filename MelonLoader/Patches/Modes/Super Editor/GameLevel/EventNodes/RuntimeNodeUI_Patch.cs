@@ -1,12 +1,4 @@
-﻿using Il2Cpp;
-using Il2CppGameLevel;
-using HarmonyLib;
-using UnityEngine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HarmonyLib;
 using Il2CppGameLevel.EventNodes;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
@@ -18,99 +10,134 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
     public static class RuntimeNodeUI_Patch
     {
         [HarmonyPatch(nameof(RuntimeNodeUI.Awake))]
-        [HarmonyPatch(nameof(RuntimeNodeUI.Initialize))]
         [HarmonyPatch(nameof(RuntimeNodeUI.CreatePorts))]
-        [HarmonyPatch(nameof(RuntimeNodeUI.CreateTravelEntryEditUI), argumentTypes: [typeof(RectTransform), typeof(GetTravelEntryNode)])]
-        [HarmonyPatch(nameof(RuntimeNodeUI.CreateStringInputField))]
-        [HarmonyPatch(nameof(RuntimeNodeUI.CreatePorts))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.CreateValueEditUI))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.GetPortUI))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.UpdateDisplay))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.UpdateSelectionVisual))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.UpdateVisable))]
         [HarmonyPostfix]
-        public static void Awake(RuntimeNodeUI __instance)
+        public static void Post_UpdateDisplay(RuntimeNodeUI __instance)
         {
             if (!__instance.isActiveAndEnabled) return;
 
+            if (__instance.Node == null) return;
+
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            if(__instance.dropdownPrefab)
-            {
-                if(__instance.dropdownPrefab.TryGetComponent<TMP_Dropdown>(out TMP_Dropdown dropdown))
-                {
-                    TMP_Dropdown_Patch.CreateDropdownList(dropdown);
-                }
-            }
+            __instance.titleText.text = TranslateCodeText(__instance.titleText.text);
+            __instance.titleText.font = fontAsset;
 
-            if(__instance.valueInputField)
+            foreach(TextMeshProUGUI txt in __instance.inputPortsContainer.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                TMP_InputField_Patch.OnEnable(__instance.valueInputField);
-                foreach(TextMeshProUGUI txt in __instance.valueInputField.GetComponentsInChildren<TextMeshProUGUI>(true))
-                {
-                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
-                }
-            }
-
-            foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
-            {
-                txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
+                txt.text = TranslateCodeText(txt.text);
                 txt.font = fontAsset;
             }
-        }
 
-        [HarmonyPatch(nameof(RuntimeNodeUI.UpdateDisplay))]
-        [HarmonyPostfix]
-        public static void UpdateDisplay(RuntimeNodeUI __instance)
-        {
-            if (!__instance.isActiveAndEnabled) return;
-
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-            if(__instance.Node.nodeType == "PlantTypeValueNode")
+            foreach(TextMeshProUGUI txt in __instance.outputPortsContainer.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+                txt.text = TranslateCodeText(txt.text);
+                txt.font = fontAsset;
+            }
+
+            if (
+                   __instance.GetComponentsInChildren<TMP_Dropdown>().Count == 0
+                && __instance.GetComponentsInChildren<TMP_InputField>().Count == 0
+                && __instance.Node.nodeType != "PlantTypeValueNode"
+                && __instance.Node.nodeType != "SinglePlantTypeListNode"
+                && __instance.Node.nodeType != "ZombieTypeValueNode"
+            ) return;
+
+            if (__instance.Node != null)
+            {
+                if(__instance.Node.nodeType == "PlantTypeValueNode")
                 {
-                    if(txt.gameObject.name.Contains("Label"))
+                    foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
                     {
-                        string plantName = Utils.GetPlantNameFromAlmanac(__instance.Node.GetPortValue<PlantType>(__instance.Node.nodeName, PlantType.Nothing));
-                        txt.text = (plantName != "") ? plantName : StringStore.TranslateText(txt.text);
-                        txt.font = fontAsset;
+                        if(txt.gameObject.name.Contains("Label"))
+                        {
+                            if (Utils.CheckForUntranslatedText(txt.text))
+                            {
+                                PlantTypeValueNode castedNode = __instance.Node.TryCast<PlantTypeValueNode>();
+                                if (castedNode != null)
+                                {
+                                    string portName = castedNode.value_PortName;
+                                    string plantName = Utils.GetPlantNameFromAlmanac(castedNode.value, removeTags: true);
+                                    txt.text = (plantName != "") ? plantName : StringStore.TranslateText(txt.text);
+                                    txt.font = fontAsset;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(__instance.Node.nodeType == "SinglePlantTypeListNode")
+                {
+                    foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+                    {
+                        if (txt.gameObject.name.Contains("Label"))
+                        {
+                            if (Utils.CheckForUntranslatedText(txt.text))
+                            {
+                                SinglePlantTypeListNode castedNode = __instance.Node.TryCast<SinglePlantTypeListNode>();
+                                if (castedNode != null)
+                                {
+                                    string portName = castedNode.plantTypeList_PortName;
+                                    string plantName = Utils.GetPlantNameFromAlmanac(castedNode.plantType, removeTags: true);
+                                    txt.text = (plantName != "") ? plantName : StringStore.TranslateText(txt.text);
+                                    txt.font = fontAsset;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(__instance.Node.nodeType == "ZombieTypeValueNode")
+                {
+                    foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
+                    {
+                        if(txt.gameObject.name.Contains("Label"))
+                        {
+                            if(Utils.CheckForUntranslatedText(txt.text))
+                            {
+                                ZombieTypeValueNode castedNode = __instance.Node.TryCast<ZombieTypeValueNode>();
+                                if(castedNode != null)
+                                {
+                                    string portName = castedNode.value_PortName;
+                                    string zombieName = Utils.GetZombieNameFromAlmanac(castedNode.value, removeTags: true);
+                                    txt.text = (zombieName != "") ? zombieName : StringStore.TranslateText(txt.text);
+                                    txt.font = fontAsset;
+                                }
+                            }
+                        }
                     }
                 }
             }
 
-            if(__instance.Node.nodeType == "ZombieTypeValueNode")
+            if(__instance.GetComponentsInChildren<TMP_Dropdown>().Count > 0)
             {
-                foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
-                {
-                    if(txt.gameObject.name.Contains("Label"))
-                    {
-                        string zombieName = Utils.GetZombieNameFromAlmanac(__instance.Node.GetPortValue<ZombieType>(__instance.Node.nodeName, ZombieType.Nothing));
-                        txt.text = (zombieName != "") ? zombieName : StringStore.TranslateText(txt.text);
-                        txt.font = fontAsset;
-                    }
-                }
-            }
-
-            if(__instance.dropdownPrefab)
-            {
-                if(__instance.dropdownPrefab.TryGetComponent<TMP_Dropdown>(out TMP_Dropdown dropdown))
+                foreach(TMP_Dropdown dropdown in __instance.GetComponentsInChildren<TMP_Dropdown>())
                 {
                     TMP_Dropdown_Patch.CreateDropdownList(dropdown);
                 }
             }
 
-            if(__instance.valueInputField)
+            if(__instance.GetComponentsInChildren<TMP_InputField>().Count > 0)
             {
-                TMP_InputField_Patch.OnEnable(__instance.valueInputField);
-                foreach(TextMeshProUGUI txt in __instance.valueInputField.GetComponentsInChildren<TextMeshProUGUI>(true))
+                foreach(TMP_InputField inputField in __instance.GetComponentsInChildren<TMP_InputField>())
                 {
-                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
+                    TMP_InputField_Patch.OnEnable(inputField);
+                    foreach(TextMeshProUGUI txt in inputField.GetComponentsInChildren<TextMeshProUGUI>(true))
+                    {
+                        txt.text = TranslateCodeText(txt.text);
+                    }
                 }
             }
         }
-
-        [HarmonyPatch(nameof(RuntimeNodeUI.UpdateSelectionVisual))]
-        [HarmonyPostfix]
-        public static void UpdateSelectionVisual(RuntimeNodeUI __instance)
+    
+        public static string TranslateCodeText(string originalText)
         {
-            UpdateDisplay(__instance);
+            return StringStore.translationString.ContainsKey(originalText + "_code") ? StringStore.TranslateText(originalText + "_code") : StringStore.TranslateText(originalText);
         }
     }
 }

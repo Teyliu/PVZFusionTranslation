@@ -1,13 +1,8 @@
-﻿using Il2Cpp;
-using Il2CppTMPro;
-using MelonLoader;
+﻿using MelonLoader;
 using MelonLoader.Utils;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.Managers;
-using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using UnityEngine;
 using static PvZ_Fusion_Translator.FileLoader;
 
@@ -21,6 +16,7 @@ namespace PvZ_Fusion_Translator
 		private static DateTime dtStart;
 		private static DateTime? dtStartToast;
 		private static string toast_txt;
+		public static bool isInitialized = false;
 		public static Core Instance { get; private set; }
 
 		object replaceTextureRoutine = null;
@@ -32,8 +28,6 @@ namespace PvZ_Fusion_Translator
 			base.OnInitializeMelon();
 			Instance = this;
 			
-			//DllStore.Init(MelonLoader.InternalUtils.UnityInformationHandler.GameVersion);
-
 			Config();
 			#if MULTI_LANGUAGE
 			FileLoader.LoadLanguage();
@@ -42,9 +36,8 @@ namespace PvZ_Fusion_Translator
 			StringStore.Init();
 			AudioStore.Init();
 			FontStore.Init();
-			Utils.RegisterPlantIndices();
 
-			//Utils.RegisterRecipeLinks();
+			isInitialized = true;
         }
 
 		public override void OnLateInitializeMelon()
@@ -52,6 +45,7 @@ namespace PvZ_Fusion_Translator
 			dtStart = DateTime.Now;
 			replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
 			LoadTravelBuffs();
+			Utils.RegisterPlantIndices();
         }
 
 		public override void OnDeinitializeMelon()

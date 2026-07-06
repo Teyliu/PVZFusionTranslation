@@ -14,7 +14,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
     [HarmonyPatch(typeof(LevelResultMenu))]
     public static class LevelResultMenu_Patch
     {
-        [HarmonyPatch(nameof(LevelResultMenu.Awake))]
         [HarmonyPatch(nameof(LevelResultMenu.Start))]
         [HarmonyPatch(nameof(LevelResultMenu.ShowResult))]
         [HarmonyPostfix]

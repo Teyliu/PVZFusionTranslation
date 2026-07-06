@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppCore;
 using Il2CppAlmanacData;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
@@ -73,7 +74,8 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             int godsGachaCheck = CheckGodsGachaPopup(originalText);
             string godsGachaMatch = "";
             string superEditorPlantMatch = CheckSuperEditorPopup(originalText);
-            string customLevelRegexMatch = CheckCustomLevelRegex(originalText); 
+            string customLevelRegexMatch = CheckCustomLevelRegex(originalText);
+            string qualityCheckMatch = CheckQualityUpgrade(originalText);
 
             switch(godsGachaCheck)
             {
@@ -111,6 +113,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                         shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
                     }
                 }
+            }
+            else if(qualityCheckMatch != "")
+            {
+                txt.text = qualityCheckMatch;
             }
             else if(superEditorPlantMatch != "")
             {
@@ -164,8 +170,10 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         public static string nameAlreadyPlantedPattern = "场上已经有一个([^\\s]+)了";
         public static string upgradePathRemovedPattern = "已移除路线：([^\\s]+)";
 
-        public static string lockedPlantPattern = "^([^\\s:]+)\\+([^\\s:]+)";
-        public static string multiLockedPlantPattern = "^或 ([^\\s:]+)\\+([^\\s:]+)";
+        public static string lockedPlantPattern = "^([\\s\\S]+)\\+([\\S]+)$";
+        public static string multiLockedPlantPattern = "^或 ([\\s\\S]+)\\+([\\S]+)$";
+
+        public static string qualityChangePattern = "诸神注视着你，并选中了一个他们喜欢的词条\n植物<color=green>【([\\S]+)】</color>的词条<color=yellow>【强化：([\\S]+)】</color>获得品质升级\n当前品质：([\\S]+)";
 
         public static Dictionary<string, string> fallbackFStrs = new Dictionary<string, string>()
         {
@@ -175,7 +183,8 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             { upgradePathRemovedPattern, "Upgrade Path removed for {0}" },
             { @"([^\s]+)\((\d+)\)", "{0}({1})" },
             { lockedPlantPattern, "{0} + {1}" },
-            { multiLockedPlantPattern, "or {0} + {1}" }
+            { multiLockedPlantPattern, "or {0} + {1}" },
+            { qualityChangePattern, "The gods are watching you, and they have granted you an upgrade!\nThe <color=yellow>{1}</color> upgrade for <color=green>{0}</color> has been upgraded.\nCurrent Quality: {2}" }
         };
 	    
         public static int CheckGodsGachaPopup(string originalText)
@@ -205,13 +214,13 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             switch(type)
             {
                 case 1:
-                    res = TranslatePlantNameParts(originalText, namePlantedPattern);
+                    res = StringStore.TranslateText(originalText, namePlantedPattern);
                     break;
                 case 2:
-                    res = TranslatePlantNameParts(originalText, nameUpgradedPattern);
+                    res = StringStore.TranslateText(originalText, nameUpgradedPattern);
                     break;
                 case 3:
-                    res = TranslatePlantNameParts(originalText, nameAlreadyPlantedPattern);
+                    res = StringStore.TranslateText(originalText, nameAlreadyPlantedPattern);
                     break;
                 default:
                     break;
@@ -269,7 +278,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
 
             if(Regex.IsMatch(originalText, upgradePathRemovedPattern))
             {
-                res = TranslatePlantNameParts(originalText, upgradePathRemovedPattern);
+                res = StringStore.TranslateText(originalText, upgradePathRemovedPattern);
             }
             else if(Regex.IsMatch(originalText, "当前全部基础植物：(.*)"))
             {
@@ -316,17 +325,14 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                         string firstLine = lines[0];
                         Match match = lockedPlantRegex.Match(firstLine);
                         GroupCollection groups = match.Groups;
-                        Log.LogDebug(Utils.plantIndiceStrings.ContainsKey(groups[1].Value));
-                        Log.LogDebug(Utils.plantIndiceStrings.ContainsKey(groups[2].Value));
-                        if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
+                        if (Utils.plantIndiceString.ContainsKey(groups[1].Value) && Utils.plantIndiceString.ContainsKey(groups[2].Value))
                         {
-                            firstLine = TranslatePlantNameParts(firstLine, lockedPlantPattern);
+                            firstLine = StringStore.TranslateText(firstLine, lockedPlantPattern);
                             List<string> translatedLines = new List<string>() { firstLine };
                             for(int i = 1; i < lines.Length; i++)
                             {
                                 string nextLine = lines[i];
-                                Log.LogDebug(nextLine);
-                                string translatedNextLine = TranslatePlantNameParts(nextLine, multiLockedPlantPattern);
+                                string translatedNextLine = StringStore.TranslateText(nextLine, multiLockedPlantPattern);
                                 translatedLines.Add(translatedNextLine);
                             }
                             res = string.Join("\n", translatedLines);
@@ -343,9 +349,9 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                     {
                         Match match = lockedPlantRegex.Match(originalText);
                         GroupCollection groups = match.Groups;
-                        if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
+                        if (Utils.plantIndiceString.ContainsKey(groups[1].Value) && Utils.plantIndiceString.ContainsKey(groups[2].Value))
                         {
-                            res = TranslatePlantNameParts(originalText, lockedPlantPattern);
+                            res = StringStore.TranslateText(originalText, lockedPlantPattern);
                         }
                         else
                         {
@@ -369,6 +375,18 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                     res = StringStore.TranslateText(originalText, pair.Key);
                 }
             }
+            return res;
+        }
+
+        public static string CheckQualityUpgrade(string originalText)
+        {
+            string res = "";
+
+            if(Regex.IsMatch(originalText, qualityChangePattern))
+            {
+                res = StringStore.TranslateText(originalText, qualityChangePattern);
+            }
+
             return res;
         }
     }

@@ -20,7 +20,14 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
             foreach(CustomButton_enterGame button in __instance.GetComponentsInChildren<CustomButton_enterGame>())
             {
                 string plantName = Utils.GetPlantNameFromAlmanac(button.levelName.text);
-                button.levelName.text = (plantName != "") ? plantName : StringStore.TranslateText(button.levelName.text);
+                if(Utils.Language == Utils.LanguageEnum.Arabic)
+                {
+                    button.levelName.text = StringStore.TranslateText(button.levelName.text);
+                }
+                else
+                {
+                    button.levelName.text = (plantName != "") ? plantName : StringStore.TranslateText(button.levelName.text);
+                }
             }
         }
 

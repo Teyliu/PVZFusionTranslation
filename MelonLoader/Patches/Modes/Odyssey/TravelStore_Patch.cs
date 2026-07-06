@@ -69,6 +69,11 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
         {
             string res = investText;
 
+            if(!Utils.CheckForUntranslatedText(res))
+            {
+                return res;
+            }
+
             string[] investStats = investText.Split("\n\n");
             List<string> translatedInvestStats = new List<string>();
             foreach(string investStat in investStats)
