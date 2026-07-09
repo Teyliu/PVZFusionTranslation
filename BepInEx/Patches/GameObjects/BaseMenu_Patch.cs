@@ -36,6 +36,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 MainMenu_Patch.AnimOver(__instance);
             }
 
+            if(__instance.name.StartsWith("PlantDamageMenu"))
+            {
+                PlantDamageMenu_Patch.Post_Awake(__instance);
+            }
+
             TranslateBaseMenu(__instance, "Level");
             TranslateBaseMenu(__instance, "Levels");
             TranslateBaseMenu(__instance, "CustomLevel");
