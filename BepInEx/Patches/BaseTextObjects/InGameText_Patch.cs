@@ -63,6 +63,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
             int godsGachaCheck = CheckGodsGachaPopup(originalText);
             string godsGachaMatch = "";
             string superEditorPlantMatch = CheckSuperEditorPopup(originalText);
+            string customLevelRegexMatch = CheckCustomLevelRegex(originalText);
+            string qualityCheckMatch = CheckQualityUpgrade(originalText);
 
             switch (godsGachaCheck)
             {
@@ -83,6 +85,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
             else if (travelMatch != "")
             {
                 txt.text = travelMatch;
+                updateShadow = true;
+            }
+            else if (qualityCheckMatch != "")
+            {
+                txt.text = qualityCheckMatch;
                 updateShadow = true;
             }
             else if (superEditorPlantMatch != "")
@@ -123,8 +130,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
         public static string nameAlreadyPlantedPattern = "场上已经有一个([^\\s]+)了";
         public static string upgradePathRemovedPattern = "已移除路线：([^\\s]+)";
 
-        public static string lockedPlantPattern = "^([^\\s:]+)\\+([^\\s:]+)";
-        public static string multiLockedPlantPattern = "^或 ([^\\s:]+)\\+([^\\s:]+)";
+        public static string lockedPlantPattern = "^([\\s\\S]+)\\+([\\S]+)$";
+        public static string multiLockedPlantPattern = "^或 ([\\s\\S]+)\\+([\\S]+)$";
+
+        public static string qualityChangePattern = "诸神注视着你，并选中了一个他们喜欢的词条\n植物<color=green>【([\\S]+)】</color>的词条<color=yellow>【强化：([\\S]+)】</color>获得品质升级\n当前品质：([\\S]+)";
 
         public static Dictionary<string, string> fallbackFStrs = new Dictionary<string, string>()
         {
@@ -134,7 +143,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
             { upgradePathRemovedPattern, "Upgrade Path removed for {0}" },
             { @"([^\s]+)\((\d+)\)", "{0}({1})" },
             { lockedPlantPattern, "{0} + {1}" },
-            { multiLockedPlantPattern, "or {0} + {1}" }
+            { multiLockedPlantPattern, "or {0} + {1}" },
+            { qualityChangePattern, "The gods are watching you, and they have granted you an upgrade!\nThe <color=yellow>{1}</color> upgrade for <color=green>{0}</color> has been upgraded.\nCurrent Quality: {2}" }
         };
 
         public static int CheckGodsGachaPopup(string originalText)
@@ -217,6 +227,30 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
                 }
                 res = string.Format(fStr, dynamicParts.ToArray());
             }
+            return res;
+        }
+
+        public static string CheckCustomLevelRegex(string originalText)
+        {
+            string res = "";
+
+            if (StringStore.customLevelString.Count > 0 && StringStore.customLevelString.ContainsKey(originalText))
+            {
+                res = StringStore.customLevelString[originalText];
+            }
+
+            return res;
+        }
+
+        public static string CheckQualityUpgrade(string originalText)
+        {
+            string res = "";
+
+            if (Regex.IsMatch(originalText, qualityChangePattern))
+            {
+                res = StringStore.TranslateText(originalText, qualityChangePattern);
+            }
+
             return res;
         }
 
