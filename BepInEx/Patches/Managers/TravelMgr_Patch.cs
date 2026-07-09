@@ -200,7 +200,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             travelBuffString.Clear();
             _titleMatchedTranslations.Clear();
 
-            // Step 1: Index-based matching
             foreach (var cat in dumpedTravelBuffs)
             {
                 if (cat.Value == null)
@@ -222,7 +221,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 }
             }
 
-            // Step 2: StringStore buff title entries
             foreach (var entry in StringStore.translationString)
             {
                 if (!string.IsNullOrEmpty(GetBuffTitle(entry.Key)))
@@ -240,7 +238,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     string viText = translatedEntry.Value;
                     if (string.IsNullOrEmpty(viText)) continue;
 
-                    // Skip if this Vietnamese text is already mapped
                     if (_titleMatchedTranslations.Contains(viText)) continue;
                     if (travelBuffString.ContainsValue(viText)) continue;
 
@@ -296,7 +293,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                             string ssTitle = GetBuffTitle(ss.Key);
                             if (ssTitle == foundChineseTitle)
                             {
-                                // Skip if this Chinese text is already mapped
                                 if (travelBuffString.ContainsKey(ss.Key)) continue;
 
                                 travelBuffString[ss.Key] = viText;
@@ -910,12 +906,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 if (!force && System.DateTime.Now - _lastDumpWriteTime < System.TimeSpan.FromSeconds(2))
                     return;
 
-                // Dump disabled - user doesn't need it
-                // string dumpDir = FileLoader.GetAssetDir(FileLoader.AssetType.Dumps);
-                // if (!Directory.Exists(dumpDir))
-                //     Directory.CreateDirectory(dumpDir);
-                // string jsonPath = Path.Combine(dumpDir, "travel_buffs.json");
-                // File.WriteAllText(jsonPath, JsonSerializer.Serialize(dumpedTravelBuffs, JsonOptions));
                 _lastDumpWriteTime = System.DateTime.Now;
             }
             catch (System.Exception ex)
@@ -943,7 +933,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 translatedTravelBuffs[category][buffIndex] = originalText;
 
             SaveDumpFileSafe();
-            // Log.LogInfo($"[TravelMgr_Patch] CaptureBuffFromLookMenu: {category}[{buffIndex}] = {originalText}");
         }
 
         private static void LoadFromFilesFallback()

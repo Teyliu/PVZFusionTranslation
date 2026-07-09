@@ -3,7 +3,7 @@
  *
  * HISTORY:
  * - AlmanacPlantBank.InitNameAndInfoFromJson() was REMOVED in 3.6
- *   This class is kept for reference only. All methods are commented out.
+ *   The old InitNameAndInfoFromJson code has been removed. Active patches remain below.
  * - The new almanac system uses AlmanacDataLoader and AlmanacPlantWindow instead
  *
  * MAINTENANCE NOTE:
@@ -16,196 +16,13 @@
 using HarmonyLib;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
-using System.IO;
 using UnityEngine;
-using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 {
     [HarmonyPatch(typeof(AlmanacPlantBank))]
     public static partial class AlmanacPlantBank_Patch
     {
-        // [3.6 OBSOLETE] InitNameAndInfoFromJson() was removed in 3.6
-        // This method was used in 3.5 to initialize plant name/info from JSON
-        // In 3.6+, this is handled by AlmanacPlantWindow.UpdateText() and AlmanacDataLoader
-#if false
-        [HarmonyPatch(nameof(AlmanacPlantBank.InitNameAndInfoFromJson))]
-        [HarmonyPostfix]
-        private static void InitNameAndInfoFromJson(AlmanacPlantBank __instance)
-        {
-#if MULTI_LANGUAGE
-            string currentLanguage = Utils.Language.ToString();
-            string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-#else
-			string almanacDir = GetAssetDir(AssetType.Almanac);
-			string currentLanguage = "English";
-#endif
-            string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-            string moddedPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
-
-            if (!File.Exists(path))
-            {
-                Log.LogError($"LawnStringsTranslate.json file not found at path: {path}");
-                return;
-            }
-
-#if OBFUSCATE
-			if (CheckSumStore.IsModified(path))
-			{
-				Log.LogError("File {0} was modified!", path);
-				return;
-			}
-#endif
-
-            string json;
-            json = File.ReadAllText(path);
-
-            bool hasAlmanacFont = false;
-            TMP_FontAsset almanacFontAsset = null;
-            if (FontStore.fontAssetDictSecondary != null &&
-                (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage)))
-            {
-                almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
-                hasAlmanacFont = true;
-            }
-
-#if MULTI_LANGUAGE
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
-#else
-			TMP_FontAsset fontAsset = FontStore.LoadTMPFont();
-#endif
-
-            if (__instance.introduce == null || __instance.plantName == null || __instance.cost == null)
-            {
-                Log.LogError("[AlmanacPlantBank_Patch] Required components are null");
-                return;
-            }
-
-            TextMeshPro component = __instance.introduce.GetComponent<TextMeshPro>();
-            TextMeshPro component2 = __instance.plantName.GetComponent<TextMeshPro>();
-            TextMeshPro component3 = null;
-            Transform plantNameChild = __instance.plantName.transform.GetChild(0);
-            if (plantNameChild != null)
-            {
-                component3 = plantNameChild.GetComponent<TextMeshPro>();
-            }
-            TextMeshPro component4 = __instance.cost.GetComponent<TextMeshPro>();
-
-            if (component == null || component2 == null || component4 == null)
-            {
-                Log.LogError("[AlmanacPlantBank_Patch] TextMeshPro components are null");
-                return;
-            }
-
-            AlmanacPlantBank.PlantData plantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(json);
-
-            if (plantData?.plants == null)
-            {
-                Log.LogError("[AlmanacPlantBank_Patch] Plant data is null");
-                return;
-            }
-
-            foreach (AlmanacPlantBank.PlantInfo plantInfo in plantData.plants)
-            {
-                if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
-                {
-                    component.autoSizeTextContainer = false;
-                    component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
-                    component.overflowMode = TextOverflowModes.Page;
-
-                    component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
-                    component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
-                    component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
-                    component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
-
-
-                    component2.text = plantInfo.name;
-                    component2.autoSizeTextContainer = true;
-
-                    if (component3 != null)
-                    {
-                        component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
-                        component3.autoSizeTextContainer = true;
-                    }
-
-                    component4.text = plantInfo.cost;
-
-                    if (hasAlmanacFont)
-                    {
-                        component.font = almanacFontAsset;
-                        component4.font = almanacFontAsset;
-                    }
-                    else
-                    {
-                        component.font = fontAsset;
-                        component4.font = fontAsset;
-                    }
-                    component2.font = fontAsset;
-                    if (component3 != null)
-                    {
-                        component3.font = fontAsset;
-                    }
-                }
-            }
-
-            if (File.Exists(moddedPath))
-            {
-                string moddedJson;
-                moddedJson = File.ReadAllText(moddedPath);
-
-                AlmanacPlantBank.PlantData moddedPlantData = JsonUtility.FromJson<AlmanacPlantBank.PlantData>(moddedJson);
-
-                if (moddedPlantData?.plants != null)
-                {
-                    foreach (AlmanacPlantBank.PlantInfo plantInfo in moddedPlantData.plants)
-                    {
-                        if (plantInfo.seedType == __instance.theSeedType && !string.IsNullOrEmpty(plantInfo.name))
-                        {
-                            component.autoSizeTextContainer = false;
-                            component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
-                            component.overflowMode = TextOverflowModes.Page;
-
-                            component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
-                            component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
-                            component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
-                            component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
-
-
-                            component2.text = plantInfo.name;
-                            component2.autoSizeTextContainer = true;
-
-                            if (component3 != null)
-                            {
-                                component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
-                                component3.autoSizeTextContainer = true;
-                            }
-
-                            component4.text = plantInfo.cost;
-
-                            if (hasAlmanacFont)
-                            {
-                                component.font = almanacFontAsset;
-                                component4.font = almanacFontAsset;
-                            }
-                            else
-                            {
-                                component.font = fontAsset;
-                                component4.font = fontAsset;
-                            }
-                            component2.font = fontAsset;
-                            if (component3 != null)
-                            {
-                                component3.font = fontAsset;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return;
-        }
-#endif
-
         // [3.6 NOTE] OnMouseDown still exists in 3.6, but may behave differently
         // Keeping this for potential future use if needed
         [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]
@@ -284,7 +101,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             TextMeshPro skinShadowText = skinShadowTextObj.GetComponent<TextMeshPro>();
             if (skinShadowText != null)
             {
-                skinShadowText.text = StringStore.TranslateText("换肤_S");
+                skinShadowText.text = StringStore.TranslateText("æ¢è‚¤_S");
                 skinShadowText.sortingOrder -= 2;
             }
 

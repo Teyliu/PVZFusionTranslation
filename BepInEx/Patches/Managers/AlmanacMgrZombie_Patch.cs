@@ -20,7 +20,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			string currentLanguage = Utils.Language.ToString();
 			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 #else
-			string almanacDir = almanacDir = GetAssetDir(AssetType.Almanac);
+			string almanacDir = GetAssetDir(AssetType.Almanac);
 			string currentLanguage = "English";
 #endif
 			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
@@ -40,8 +40,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 			}
 #endif
 
-		string json;
-			json = File.ReadAllText(path);
+			string json = File.ReadAllText(path);
 
 			bool hasAlmanacFont = false;
 			TMP_FontAsset almanacFontAsset = null;
@@ -117,8 +116,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
 
 		if (File.Exists(moddedPath))
 			{
-string moddedJson;
-			moddedJson = File.ReadAllText(moddedPath);
+			string moddedJson = File.ReadAllText(moddedPath);
 
 			var moddedZombieJsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 			ZombieAlmanacData moddedZombieData = System.Text.Json.JsonSerializer.Deserialize<ZombieAlmanacData>(moddedJson, moddedZombieJsonOptions);
@@ -153,8 +151,6 @@ string moddedJson;
 					}
 				}
 			}
-
-			return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]
