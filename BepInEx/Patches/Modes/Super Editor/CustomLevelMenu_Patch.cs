@@ -18,6 +18,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
         public static Dictionary<string, TranslatedLevelData> translatedLevelData = new Dictionary<string, TranslatedLevelData>();
         public static float requestTimer = 0f;
 
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
         [HarmonyPatch(nameof(CustomLevelMenu.LoadOnlineFiles))]
         [HarmonyPostfix]
         public static void LoadOnlineFiles(CustomLevelMenu __instance)
@@ -60,45 +66,37 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 
             if (!File.Exists(dumpPath))
             {
-                File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                }));
+                File.WriteAllText(dumpPath, JsonSerializer.Serialize(dumpData, JsonOptions));
             }
 
             foreach (CustomButton_enterGame level in __instance.levels)
             {
-                if (level.onlineLevelInfo != null)
+                if (level.onlineLevelInfo == null)
                 {
-                    string levelId = level.onlineLevelInfo.levelId;
-                    if (levelId != null)
-                    {
-                        if (translatedLevelData.ContainsKey(levelId))
-                        {
-                            TranslatedLevelData levelData = translatedLevelData[levelId];
-                            level.levelName.text = levelData.name;
-                            level.serializedLevel.name = levelData.name;
-                            level.serializedLevel.boardConfig.startTip = levelData.startTip;
-                        }
-                        else
-                        {
-                            TranslatedLevelData dumpedLevelData = new TranslatedLevelData(level.onlineLevelInfo.levelName, level.serializedLevel.boardConfig.startTip);
-                            dumpData.Add(levelId, dumpedLevelData);
-                        }
-                    }
+                    level.levelName.text = StringStore.TranslateText(level.levelName.text);
+                    continue;
+                }
+
+                string levelId = level.onlineLevelInfo.levelId;
+                if (levelId == null)
+                {
+                    continue;
+                }
+
+                if (translatedLevelData.TryGetValue(levelId, out TranslatedLevelData levelData))
+                {
+                    level.levelName.text = levelData.name;
+                    level.serializedLevel.name = levelData.name;
+                    level.serializedLevel.boardConfig.startTip = levelData.startTip;
                 }
                 else
                 {
-                    level.levelName.text = StringStore.TranslateText(level.levelName.text);
+                    TranslatedLevelData dumpedLevelData = new TranslatedLevelData(level.onlineLevelInfo.levelName, level.serializedLevel.boardConfig.startTip);
+                    dumpData.Add(levelId, dumpedLevelData);
                 }
             }
 
-            File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            }));
+            File.WriteAllText(dumpPath, JsonSerializer.Serialize(dumpData, JsonOptions));
         }
 
         public static async Task<Dictionary<string, TranslatedLevelData>> GetTranslatedLevelData()
@@ -147,7 +145,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
             string assetDir = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "custom_level_data.json");
             if (!File.Exists(assetDir))
             {
-                File.CreateText(assetDir);
                 File.WriteAllText(assetDir, "{}");
             }
             string levelDataString = File.ReadAllText(assetDir);
