@@ -98,8 +98,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
                                 fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
                             }
                         }
-
-                        // Log.LogInfo($"Fallback font for language '{fileNameLanguage}' loaded");
                     }
                 }
             }
@@ -110,26 +108,27 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
         {
             foreach (var lang in fontAssetDict.Keys)
             {
-                if (fontAssetDict[lang].fallbackFontAssetTable == null)
+                TMP_FontAsset primaryFont = fontAssetDict[lang];
+                if (primaryFont.fallbackFontAssetTable == null)
                 {
-                    fontAssetDict[lang].fallbackFontAssetTable = new Il2CppSystem.Collections.Generic.List<TMP_FontAsset>();
+                    primaryFont.fallbackFontAssetTable = new Il2CppSystem.Collections.Generic.List<TMP_FontAsset>();
                 }
 
-                if (fontAssetDictSecondary.ContainsKey(lang))
+                if (fontAssetDictSecondary.TryGetValue(lang, out TMP_FontAsset fallback))
                 {
-                    fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang]);
+                    primaryFont.fallbackFontAssetTable.Add(fallback);
                     Log.LogInfo("Fallback font for language '" + lang + "' added");
                     continue;
                 }
-                if (fontAssetDictSecondary.ContainsKey(lang + "_Almanac"))
+                if (fontAssetDictSecondary.TryGetValue(lang + "_Almanac", out fallback))
                 {
-                    fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang + "_Almanac"]);
+                    primaryFont.fallbackFontAssetTable.Add(fallback);
                     Log.LogInfo("Fallback font for language '" + lang + "' added");
                     continue;
                 }
-                if (fontAssetDictSecondary.ContainsKey(lang + "_Fallback"))
+                if (fontAssetDictSecondary.TryGetValue(lang + "_Fallback", out fallback))
                 {
-                    fontAssetDict[lang].fallbackFontAssetTable.Add(fontAssetDictSecondary[lang + "_Fallback"]);
+                    primaryFont.fallbackFontAssetTable.Add(fallback);
                     Log.LogInfo("Fallback font for language '" + lang + "' added");
                     continue;
                 }
@@ -141,12 +140,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
         {
             if (fontAssetDict.TryGetValue(language, out TMP_FontAsset font))
             {
-                TMP_FontAsset fontAsset = font;
-                if (fontAsset.fallbackFontAssetTable != null)
-                {
-                    // Log.LogInfo("Fallback font for language '" + language + "' loaded. The name of the FB Font is" + fontAsset.fallbackFontAssetTable[0].name);
-                }
-                return fontAsset;
+                return font;
             }
             return fontAssetDict.GetValueOrDefault("English");
         }
@@ -160,19 +154,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
         public static TMP_FontAsset LoadTMPFontAlmanac(string language)
         {
-            if (fontAssetDictSecondary.ContainsKey(language))
+            if (fontAssetDictSecondary.TryGetValue(language, out TMP_FontAsset almanacAsset))
             {
-                if (fontAssetDictSecondary.TryGetValue(language, out TMP_FontAsset almanacAsset))
-                {
-                    return almanacAsset;
-                }
+                return almanacAsset;
             }
-            if (fontAssetDictSecondary.ContainsKey(language + "_Almanac"))
+            if (fontAssetDictSecondary.TryGetValue(language + "_Almanac", out almanacAsset))
             {
-                if (fontAssetDictSecondary.TryGetValue(language + "_Almanac", out TMP_FontAsset almanacAsset))
-                {
-                    return almanacAsset;
-                }
+                return almanacAsset;
             }
 
             return fontAssetDict.GetValueOrDefault("English");
@@ -181,11 +169,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 #if MULTI_LANGUAGE
         public static void Reload()
         {
-            // Get the current language
-            string currentLanguage = Utils.Language.ToString();
-
-            // Load the font for the current language
-            _ = LoadTMPFont(currentLanguage);
         }
 #endif
 

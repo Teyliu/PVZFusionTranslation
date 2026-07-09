@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using AudioImportLib.BepInEx;
 using BepInEx.Logging;
-using System.Runtime;
-using System.Runtime.InteropServices;
-using System.Reflection;
 using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
@@ -42,7 +37,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             try
             {
-                // Clear existing dictionaries to prevent duplicate key errors
                 AudioClips.Clear();
                 AudioClipNames.Clear();
                 
