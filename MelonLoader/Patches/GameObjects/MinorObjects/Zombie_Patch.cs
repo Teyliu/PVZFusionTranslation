@@ -4,7 +4,6 @@ using PvZ_Fusion_Translator.AssetStore;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Il2CppTMPro;
-using System.Reflection.Metadata.Ecma335;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
 {
@@ -103,7 +102,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
 
             string finalText = __instance.healthText.text;
             int fIndex = -1;
-            bool found = false;
 
             for(int i = 0; i < HPStrings.Count; i++)
             {
@@ -111,11 +109,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
                 if(Regex.Match(originalText, hp.Key, RegexOptions.Singleline).Success)
                 {
                     fIndex = i;
-                    found = true;
                 }
             }
 
-            if(fIndex > -1 && found)
+            if(fIndex > -1)
             {
                 string fStr = HPStrings.ElementAt(fIndex).Value;
 
@@ -145,7 +142,6 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
         {
             string finalText = __instance.healthText.text;
             int fIndex = -1;
-            bool found = false;
 
             for (int i = 0; i < HPStrings.Count; i++)
             {
@@ -154,11 +150,10 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects
                 if (regex.IsMatch(originalText))
                 {
                     fIndex = i;
-                    found = true;
                 }
             }
 
-            if (fIndex > -1 && found)
+            if (fIndex > -1)
             {
                 string fStr = HPStrings.ElementAt(fIndex).Value;
 

@@ -6,8 +6,7 @@ using MelonLoader;
 using PvZ_Fusion_Translator;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static MelonLoader.MelonLogger;
+
 using Object = UnityEngine.Object;
 
 public class OptionButtonData
@@ -290,29 +289,27 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 
 		private static void ToggleCustomAssets(string type)
 		{
-			if (type != "Textures" && type != "Audio" && type != "SwapLocal") return;
-
-			if(type == "Textures")
+			switch (type)
 			{
-				Utils.customTextures = !Utils.customTextures;
-                MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultTextures", !Utils.customTextures);
-				TextureStore.Reload();
-                object replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
-            } 
-			
-			if (type == "Audio")
-			{
-                Utils.customAudio = (Utils.customAudio) ? false : true;
-                MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultAudio", !Utils.customAudio);
-            }
-
-			if (type == "SwapLocal")
-			{
-                Utils.WarnLocalData();
-            }
+				case "Textures":
+					Utils.customTextures = !Utils.customTextures;
+					MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultTextures", !Utils.customTextures);
+					TextureStore.Reload();
+					MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
+					break;
+				case "Audio":
+					Utils.customAudio = !Utils.customAudio;
+					MelonPreferences.SetEntryValue<bool>("PvZ_Fusion_Translator", "DefaultAudio", !Utils.customAudio);
+					break;
+				case "SwapLocal":
+					Utils.WarnLocalData();
+					break;
+				default:
+					return;
+			}
 
 			MelonPreferences.Save();
-        }
+		}
 
 		[HarmonyPatch(typeof(OptionBtn))]
 		public static class OptLangBtn_Patch
