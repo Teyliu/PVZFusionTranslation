@@ -76,7 +76,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 			Transform canvasTransform; 
 
-			if (canvas != null) return; // Prevent duplicate canvas creation
+			if (canvas != null) return;
 
 			canvas = new GameObject("AudioSourceCanvas").AddComponent<Canvas>();
 			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -87,7 +87,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 			canvas.gameObject.AddComponent<GraphicRaycaster>();
 
-			// Add a RectTransform for positioning text
 			GameObject songTextObject = new GameObject("SongText");
 			songTextObject.transform.SetParent(canvas.transform);
 
@@ -97,12 +96,11 @@ namespace PvZ_Fusion_Translator.AssetStore
 			songRectTransform.pivot = new Vector2(1, 1);
 			songRectTransform.anchoredPosition = new Vector2(-20, -20); // Adjust margin
 
-			// Add a TextMeshPro component for the text
 			var textComponent = songTextObject.AddComponent<TextMeshProUGUI>();
 			textComponent.alignment = TextAlignmentOptions.Right;
 			textComponent.fontSize = 24;
 			textComponent.color = Color.white;
-			textComponent.text = "Current Song: None"; // Placeholder
+			textComponent.text = "Current Song: None";
 		}
 
 
@@ -125,13 +123,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 		public static (string, string) GetAudioSource(string clipName)
 		{
 			if (AudioClipNames.TryGetValue(clipName, out var audioSource))
-			{
 				return audioSource;
-			}
-			else
-			{
-				return ("Music", "Source Unknown");
-			}
+			return ("Music", "Source Unknown");
 		}
 
 		
@@ -169,7 +162,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 				}
 
 				#if AUDIO_TESTING
-				// Update the displayed audio source
 				var (name, source) = GetAudioSource(__instance.clip.name);
 				UpdateAudioSourceText(name, source);
 				#endif

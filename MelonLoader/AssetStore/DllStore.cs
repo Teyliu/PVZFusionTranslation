@@ -1,11 +1,8 @@
-﻿/*using MelonLoader;
+﻿using MelonLoader;
 using MelonLoader.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PvZ_Fusion_Translator.AssetStore
 {
@@ -22,44 +19,33 @@ namespace PvZ_Fusion_Translator.AssetStore
 
         public static void TryGetNewDll(string gameVersion)
 		{
-			bool ableToUpdate = true;
-			string unableReason = "";
 			string getGameVersionRequest = Utils.GetDataFromWeb("https://raw.githubusercontent.com/SillyStar-Github/PvZF-Translation-DLLs/refs/heads/main/CURRENT_GAME_VER").Result;
-			if(getGameVersionRequest != null)
+			if (getGameVersionRequest == null)
 			{
-				Log.LogDebug($"Requst game version: {getGameVersionRequest} -> {Utils.CalculateGameVersion(getGameVersionRequest)}");
-				Log.LogDebug($"This game version: {gameVersion} -> {Utils.CalculateGameVersion(gameVersion)}");
-				if (Utils.CalculateGameVersion(getGameVersionRequest) != Utils.CalculateGameVersion(gameVersion))
-				{
-					ableToUpdate = false;
-					unableReason = "Incorrect game version...";
-				}
-			}
-			else
-			{
-				ableToUpdate = false;
-				unableReason = "Couldn't get latest game version info...";
+				Log.LogError("Unable to update! Couldn't get latest game version info...");
+				return;
 			}
 
-			if (ableToUpdate)
+			Log.LogDebug($"Request game version: {getGameVersionRequest} -> {Utils.CalculateGameVersion(getGameVersionRequest)}");
+			Log.LogDebug($"This game version: {gameVersion} -> {Utils.CalculateGameVersion(gameVersion)}");
+			if (Utils.CalculateGameVersion(getGameVersionRequest) != Utils.CalculateGameVersion(gameVersion))
 			{
-				foreach(var key in dllData.Keys)
-				{
-					byte[] newDllRequest = Utils.GetByteDataFromWeb($"https://raw.githubusercontent.com/SillyStar-Github/PvZF-Translation-DLLs/refs/heads/main/{key}").Result;
-					if(newDllRequest != null)
-					{
-						dllData[key] = newDllRequest;
-						SaveNewDll(key);
-					}
-					else
-					{
-						Log.LogError($"Couldn't get latest {key} data!");
-					}
-				}
+				Log.LogError("Unable to update! Incorrect game version...");
+				return;
 			}
-			else
+
+			foreach (var key in dllData.Keys)
 			{
-				Log.LogError($"Unable to update! {unableReason}");
+				byte[] newDllRequest = Utils.GetByteDataFromWeb($"https://raw.githubusercontent.com/SillyStar-Github/PvZF-Translation-DLLs/refs/heads/main/{key}").Result;
+				if (newDllRequest != null)
+				{
+					dllData[key] = newDllRequest;
+					SaveNewDll(key);
+				}
+				else
+				{
+					Log.LogError($"Couldn't get latest {key} data!");
+				}
 			}
 		}
 
@@ -86,7 +72,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 			if(updateOnClose)
 			{
-				int processId = (Process.GetCurrentProcess().Id);
+				int processId = Process.GetCurrentProcess().Id;
 
 				var assembly = Core.Instance.MelonAssembly.Assembly;
 				string programName = "PvZ_Fusion_Translator.Resources.ModUpdateUtil.exe";
@@ -112,4 +98,3 @@ namespace PvZ_Fusion_Translator.AssetStore
 		}
     }
 }
-*/

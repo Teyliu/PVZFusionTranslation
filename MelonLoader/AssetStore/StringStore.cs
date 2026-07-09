@@ -1,6 +1,4 @@
-﻿using Il2CppSystem.Runtime.Remoting.Messaging;
-using Il2CppTMPro;
-using System.Diagnostics;
+﻿using Il2CppTMPro;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -89,12 +87,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static TextMeshPro TranslateText(TextMeshPro originalTMP, bool isLog = false)
 		{
-			/*var frame = new StackTrace().GetFrame(1);
-			var method = frame.GetMethod();
-			var className = method.DeclaringType.Name;
-
-			Console.WriteLine($"TextMeshPro: {className}.{method.Name}");*/
-
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
 			TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
@@ -111,11 +103,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static TextMeshProUGUI TranslateText(TextMeshProUGUI originalTMP, bool isLog = false)
 		{
-			/*var frame = new StackTrace().GetFrame(1);
-			var method = frame.GetMethod();
-			var className = method.DeclaringType.Name;
-
-			Console.WriteLine($"tmp pro ugui: {className}.{method.Name}");*/
 
 			#if MULTI_LANGUAGE
 			string currentLanguage = Utils.Language.ToString();
@@ -133,34 +120,23 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static string TranslateText(string originalText, bool isLog = false)
 		{
-			/*var frame = new StackTrace().GetFrame(1);
-			var method = frame.GetMethod();
-			var className = method.DeclaringType.Name;
-        
-			Console.WriteLine($"string: {className}.{method.Name}");*/
-
 			string text = DoTranslateText(originalText, false);
-			string checkText;
-			#if DEBUG
+#if DEBUG
 			Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
 			Match match = regex.Match(text);
 
 			if(match.Success)
 			{
-				// Log.LogDebug("Untranslated String: " + match.Value);
 				FileLoader.DumpUntranslatedStrings(text);
 			}
-			#endif
-			checkText = text;
-			
-			return checkText;
+#endif
+			return text;
 		}
 
         public static string TranslateText(string originalText, string pattern, bool isLog = false)
         {
             if (TestRegex(originalText, pattern) && translationStringRegex.ContainsKey(pattern))
             {
-                // Extract dynamic parts from the original text
                 var regex = new Regex(pattern);
                 var match = regex.Match(originalText);
                 int groupCount = match.Groups.Count;
@@ -168,10 +144,8 @@ namespace PvZ_Fusion_Translator.AssetStore
                 if (isLog)
                     Log.LogDebug("Text found in translationStringRegex {0}: {1}", match, groupCount);
 
-                // List to hold formatted dynamic parts
                 List<string> dynamicParts = [];
 
-                // Loop through each group and determine its translation
                 for (int i = 1; i < groupCount; i++)
                 {
                     string groupValue = match.Groups[i].Value;
@@ -181,7 +155,6 @@ namespace PvZ_Fusion_Translator.AssetStore
                     dynamicParts.Add(translatedValue);
                 }
 
-                // Format the output string with dynamic parts
                 return string.Format(translationStringRegex[pattern], [.. dynamicParts]);
             }
 			else
@@ -228,12 +201,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return fsTipCollectionString[originalText];
 			}
 
-			// Regex-based dynamic translation
 			foreach (var entry in translationStringRegex)
 			{
 				if (TestRegex(originalText, entry.Key))
 				{
-					// Extract dynamic parts from the original text
 					var regex = new Regex(entry.Key);
 					var match = regex.Match(originalText);
 					int groupCount = match.Groups.Count;
@@ -241,10 +212,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 					if (isLog)
 						Log.LogDebug("Text found in translationStringRegex {0}: {1}", match, groupCount);
 
-					// List to hold formatted dynamic parts
 					List<string> dynamicParts = [];
 
-					// Loop through each group and determine its translation
 					for (int i = 1; i < groupCount; i++)
 					{
 						string groupValue = match.Groups[i].Value;
@@ -254,7 +223,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 						dynamicParts.Add(translatedValue);
 					}
 
-					// Format the output string with dynamic parts
 					return string.Format(entry.Value, [.. dynamicParts]);
 				}
 			}
@@ -271,20 +239,16 @@ namespace PvZ_Fusion_Translator.AssetStore
         public static string TranslateColorText(string originalText, bool isLog = false)
         {
             string text = TranslateColorSegments(originalText);
-            string checkText;
 #if DEBUG
             Regex regex = new("\\p{IsCJKUnifiedIdeographs}+");
             Match match = regex.Match(text);
 
             if (match.Success)
             {
-                // Log.LogDebug("Untranslated String: " + match.Value);
                 FileLoader.DumpUntranslatedStrings(text);
             }
 #endif
-            checkText = text;
-
-            return checkText;
+            return text;
         }
 
 		public static string TranslateColorSegments(string input)
@@ -361,20 +325,15 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return null;
 			}
 
-			// Log.LogInfo($"Converting UnityEngine.UI.Text: {oldText.name}");
-
 			GameObject textObject = oldText.gameObject;
 
-			// Preserve text content and settings
 			string originalText = oldText.text;
 			originalText = TranslateText(originalText, isLog);
 			TextAnchor alignment = oldText.alignment;
 			Color color = oldText.color;
 
-			// Remove old Text component
 			UnityEngine.Object.DestroyImmediate(oldText);
 
-			// Add TextMeshProUGUI component
 			TextMeshProUGUI newTMP = textObject.AddComponent<TextMeshProUGUI>();
 			if (newTMP == null)
 			{
@@ -382,13 +341,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return null;
 			}
 
-			// Configure TextMeshProUGUI
 			newTMP.text = originalText;
 			newTMP.color = color;
 			newTMP.alignment = TextAnchorToTMPAlignment(alignment);
 			newTMP.font = fontAsset;
-
-			// Log.LogInfo($"Successfully converted {textObject.name} to TextMeshProUGUI.");
 
 			return newTMP;
 		}
@@ -414,12 +370,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return;
 			}
 
-			// Local function for processing transforms
 			void ProcessTextTransform(Transform textTransform)
 			{
 				if (!textTransform) return;
 
-				// Handle TextMeshPro components
 				TextMeshPro textTMP = textTransform.GetComponent<TextMeshPro>();
 				if (textTMP)
 				{
@@ -436,7 +390,6 @@ namespace PvZ_Fusion_Translator.AssetStore
 					textTMPUGUI.font = fontAsset;
 				}
 
-				// Handle UnityEngine.UI.Text components
 				UnityEngine.UI.Text textUI = textTransform.GetComponent<UnityEngine.UI.Text>();
 				if (textUI)
 				{
@@ -444,10 +397,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 				}
 			}
 
-			// Process specific text paths
 			ProcessTextTransform(baseTransform.Find("text"));
 			ProcessTextTransform(baseTransform.Find("text1"));
-			// ProcessTextTransform(baseTransform.Find("text2"));
 
 			Transform shadowTransform = baseTransform.Find("text/shadow");
 			if (shadowTransform) ProcessTextTransform(shadowTransform);
@@ -477,8 +428,9 @@ namespace PvZ_Fusion_Translator.AssetStore
 			if (textTMP)
 			{
 				string origText = textTMP.text;
+				string translatedText = TranslateText(origText, isLog);
 
-				textTMP.text = TranslateText(origText, isLog) == "" ? origText : TranslateText(origText, isLog);
+				textTMP.text = translatedText == "" ? origText : translatedText;
 				if (isAutoTextContainer != null) textTMP.autoSizeTextContainer = isAutoTextContainer.Value;
 				if (origText != textTMP.text)
 					textTMP.font = FontStore.LoadTMPFont(currentLanguage);
