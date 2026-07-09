@@ -70,17 +70,15 @@ namespace PvZ_Fusion_Translator.Patches.Managers
                     component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
                     component.overflowMode = TextOverflowModes.Page;
 
-                    // fix dimensions for cost text
                     component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
                     component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
                     component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
                     component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
 
-
                     component2.text = plantInfo.name;
                     component2.autoSizeTextContainer = true;
 
-                    component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
+                    component3.text = Utils.RemoveColorTags(plantInfo.name);
                     component3.autoSizeTextContainer = true;
 
                     component4.text = plantInfo.cost;
@@ -115,17 +113,15 @@ namespace PvZ_Fusion_Translator.Patches.Managers
                         component.text = plantInfo.info + "\n\n" + plantInfo.introduce;
                         component.overflowMode = TextOverflowModes.Page;
 
-                        // fix dimensions for cost text
                         component.rectTransform.offsetMax = new Vector2(component.rectTransform.offsetMax.x, 27.3839f);
                         component.rectTransform.offsetMin = new Vector2(component.rectTransform.offsetMin.x, -29.3079f);
                         component.rectTransform.sizeDelta = new Vector2(component.rectTransform.sizeDelta.x, 50.917f);
                         component.transform.localPosition = new Vector3(component.transform.localPosition.x, component.transform.localPosition.y + 0.15f, component.transform.localPosition.z);
 
-
                         component2.text = plantInfo.name;
                         component2.autoSizeTextContainer = true;
 
-                        component3.text = Utils.RemoveColorTags(plantInfo.name ?? string.Empty);
+                        component3.text = Utils.RemoveColorTags(plantInfo.name);
                         component3.autoSizeTextContainer = true;
 
                         component4.text = plantInfo.cost;
@@ -146,7 +142,6 @@ namespace PvZ_Fusion_Translator.Patches.Managers
                 }
             }
 
-            return;
         }
 
         [HarmonyPatch(nameof(AlmanacPlantBank.OnMouseDown))]

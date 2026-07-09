@@ -18,7 +18,7 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 			string currentLanguage = Utils.Language.ToString();
 			string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 #else
-			string almanacDir = almanacDir = GetAssetDir(AssetType.Almanac);
+			string almanacDir = GetAssetDir(AssetType.Almanac);
 			string currentLanguage = "English";
 #endif
 			string path = Path.Combine(almanacDir, "ZombieStringsTranslate.json");
@@ -109,7 +109,6 @@ namespace PvZ_Fusion_Translator.Patches.Managers
 				}
 			}
 
-			return;
 		}
 
 		[HarmonyPatch(nameof(AlmanacMgrZombie.OnMouseDown))]

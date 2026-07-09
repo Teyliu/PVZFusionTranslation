@@ -3,13 +3,8 @@ using Il2Cpp;
 using PvZ_Fusion_Translator.AssetStore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Unity.Collections;
-using UnityEngine.Rendering;
 using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
@@ -120,14 +115,11 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
             }
         }
 
-        //System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
         public static Dictionary<string, SortedDictionary<int, string>> GenerateTranslatedTravelBuffs(string travelBuffsContent)
         {
             TravelMgr_Patch.DumpTravelBuffs();
 
             Dictionary<string, SortedDictionary<int, string>> travelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(travelBuffsContent);
-
-            // save travel buffs
 
 			string travelBuffsToSave = SerializeWithIndentation(travelBuffs);
             string stringDir = GetAssetDir(AssetType.Strings, Utils.Language);
@@ -155,27 +147,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                             }
                         }
                     }
-                    else if(j.Value == RemoveBuffName(originalBuff))
-                    {
-                        if (translatedBuffSet.ContainsKey(j.Key))
-                        {
-                            if(travelBuffString.ContainsKey(originalBuff))
-                            {
-                                travelBuffString[RemoveBuffName(originalBuff)] = translatedBuffSet[j.Key];
-                            }
-                            else
-                            {
-                                travelBuffString.Add(RemoveBuffName(originalBuff), translatedBuffSet[j.Key]);
-                            }
-                        }
-                    }
-
-                    /*var translatedBuffSet = travelBuffs[i.Key];
-                    if(translatedBuffSet.ContainsKey(j.Key))
-                    {
-                        string translatedBuff = travelBuffs[i.Key][j.Key];
-                        travelBuffString[originalBuff] = translatedBuff;
-                    }*/
                 }
             }
 
