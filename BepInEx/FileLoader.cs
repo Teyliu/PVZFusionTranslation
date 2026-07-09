@@ -10,9 +10,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
-using UnityEngine.Rendering;
 using PvZ_Fusion_Translator.Patches.GameObjects;
-using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PvZ_Fusion_Translator__BepInEx_
@@ -558,22 +556,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
 
             // Online sync disabled for modded plants/zombies
-            // string langCode = Utils.Language.ToString();
-            // string moddedPlantContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{langCode}/Almanac/ModdedPlantsTranslate.json").Result;
-            // if (!string.IsNullOrEmpty(moddedPlantContent))
-            // {
-            //     string moddedPlantPath = Path.Combine(almanacDir, "ModdedPlantsTranslate.json");
-            //     File.WriteAllText(moddedPlantPath, moddedPlantContent);
-            //     Log.LogInfo($"[SaveAlmanacFiles] Saved ModdedPlantsTranslate.json");
-            // }
-
-            // string moddedZombieContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{langCode}/Almanac/ModdedZombiesTranslate.json").Result;
-            // if (!string.IsNullOrEmpty(moddedZombieContent))
-            // {
-            //     string moddedZombiePath = Path.Combine(almanacDir, "ModdedZombiesTranslate.json");
-            //     File.WriteAllText(moddedZombiePath, moddedZombieContent);
-            //     Log.LogInfo($"[SaveAlmanacFiles] Saved ModdedZombiesTranslate.json");
-            // }
 #endif
         }
 
@@ -843,14 +825,7 @@ internal static void LoadDetailStrings(string content)
                 {
                     if (translatedDetailStrings.ContainsKey(detailString.Key))
                     {
-                        if (!AlmanacSelectMenu_Patch.detailTranslateStrings.ContainsKey(detailString.Value))
-                        {
-                            AlmanacSelectMenu_Patch.detailTranslateStrings.Add(detailString.Value, translatedDetailStrings[detailString.Key]);
-                        }
-                        else
-                        {
-                            AlmanacSelectMenu_Patch.detailTranslateStrings[detailString.Value] = translatedDetailStrings[detailString.Key];
-                        }
+                        AlmanacSelectMenu_Patch.detailTranslateStrings[detailString.Value] = translatedDetailStrings[detailString.Key];
                     }
                 }
             }
@@ -875,14 +850,7 @@ internal static void LoadDetailStrings(string content)
                         string text = detail.TryGetProperty("text", out var textProp) ? textProp.GetString() : "";
                         if (!string.IsNullOrEmpty(title))
                         {
-                            if (detailStringsDump.ContainsKey(title))
-                            {
-                                detailStringsDump[title] = text;
-                            }
-                            else
-                            {
-                                detailStringsDump.Add(title, text);
-                            }
+                            detailStringsDump[title] = text;
                         }
                     }
                 }

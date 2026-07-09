@@ -50,12 +50,6 @@ public class PluginCore : BasePlugin
         dtStart = DateTime.Now;
 
         // TODO: Get game version for DllStore - may need adjustment for BepInEx
-        string gameVersion = "3.6.1";
-        if (configEnableDllUpdate.Value)
-        {
-            //DllStore.Init(gameVersion);
-        }
-
         FileLoader.LoadLanguage();
 
         AudioStore.Init();
@@ -68,10 +62,6 @@ public class PluginCore : BasePlugin
         Utils.CacheAlmanacData();
         TravelMgr_Patch.DumpTravelBuffs();
 
-        //Utils.RegisterRecipeLinks();
-        //PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects.Zombie_Patch.LoadHPStrings();
-
-        // Start texture replacement coroutine once
         replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
     }
 
@@ -82,13 +72,9 @@ public class PluginCore : BasePlugin
 			MonoInstance.StopCoroutine(replaceTextureRoutine);
 			Log.LogInfo("Coroutine Stopped");
 		}
-		FileLoader.SaveLanguage();
-		if (configEnableDllUpdate.Value)
-		{
-			//DllStore.UpdateNewDll();
-		}
-		
-		#if OBFUSCATE && !RELEASE
+        FileLoader.SaveLanguage();
+        
+        #if OBFUSCATE && !RELEASE
 		CheckSumStore.ConvertMD5Json();
 		#endif
 
@@ -139,7 +125,7 @@ public class PluginCore : BasePlugin
 
 	public static void DebugStringReload()
 	{
-        if (stringreloaded == true)
+        if (stringreloaded)
         {
             checkTime += Time.deltaTime;
             if (checkTime >= checkInterval)
@@ -183,31 +169,26 @@ public class PluginCore : BasePlugin
 		{
             configDefaultTextures = Config.Bind(new ConfigDefinition(mainCategory, "DefaultTextures"), false, new ConfigDescription("Use Default Textures + Translation Textures", new AcceptableValueList<bool>(true, false)));
         }
-        bool defaultTextures = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultTextures"), out configDefaultTextures);
 
         if (Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "DefaultAudio"), out configDefaultAudio) == false)
         {
             configDefaultAudio = Config.Bind(new ConfigDefinition(mainCategory, "DefaultAudio"), false, new ConfigDescription("Use Default Audio", new AcceptableValueList<bool>(true, false)));
         }
-        bool defaultAudio = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "DefaultAudio"), out configDefaultAudio);
 
         if (Config.TryGetEntry<string>(new ConfigDefinition(mainCategory, "Language"), out configLanguage) == false)
         {
             configLanguage = Config.Bind(new ConfigDefinition(mainCategory, "Language"), "English", new ConfigDescription("Load the Game in this Language", new AcceptableValueList<string>("English", "French", "Italian", "German", "Spanish", "Portuguese", "Indonesian", "Vietnamese", "Javanese", "Russian", "Japanese", "Korean")));
         }
-		bool language = Config.TryGetEntry<string>(new ConfigDefinition("PvZ_Fusion_Translator", "Language"), out configLanguage);
 
 		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "UseLocal"), out configUseLocal) == false)
 		{
 			configUseLocal = Config.Bind(new ConfigDefinition(mainCategory, "UseLocal"), false, new ConfigDescription("Use Local Translation Data", new AcceptableValueList<bool>(true, false)));
 		}
-		bool useLocal = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "UseLocal"), out configUseLocal);
 
 		if(Config.TryGetEntry<bool>(new ConfigDefinition(mainCategory, "EnableDllUpdate"), out configEnableDllUpdate) == false)
 		{
 			configEnableDllUpdate = Config.Bind(new ConfigDefinition(mainCategory, "EnableDllUpdate"), true, new ConfigDescription("Enable DLL update functionality", new AcceptableValueList<bool>(true, false)));
 		}
-		bool enableDllUpdate = Config.TryGetEntry<bool>(new ConfigDefinition("PvZ_Fusion_Translator", "EnableDllUpdate"), out configEnableDllUpdate);
 	}
 }
 

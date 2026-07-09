@@ -11,8 +11,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
-using Unity.Burst.Intrinsics;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
@@ -158,7 +156,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
             // The dictionary key is ValueTuple<PlantType, PlantType> and value is the resulting plant
             try
             {
-                // Access the static _recipes field via reflection or direct access
                 var recipesField = typeof(MixData).GetField("_recipes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 if (recipesField == null)
                 {
@@ -173,7 +170,6 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     return;
                 }
 
-                // Build recipe links from the dictionary
                 foreach (var kvp in recipes)
                 {
                     int left = (int)kvp.Key.Item1;
@@ -382,9 +378,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
             if (string.IsNullOrEmpty(text))
                 return text ?? string.Empty;
 
-            // Remove opening color tags like <color=#FF0000>
             string withoutOpenTags = Regex.Replace(text, @"<color=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
-            // Remove closing color tags like </color>
             string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</color>", string.Empty, RegexOptions.IgnoreCase);
             return withoutCloseTags;
         }
@@ -589,10 +583,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
 
             // third column
             Ukrainian,
-            // Slovak,
-            //Polish,
             Turkish,
-            //Arabic,
             Romanian,
 
             LANG_END
