@@ -51,7 +51,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static void TranslateStoreText(TravelStore __instance)
         {
-            Log.LogInfo("==== [TravelStore_Patch.TranslateStoreText] ====");
             
             if (__instance.investText != null)
             {
@@ -113,7 +112,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             }
 
             string result = string.Join("\n\n", translatedInvestStats);
-            Log.LogInfo($"[TravelStore_Patch] TranslateInvestText: \"{investText}\" -> \"{result}\"");
 
             return result;
         }

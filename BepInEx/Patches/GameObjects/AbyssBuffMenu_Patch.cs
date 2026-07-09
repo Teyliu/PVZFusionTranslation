@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HarmonyLib;
-//using MelonLoader.TinyJSON;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_;
 using TMPro;
-using UnityEngine.TextCore.Text;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
@@ -117,11 +112,9 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
                 if (x.Key.Contains("{value}"))
                 {
                     string pattern = Regex.Escape(x.Key).Replace("\\{value}", "(\\d+)");
-                    if (Regex.IsMatch(originalText, pattern))
+                    var match = Regex.Match(originalText, pattern);
+                    if (match.Success)
                     {
-                        var regex = new Regex(pattern);
-                        var match = regex.Match(originalText);
-
                         return String.Format(x.Value.Replace("value", "0"), match.Groups[1].Value);
                     }
                 }

@@ -257,8 +257,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
 
 					if(isToggle)
 					{
-                        text.transform.position = new Vector3(text.transform.position.x, text.transform.position.y + (ToggleBtnDict[button.GetInstanceID()].shifted ? 0.0f : yShift), text.transform.position.z);
-						ToggleBtnDict[button.GetInstanceID()].shifted = true;
+                        text.transform.position = new Vector3(text.transform.position.x, text.transform.position.y + (data.shifted ? 0.0f : yShift), text.transform.position.z);
+						data.shifted = true;
                     }
                     else
 					{
