@@ -39,15 +39,12 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
             if(__instance.valueInputField)
             {
                 TMP_InputField_Patch.OnEnable(__instance.valueInputField);
-                foreach(TextMeshProUGUI txt in __instance.valueInputField.GetComponentsInChildren<TextMeshProUGUI>(true))
-                {
-                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
-                }
             }
 
             foreach(TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
+                string key = txt.text + "_code";
+                txt.text = StringStore.translationString.ContainsKey(key) ? StringStore.TranslateText(key) : StringStore.TranslateText(txt.text);
                 txt.font = fontAsset;
             }
         }
@@ -97,7 +94,8 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor.GameLevel.EventNodes
                 TMP_InputField_Patch.OnEnable(__instance.valueInputField);
                 foreach(TextMeshProUGUI txt in __instance.valueInputField.GetComponentsInChildren<TextMeshProUGUI>(true))
                 {
-                    txt.text = StringStore.translationString.ContainsKey(txt.text + "_code") ? StringStore.TranslateText(txt.text + "_code") : StringStore.TranslateText(txt.text);
+                    string key = txt.text + "_code";
+                    txt.text = StringStore.translationString.ContainsKey(key) ? StringStore.TranslateText(key) : StringStore.TranslateText(txt.text);
                 }
             }
         }

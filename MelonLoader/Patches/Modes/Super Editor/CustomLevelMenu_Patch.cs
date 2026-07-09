@@ -6,11 +6,8 @@ using Newtonsoft.Json;
 using PvZ_Fusion_Translator.AssetStore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -62,15 +59,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
             string dumpPath = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "custom_level_data.json");
             Dictionary<string, TranslatedLevelData> dumpData = new Dictionary<string, TranslatedLevelData>();
 
-            if (!File.Exists(dumpPath))
-            {
-                File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, new JsonSerializerOptions
-			    {
-				    WriteIndented = true,
-				    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			    }));
-            }
-            
             foreach(CustomButton_enterGame level in __instance.levels)
             {
                 if(level.onlineLevelInfo != null)
@@ -115,7 +103,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
             }
             else
             {
-                new CancellationTokenSource().Cancel();
                 return null;
             }
         }
@@ -152,7 +139,6 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Super_Editor
             string assetDir = Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language), "custom_level_data.json");
             if (!File.Exists(assetDir))
             {
-                File.CreateText(assetDir);
                 File.WriteAllText(assetDir, "{}");
             }
             string levelDataString = File.ReadAllText(assetDir);
