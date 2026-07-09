@@ -1,16 +1,13 @@
 ﻿using Il2Cpp;
 using Il2CppAlmanacData;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using JetBrains.Annotations;
 using MelonLoader;
-using MelonLoader.TinyJSON;
 using Newtonsoft.Json;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 using PvZ_Fusion_Translator.Patches.OtherManagers;
-using System.CodeDom.Compiler;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -34,8 +31,6 @@ namespace PvZ_Fusion_Translator
 			string languagePath = language.HasValue ? ("Localization" + Path.DirectorySeparatorChar + language.ToString()) : string.Empty;
 			return Path.Combine(Core.Instance.modsDirectory, languagePath, assetType.ToString());
 		}
-		// private static string GetAssetDir(AssetType assetType) => Path.Combine(Core.Instance.modsDirectory, assetType.ToString());
-
 		internal static void LoadStrings() => LoadStrings(Utils.Language);
 
 		internal static void LoadStrings(Utils.LanguageEnum language)
@@ -503,7 +498,6 @@ namespace PvZ_Fusion_Translator
 							if(imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
-								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.textureDict[fileName] = imageData;
 								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
 								{
@@ -538,7 +532,6 @@ namespace PvZ_Fusion_Translator
 					#endif
 
 					byte[] imageData = File.ReadAllBytes(filepath);
-					Texture2D texture2D = Utils.LoadImage(imageData);
 					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
 			}
@@ -616,7 +609,6 @@ namespace PvZ_Fusion_Translator
 							if(imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
-								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.spriteDict[fileName] = imageData;
 								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
 								{
@@ -651,7 +643,6 @@ namespace PvZ_Fusion_Translator
 					#endif
 
 					byte[] imageData = File.ReadAllBytes(filepath);
-					Texture2D texture2D = Utils.LoadImage(imageData);
 					TextureStore.spriteDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
             }
@@ -730,7 +721,6 @@ namespace PvZ_Fusion_Translator
 								if (imageData != null)
 								{
 									string fileName = Path.GetFileName(downloadPath);
-									Texture2D texture2D = Utils.LoadImage(imageData);
 									TextureStore.textureDict[fileName] = imageData;
 									if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
 									{
@@ -756,7 +746,6 @@ namespace PvZ_Fusion_Translator
 						#endif
 
 						byte[] imageData = File.ReadAllBytes(filepath);
-						Texture2D texture2D = Utils.LoadImage(imageData);
 						TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 					}
                 }
@@ -836,7 +825,6 @@ namespace PvZ_Fusion_Translator
 							if (imageData != null)
 							{
 								string fileName = Path.GetFileName(downloadPath);
-								Texture2D texture2D = Utils.LoadImage(imageData);
 								TextureStore.textureDict[fileName] = imageData;
 								if(!Directory.Exists(Path.GetDirectoryName(downloadPath)))
 								{
@@ -862,7 +850,6 @@ namespace PvZ_Fusion_Translator
 						&& (SerializeWithIndentation(localTOC) != "{}")) continue;
 
 					byte[] imageData = File.ReadAllBytes(filepath);
-					Texture2D texture2D = Utils.LoadImage(imageData);
 					TextureStore.textureDict[Path.GetFileNameWithoutExtension(filepath)] = imageData;
 				}
 			}
@@ -1016,16 +1003,6 @@ namespace PvZ_Fusion_Translator
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             }));
 
-            /*Dictionary<Achievement, AchievementObject> achievementsList = new Dictionary<Achievement, AchievementObject>();
-			foreach (Il2CppSystem.Collections.Generic.KeyValuePair<Achievement, Il2CppSystem.Tuple<string, string>> entry in AchievementClip.achievementsText)
-			{
-				achievementsList.Add(entry.Key, new AchievementObject(entry.Key, entry.Value.Item1, entry.Value.Item2));
-			}
-			File.WriteAllText(Path.Combine(dumpDir, "AchievementsText.json"), System.Text.Json.JsonSerializer.Serialize(achievementsList, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			}));*/
         }
 
 		public static ValueTuple<Il2CppArrayBase<TextAsset>, Dictionary<string, string>> DumpIZStrings()
@@ -1093,7 +1070,7 @@ namespace PvZ_Fusion_Translator
 
 			if (!File.Exists(jsonFile))
 			{
-				File.WriteAllText(jsonFile, "{}"); // Initialize empty JSON object
+				File.WriteAllText(jsonFile, "{}");
 			}
 
 			string json = File.ReadAllText(jsonFile);
@@ -1118,7 +1095,6 @@ namespace PvZ_Fusion_Translator
 		{
 			try
 			{
-				// Load the language preference as a string and parse it into the enum
 				string languageName = MelonPreferences.GetEntryValue<string>("PvZ_Fusion_Translator", "Language");
 				if (Enum.TryParse(languageName, out Utils.LanguageEnum loadedLanguage))
 				{
@@ -1127,7 +1103,7 @@ namespace PvZ_Fusion_Translator
 				else
 				{
 					Log.LogWarning($"Invalid language '{languageName}' found in preferences. Falling back to English.");
-					Utils.Language = Utils.LanguageEnum.English; // Default fallback
+					Utils.Language = Utils.LanguageEnum.English;
 				}
 				Log.LogWarning($"Loaded language {languageName}");
 			}
@@ -1143,18 +1119,13 @@ namespace PvZ_Fusion_Translator
 		{
 			try
 			{
-				// Save the current language as a string
 				MelonPreferences.SetEntryValue("PvZ_Fusion_Translator", "Language", Utils.Language.ToString());
-
-				// Ensure changes are written to the config file
-				// MelonPreferences.Save();
 			}
 			catch (Exception e)
 			{
 				Log.LogError("Error saving language setting.");
 				Log.LogError($"{e.GetType()} {e.Message}");
 			}
-			// Log.LogInfo($"Language has been saved: {Utils.Language}");
 		}
 		#endif
 	}

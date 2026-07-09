@@ -3,7 +3,6 @@ using Il2Cpp;
 using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.TinyJSON;
-using Newtonsoft.Json;
 using PvZ_Fusion_Translator.AssetStore;
 using PvZ_Fusion_Translator.Patches.GameObjects;
 using PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects;
@@ -11,7 +10,6 @@ using PvZ_Fusion_Translator.Patches.GameObjects.MinorObjects;
 using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering;
@@ -68,9 +66,8 @@ namespace PvZ_Fusion_Translator
 				throw new FileNotFoundException($"Byte array was null.");
 			}
 
-			byte[] array = bytes;
 			Texture2D texture2D = new(2, 2, GraphicsFormat.R8G8B8A8_UNorm, TextureCreationFlags.None, 1, IntPtr.Zero, null);
-			ImageConversion.LoadImage(texture2D, array);
+			ImageConversion.LoadImage(texture2D, bytes);
 			return texture2D;
 		}
 
@@ -103,9 +100,7 @@ namespace PvZ_Fusion_Translator
 			if (string.IsNullOrEmpty(text))
                 return text ?? string.Empty;
 
-            // Remove opening color tags like <color=#FF0000>
             string withoutOpenTags = Regex.Replace(text, @"<color=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
-            // Remove closing color tags like </color>
             string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</color>", string.Empty, RegexOptions.IgnoreCase);
             return withoutCloseTags;
 		}
@@ -115,9 +110,7 @@ namespace PvZ_Fusion_Translator
             if (string.IsNullOrEmpty(text))
                 return text ?? string.Empty;
 
-            // Remove opening color tags like <color=#FF0000>
             string withoutOpenTags = Regex.Replace(text, @"<size=[^>]+>", string.Empty, RegexOptions.IgnoreCase);
-            // Remove closing color tags like </color>
             string withoutCloseTags = Regex.Replace(withoutOpenTags, @"</size>", string.Empty, RegexOptions.IgnoreCase);
             return withoutCloseTags;
         }
@@ -154,58 +147,38 @@ namespace PvZ_Fusion_Translator
 
 		public static string GetPlantNameFromAlmanac(PlantType thePlantType, bool log = false)
 		{
-            bool foundPlantName = false;
-			string thePlantName = "";
-
 			if(plantIndices.ContainsKey((int)thePlantType))
 			{
-				foundPlantName = true;
-				thePlantName = plantIndices[(int)thePlantType].Value;
+				return plantIndices[(int)thePlantType].Value;
 			}
 
-            if (!foundPlantName)
-            {
-				if(log)
-				{
-					Log.LogInfo("Couldn't find plant name!");
-				}
-                thePlantName = "";
-            }
+			if(log)
+			{
+				Log.LogInfo("Couldn't find plant name!");
+			}
 
-            return thePlantName;
+			return "";
         }
 
         public static string GetPlantNameFromAlmanac(string theOriginalPlantName, bool log = false)
 		{
-			bool foundPlantName = false;
-			string thePlantName = "";
-
 			if(plantIndiceStrings.ContainsKey(theOriginalPlantName))
 			{
-				foundPlantName = true;
-				thePlantName = plantIndiceStrings[theOriginalPlantName];
+				return plantIndiceStrings[theOriginalPlantName];
 			}
 
-            if (!foundPlantName)
-            {
-				if(log)
-				{
-					Log.LogInfo("Couldn't find plant name!");
-				}
-                thePlantName = "";
-            }
+			if(log)
+			{
+				Log.LogInfo("Couldn't find plant name!");
+			}
 
-            return thePlantName;
+			return "";
         }
 
 		public static string GetZombieNameFromAlmanac(ZombieType theZombieType)
 		{
-			string json;
 			string theZombieName = "";
-
-			string currentLanguage = Utils.Language.ToString();
-
-			json = AlmanacZombieMenu_Patch.almanacJson;
+			string json = AlmanacZombieMenu_Patch.almanacJson;
             Il2CppAlmanacData.AlmanacData zombieData = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(json);
 
 			foreach (Il2CppAlmanacData.ZombieInfo zombieInfo in zombieData.zombies)
@@ -272,49 +245,6 @@ namespace PvZ_Fusion_Translator
 				}
 			}
 		}
-
-		/*public static Dictionary<int, List<int>> recipeLinks = new Dictionary<int, List<int>>();
-
-		public static void RegisterRecipeLinks()
-		{
-			recipeLinks.Clear();
-
-			Il2CppSystem.Array mixData = MixData.data.Cast<Il2CppSystem.Array>();
-			int rows = mixData.GetLength(0);
-			int columns = mixData.GetLength(1);
-
-			foreach (PlantType plantType in Enum.GetValues(typeof(PlantType)))
-			{
-				int seedType = (int)plantType;
-
-				recipeLinks.Add(seedType, new());
-
-				if (seedType > 0)
-				{
-					foreach (PlantType checkType in Enum.GetValues(typeof(PlantType)))
-					{
-						if (checkType > 0)
-						{
-							int[] checks = [mixData.GetValue(seedType, (int)checkType).Unbox<int>(), mixData.GetValue((int)checkType, seedType).Unbox<int>()];
-
-							if (checks[0] != 0)
-							{
-								recipeLinks[seedType].Add(checks[0]);
-							}
-
-							if (checks[1] != 0)
-							{
-								recipeLinks[seedType].Add(checks[1]);
-							}
-						}
-					}
-				}
-				if (recipeLinks[seedType].Count > 0)
-				{
-					Log.LogDebug($"Found {recipeLinks[seedType].Count} fusions for {seedType}!");
-				}
-			}
-		}*/
 
 		public static bool CheckForUntranslatedText(string text)
 		{
@@ -510,11 +440,9 @@ namespace PvZ_Fusion_Translator
 			}
 			else
 			{
-				// Handle invalid language string
 				Log.LogError($"Invalid language string: {language}");
 			}
 			
-			//WarningStore.isWarningMessageLoaded = false;
 			FontStore.Reload();
 			StringStore.Reload();
 			TextureStore.Reload();

@@ -18,22 +18,19 @@ namespace PvZ_Fusion_Translator
 {
 	public class Core : MelonMod
 	{
-		private static DateTime dtStart;
 		private static DateTime? dtStartToast;
 		private static string toast_txt;
 		public static Core Instance { get; private set; }
 
 		object replaceTextureRoutine = null;
 
-		public override void OnEarlyInitializeMelon() => dtStart = DateTime.Now;
+		public override void OnEarlyInitializeMelon() { }
 
 		public override void OnInitializeMelon()
 		{
 			base.OnInitializeMelon();
 			Instance = this;
 			
-			//DllStore.Init(MelonLoader.InternalUtils.UnityInformationHandler.GameVersion);
-
 			Config();
 			#if MULTI_LANGUAGE
 			FileLoader.LoadLanguage();
@@ -43,13 +40,10 @@ namespace PvZ_Fusion_Translator
 			AudioStore.Init();
 			FontStore.Init();
 			Utils.RegisterPlantIndices();
-
-			//Utils.RegisterRecipeLinks();
         }
 
 		public override void OnLateInitializeMelon()
 		{
-			dtStart = DateTime.Now;
 			replaceTextureRoutine = MelonCoroutines.Start(TextureStore.ReplaceTexturesCoroutine());
 			LoadTravelBuffs();
         }
@@ -60,7 +54,6 @@ namespace PvZ_Fusion_Translator
 			#if MULTI_LANGUAGE
 			FileLoader.SaveLanguage();
 			#endif
-			//DllStore.UpdateNewDll();
 			#if OBFUSCATE && !RELEASE
 			CheckSumStore.ConvertMD5Json();
 			#endif
@@ -69,7 +62,7 @@ namespace PvZ_Fusion_Translator
 		public static void ShowToast(string message)
 		{
 			toast_txt = message;
-			dtStartToast = new DateTime?(DateTime.Now);
+			dtStartToast = DateTime.Now;
 		}
 		
 		public override void OnLateUpdate()
