@@ -101,7 +101,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
             }
             string finalText = __instance.healthText.text;
             int fIndex = -1;
-            bool found = false;
 
             for (int i = 0; i < HPStrings.Count; i++)
             {
@@ -109,11 +108,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
                 if(Regex.Match(originalText, hp.Key, RegexOptions.Singleline).Success)
                 {
                     fIndex = i;
-                    found = true;
                 }
             }
 
-            if (fIndex > -1 && found)
+            if (fIndex > -1)
             {
                 string fStr = HPStrings.ElementAt(fIndex).Value;
 
@@ -143,7 +141,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
         {
             string finalText = __instance.healthText.text;
             int fIndex = -1;
-            bool found = false;
 
             for (int i = 0; i < HPStrings.Count; i++)
             {
@@ -152,11 +149,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.MinorObjects
                 if (regex.IsMatch(originalText))
                 {
                     fIndex = i;
-                    found = true;
                 }
             }
 
-            if (fIndex > -1 && found)
+            if (fIndex > -1)
             {
                 string fStr = HPStrings.ElementAt(fIndex).Value;
                 string DPS = originalText.Split("\n")[1].Replace("DPS：", "");

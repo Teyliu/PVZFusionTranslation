@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
@@ -19,8 +20,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             if (__instance.synergyTitle == null)
                 return;
 
-            // Log.LogInfo($"[SynergyNode_Patch] InitNode called. Original text: '{__instance.synergyTitle.text}'");
-
             try
             {
                 int firstNewlineIndex = __instance.synergyTitle.text.IndexOf("\n");
@@ -37,18 +36,18 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 string pattern = @"<color=[^>]+>[\s\S]*?(?:<\/color>|$)|(?:<(?!color=)|[^<])+";
                 string smallPattern = @"(<color=[^>]+>)(.*?)(</color>)";
                 MatchCollection matches = Regex.Matches(description, pattern);
-                string translatedDescription = "";
+                var translatedDescription = new StringBuilder();
 
                 foreach (Match match in matches)
                 {
                     Match colorMatch = Regex.Match(match.Value, smallPattern, RegexOptions.Singleline);
                     if (colorMatch.Success)
                     {
-                        translatedDescription += colorMatch.Groups[1].Value + TranslateSegment(colorMatch.Groups[2].Value) + colorMatch.Groups[3].Value;
+                        translatedDescription.Append(colorMatch.Groups[1].Value).Append(TranslateSegment(colorMatch.Groups[2].Value)).Append(colorMatch.Groups[3].Value);
                     }
                     else
                     {
-                        translatedDescription += TranslateSegment(match.Value) + "\n";
+                        translatedDescription.Append(TranslateSegment(match.Value)).Append('\n');
                     }
                 }
 
@@ -57,9 +56,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 {
                     finalTitle = StringStore.TranslateText(title);
                 }
-                __instance.synergyTitle.text = "<size=95%>" + finalTitle + "\n" + translatedDescription;
+                __instance.synergyTitle.text = "<size=95%>" + finalTitle + "\n" + translatedDescription.ToString();
 
-                // Log.LogInfo($"[SynergyNode_Patch] Translated to: '{__instance.synergyTitle.text}'");
 #if DEBUG
                 FileLoader.DumpUntranslatedStrings(title);
 #endif
@@ -72,12 +70,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static string TranslateSegment(string text)
         {
-            string res = "";
-
             if (string.IsNullOrEmpty(text))
-                return res;
+                return "";
 
             List<string> parts = SplitSecondNewLines(text);
+            var sb = new StringBuilder();
 
             foreach (string part in parts)
             {
@@ -100,10 +97,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     string matched = translated == part ? Managers.TravelMgr_Patch.MatchTravelBuff(part) : null;
                     temp = !string.IsNullOrEmpty(matched) ? matched : translated;
                 }
-                res += temp + "\n";
+                sb.Append(temp).Append('\n');
             }
 
-            return res.Length > 0 ? res.Substring(0, res.Length - 1) : res;
+            if (sb.Length > 0) sb.Length -= 1;
+            return sb.ToString();
         }
 
         public static List<string> SplitSecondNewLines(string originalText)

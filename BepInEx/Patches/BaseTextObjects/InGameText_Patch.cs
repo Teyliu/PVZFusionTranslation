@@ -71,35 +71,19 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
                 case 3:
                     godsGachaMatch = TranslateGodsGachaPopup(originalText, godsGachaCheck);
                     break;
-                default:
-                    break;
             }
+
+            bool updateShadow = false;
 
             if (godsGachaMatch != "")
             {
                 txt.text = godsGachaMatch;
-                if (txt.gameObject.name.Contains("main"))
-                {
-                    originalText = txt.text;
-                    Transform shadowText = txt.transform.parent.Find("Text_shadow");
-                    if (shadowText != null)
-                    {
-                        shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
-                    }
-                }
+                updateShadow = true;
             }
             else if (travelMatch != "")
             {
                 txt.text = travelMatch;
-                if (txt.gameObject.name.Contains("main"))
-                {
-                    originalText = txt.text;
-                    Transform shadowText = txt.transform.parent.Find("Text_shadow");
-                    if (shadowText != null)
-                    {
-                        shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
-                    }
-                }
+                updateShadow = true;
             }
             else if (superEditorPlantMatch != "")
             {
@@ -112,27 +96,20 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
             else if (Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success && (!StringStore.translationString.ContainsKey(txt.text) && !StringStore.fsTipCollectionString.ContainsKey(txt.text) && !StringStore.izTipCollectionString.ContainsKey(txt.text)))
             {
                 txt.text = StringStore.TranslateColorText(txt.text, true);
-                if (txt.gameObject.name.Contains("main"))
-                {
-                    originalText = txt.text;
-                    Transform shadowText = txt.transform.parent.Find("Text_shadow");
-                    if (shadowText != null)
-                    {
-                        shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
-                    }
-                }
+                updateShadow = true;
             }
             else
             {
                 txt.text = StringStore.TranslateText(txt.text, true);
-                if (txt.gameObject.name.Contains("main"))
+                updateShadow = true;
+            }
+
+            if (updateShadow && txt.gameObject.name.Contains("main"))
+            {
+                Transform shadowText = txt.transform.parent.Find("Text_shadow");
+                if (shadowText != null)
                 {
-                    originalText = txt.text;
-                    Transform shadowText = txt.transform.parent.Find("Text_shadow");
-                    if (shadowText != null)
-                    {
-                        shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(originalText);
-                    }
+                    shadowText.GetComponent<TextMeshProUGUI>().text = Utils.RemoveColorTags(txt.text);
                 }
             }
             txt.text = StringStore.ReplaceOppositeBuffBut(txt.text);
@@ -194,8 +171,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
                     break;
                 case 3:
                     res = TranslatePlantNameParts(originalText, nameAlreadyPlantedPattern);
-                    break;
-                default:
                     break;
             }
 
@@ -318,18 +293,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
                 }
                 else
                 {
-                    if (lockedPlantRegex.IsMatch(originalText))
+                    Match match = lockedPlantRegex.Match(originalText);
+                    GroupCollection groups = match.Groups;
+                    if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
                     {
-                        Match match = lockedPlantRegex.Match(originalText);
-                        GroupCollection groups = match.Groups;
-                        if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
-                        {
-                            res = TranslatePlantNameParts(originalText, lockedPlantPattern);
-                        }
-                        else
-                        {
-                            return "";
-                        }
+                        res = TranslatePlantNameParts(originalText, lockedPlantPattern);
+                    }
+                    else
+                    {
+                        return "";
                     }
                 }
             }
