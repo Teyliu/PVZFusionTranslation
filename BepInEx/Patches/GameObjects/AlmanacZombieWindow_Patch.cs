@@ -116,7 +116,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 // Step 1.5: If no original data found, read current UI text (may have been set by a mod's postfix)
-                if (string.IsNullOrEmpty(originalName) && __instance.showedZombieName != null && __instance.showedZombieName.Count > 0)
+                if (string.IsNullOrEmpty(originalName) && __instance.showedZombieName.Count > 0)
                 {
                     foreach (TextMeshProUGUI text in __instance.showedZombieName)
                     {
@@ -127,7 +127,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                         }
                     }
                 }
-                if (string.IsNullOrEmpty(originalInfo) && string.IsNullOrEmpty(originalIntroduce) && __instance.showedZombieIntroduce != null && !string.IsNullOrEmpty(__instance.showedZombieIntroduce.text))
+                if (string.IsNullOrEmpty(originalInfo) && string.IsNullOrEmpty(originalIntroduce) && !string.IsNullOrEmpty(__instance.showedZombieIntroduce.text))
                 {
                     originalIntroduce = __instance.showedZombieIntroduce.text;
                 }
@@ -219,20 +219,17 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 if (!foundInJson && string.IsNullOrEmpty(originalName) && string.IsNullOrEmpty(originalIntroduce) && string.IsNullOrEmpty(originalInfo))
                 {
                     Log.LogInfo($"[AlmanacZombieWindow_Patch] No data found for zombie {zombieTypeInt}, translating current UI text via StringStore");
-                    if (__instance.showedZombieName != null)
+                    foreach (TextMeshProUGUI text in __instance.showedZombieName)
                     {
-                        foreach (TextMeshProUGUI text in __instance.showedZombieName)
+                        if (text != null && !string.IsNullOrEmpty(text.text))
                         {
-                            if (text != null && !string.IsNullOrEmpty(text.text))
-                            {
-                                text.text = StringStore.TranslateText(text.text);
-                                text.font = FontStore.LoadTMPFont(currentLanguage);
-                                text.fontSizeMax = 21;
-                                text.autoSizeTextContainer = false;
-                            }
+                            text.text = StringStore.TranslateText(text.text);
+                            text.font = FontStore.LoadTMPFont(currentLanguage);
+                            text.fontSizeMax = 21;
+                            text.autoSizeTextContainer = false;
                         }
                     }
-                    if (__instance.showedZombieIntroduce != null && !string.IsNullOrEmpty(__instance.showedZombieIntroduce.text))
+                    if (!string.IsNullOrEmpty(__instance.showedZombieIntroduce.text))
                     {
                         __instance.showedZombieIntroduce.text = StringStore.TranslateText(__instance.showedZombieIntroduce.text);
                         __instance.showedZombieIntroduce.font = FontStore.LoadTMPFont(currentLanguage);
@@ -278,64 +275,58 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 // Step 6: Update showedZombieName (List<TextMeshProUGUI>)
-                if (__instance.showedZombieName != null)
+                foreach (TextMeshProUGUI text in __instance.showedZombieName)
                 {
-                    foreach (TextMeshProUGUI text in __instance.showedZombieName)
-                    {
-                        if (text == null) continue;
-                        text.autoSizeTextContainer = false;
-                        text.text = $"{Utils.RemoveSizeTags(finalName)} ({zombieTypeInt})";
-                        text.font = fontAsset;
-                        text.fontSizeMax = 21;
-                        Log.LogInfo($"[AlmanacZombieWindow_Patch] Set showedZombieName[{text.name}] text: {text.text}");
-                    }
+                    if (text == null) continue;
+                    text.autoSizeTextContainer = false;
+                    text.text = $"{Utils.RemoveSizeTags(finalName)} ({zombieTypeInt})";
+                    text.font = fontAsset;
+                    text.fontSizeMax = 21;
+                    Log.LogInfo($"[AlmanacZombieWindow_Patch] Set showedZombieName[{text.name}] text: {text.text}");
                 }
 
                 // Step 7: Update showedZombieIntroduce
-                if (__instance.showedZombieIntroduce != null)
+                string spawnInfo = "";
+                var zombieDataDic = ZombieDataManager.zombieDataDic;
+                if (zombieDataDic != null && zombieDataDic.ContainsKey(__instance.currentZombieType))
                 {
-                    string spawnInfo = "";
-                    var zombieDataDic = ZombieDataManager.zombieDataDic;
-                    if (zombieDataDic != null && zombieDataDic.ContainsKey(__instance.currentZombieType))
+                    try
                     {
-                        try
+                        ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
+                        string spawnInfoFormat = null;
+                        if (StringStore.translationStringRegex != null &&
+                            StringStore.translationStringRegex.ContainsKey("出怪等级: (\\d+)\\n出怪权重: (\\d+)"))
                         {
-                            ZombieDataManager.ZombieData zombieData = zombieDataDic[__instance.currentZombieType];
-                            string spawnInfoFormat = null;
-                            if (StringStore.translationStringRegex != null &&
-                                StringStore.translationStringRegex.ContainsKey("出怪等级: (\\d+)\\n出怪权重: (\\d+)"))
-                            {
-                                spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\\n出怪权重: (\\d+)"];
-                            }
-
-                            if (spawnInfoFormat != null)
-                            {
-                                spawnInfo = string.Format(spawnInfoFormat, new object[] { zombieData.summonLevel, zombieData.summonWeight }) + "\n\n";
-                            }
+                            spawnInfoFormat = StringStore.translationStringRegex["出怪等级: (\\d+)\\n出怪权重: (\\d+)"];
                         }
-                        catch (Exception ex)
+
+                        if (spawnInfoFormat != null)
                         {
-                            Log.LogWarning($"[AlmanacZombieWindow_Patch] Error accessing zombie data: {ex.Message}");
+                            spawnInfo = string.Format(spawnInfoFormat, new object[] { zombieData.summonLevel, zombieData.summonWeight }) + "\n\n";
                         }
                     }
-
-                    string finalText = Utils.RemoveSizeTags(finalInfo) + "\n\n" + spawnInfo + Utils.RemoveSizeTags(finalIntroduce) + "\n\n";
-                    __instance.showedZombieIntroduce.text = finalText;
-                    __instance.showedZombieIntroduce.font = fontAsset;
-                    __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
-                    __instance.showedZombieIntroduce.enableWordWrapping = true;
-                    __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
-
-                    Canvas.ForceUpdateCanvases();
-                    __instance.showedZombieIntroduce.ForceMeshUpdate();
-
-                    Log.LogInfo($"[AlmanacZombieWindow_Patch] Set showedZombieIntroduce text length: {finalText.Length}, first 100: {finalText.Substring(0, Math.Min(100, finalText.Length))}");
-
-                    if (__instance.zombieTextContent != null)
+                    catch (Exception ex)
                     {
-                        float textHeight = __instance.showedZombieIntroduce.preferredHeight;
-                        __instance.zombieTextContent.sizeDelta = new Vector2(__instance.zombieTextContent.sizeDelta.x, textHeight);
+                        Log.LogWarning($"[AlmanacZombieWindow_Patch] Error accessing zombie data: {ex.Message}");
                     }
+                }
+
+                string finalText = Utils.RemoveSizeTags(finalInfo) + "\n\n" + spawnInfo + Utils.RemoveSizeTags(finalIntroduce) + "\n\n";
+                __instance.showedZombieIntroduce.text = finalText;
+                __instance.showedZombieIntroduce.font = fontAsset;
+                __instance.showedZombieIntroduce.margin = new Vector4(3, 2, 12, 0);
+                __instance.showedZombieIntroduce.enableWordWrapping = true;
+                __instance.showedZombieIntroduce.overflowMode = TextOverflowModes.ScrollRect;
+
+                Canvas.ForceUpdateCanvases();
+                __instance.showedZombieIntroduce.ForceMeshUpdate();
+
+                Log.LogInfo($"[AlmanacZombieWindow_Patch] Set showedZombieIntroduce text length: {finalText.Length}, first 100: {finalText.Substring(0, Math.Min(100, finalText.Length))}");
+
+                if (__instance.zombieTextContent != null)
+                {
+                    float textHeight = __instance.showedZombieIntroduce.preferredHeight;
+                    __instance.zombieTextContent.sizeDelta = new Vector2(__instance.zombieTextContent.sizeDelta.x, textHeight);
                 }
 
                 Log.LogInfo($"[AlmanacZombieWindow_Patch] Successfully updated UI for zombie {zombieTypeInt}");

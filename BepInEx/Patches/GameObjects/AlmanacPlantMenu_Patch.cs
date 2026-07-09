@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
@@ -36,7 +35,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                     }
                 }
 
-                // skin button resize
                 if (__instance.window?.skinButton != null)
                 {
                     AlmanacPlantWindow window = __instance.window;
@@ -63,43 +61,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         // [3.6 NOTE] SearchChanged in 3.6 uses coroutine debounce via PerformSearchDelayed
         // The original SearchChanged should NOT be skipped anymore as it manages the coroutine
         // Instead, we patch PerformSearch (the actual search execution) to add our logic
-#if false
-        [HarmonyPatch(nameof(AlmanacPlantMenu.SearchChanged))]
-        [HarmonyPrefix]
-        public static bool SearchChanged(AlmanacPlantMenu __instance, ref TMP_InputField inputField)
-        {
-            string search = inputField.text;
-            if (search != StringStore.TranslateText("搜索") && search != "")
-            {
-                string currentLanguage = Utils.Language.ToString();
-                string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
-                string path = Path.Combine(almanacDir, "LawnStringsTranslate.json");
-
-                string json = AlmanacPlantMenu_Patch.almanacJson;
-
-                TMP_FontAsset fontAsset = FontStore.LoadTMPFont(currentLanguage);
-
-                var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                PlantData plantData = System.Text.Json.JsonSerializer.Deserialize<PlantData>(json, jsonOptions);
-
-                Il2CppSystem.Collections.Generic.List<PlantType> searchedPlants = new();
-
-                foreach (PlantInfo plantInfo in plantData.plants)
-                {
-                    if (plantInfo.name.ToLower().Contains(search.ToLower()))
-                    {
-                        searchedPlants.Add((PlantType)plantInfo.seedType);
-                    }
-                }
-
-                __instance.ShowPlants(searchedPlants);
-
-                return false;
-            }
-
-            return true;
-        }
-#endif
 
         // [3.6 NEW] Patch PerformSearch to intercept search results
         // This is called by the coroutine SearchChanged mechanism in 3.6
@@ -152,12 +113,13 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
                 Il2CppSystem.Collections.Generic.List<PlantType> searchedPlants = new();
                 int matchCount = 0;
+                string lowerSearchText = searchText.ToLower();
 
                 foreach (PlantInfo plantInfo in plantData.plants)
                 {
                     if (plantInfo == null || string.IsNullOrEmpty(plantInfo.name)) continue;
 
-                    if (plantInfo.name.ToLower().Contains(searchText.ToLower()))
+                    if (plantInfo.name.ToLower().Contains(lowerSearchText))
                     {
                         searchedPlants.Add((PlantType)plantInfo.seedType);
                         matchCount++;
@@ -179,7 +141,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                 foreach (PlantInfo plantInfo in moddedPlantData.plants)
                                 {
                                     if (plantInfo == null || string.IsNullOrEmpty(plantInfo.name)) continue;
-                                    if (plantInfo.name.ToLower().Contains(searchText.ToLower()))
+                                    if (plantInfo.name.ToLower().Contains(lowerSearchText))
                                     {
                                         PlantType pt = (PlantType)plantInfo.seedType;
                                         if (!searchedPlants.Contains(pt))

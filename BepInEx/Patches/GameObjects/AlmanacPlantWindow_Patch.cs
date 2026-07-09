@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System.IO;
 using static PvZ_Fusion_Translator__BepInEx_.FileLoader;
 using static PvZ_Fusion_Translator__BepInEx_.Log;
@@ -189,7 +188,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                                             break;
                                         }
 
-                                        // Only use modded data if NOT already in LawnStrings
                                         finalName = moddedInfo.name ?? finalName;
                                         finalIntroduce = moddedInfo.introduce ?? finalIntroduce;
                                         finalInfo = moddedInfo.info ?? finalInfo;
@@ -244,7 +242,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 // Step 5: Update showedPlantName (List<TextMeshProUGUI> - Name + Name_shadow)
-                if (hasData && __instance.showedPlantName != null)
+                if (hasData)
                 {
                     foreach (TextMeshProUGUI text in __instance.showedPlantName)
                     {
@@ -258,7 +256,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
 
                 // Step 6: Update showedPlantIntroduce (Description)
-                if (hasData && __instance.showedPlantIntroduce != null)
+                if (hasData)
                 {
                     char[] toTrim = Environment.NewLine.ToCharArray();
                     string finalText = Utils.RemoveSizeTags(finalInfo) + "\n\n" +
