@@ -81,8 +81,6 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 case 3:
                     godsGachaMatch = TranslateGodsGachaPopup(originalText, godsGachaCheck);
                     break;
-                default:
-                    break;
             }
 
             if(godsGachaMatch != "")
@@ -203,8 +201,6 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                     break;
                 case 3:
                     res = TranslatePlantNameParts(originalText, nameAlreadyPlantedPattern);
-                    break;
-                default:
                     break;
             }
 
@@ -330,18 +326,15 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 }
                 else
                 {
-                    if (lockedPlantRegex.IsMatch(originalText))
+                    Match match = lockedPlantRegex.Match(originalText);
+                    GroupCollection groups = match.Groups;
+                    if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
                     {
-                        Match match = lockedPlantRegex.Match(originalText);
-                        GroupCollection groups = match.Groups;
-                        if (Utils.plantIndiceStrings.ContainsKey(groups[1].Value) && Utils.plantIndiceStrings.ContainsKey(groups[2].Value))
-                        {
-                            res = TranslatePlantNameParts(originalText, lockedPlantPattern);
-                        }
-                        else
-                        {
-                            return "";
-                        }
+                        res = TranslatePlantNameParts(originalText, lockedPlantPattern);
+                    }
+                    else
+                    {
+                        return "";
                     }
                 }
             }

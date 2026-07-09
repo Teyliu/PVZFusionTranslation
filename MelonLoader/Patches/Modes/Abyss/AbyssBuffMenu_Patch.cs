@@ -1,16 +1,11 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
-using MelonLoader.TinyJSON;
 using PvZ_Fusion_Translator.AssetStore;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using UnityEngine.TextCore.Text;
 using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
