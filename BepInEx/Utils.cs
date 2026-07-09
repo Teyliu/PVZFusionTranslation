@@ -393,6 +393,27 @@ namespace PvZ_Fusion_Translator__BepInEx_
             return withoutCloseTags;
         }
 
+        public static string RemoveFormatTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            string withoutUnderlineTags = Regex.Replace(text, @"<u>", string.Empty, RegexOptions.IgnoreCase);
+            string withoutUnderlineCloseTags = Regex.Replace(withoutUnderlineTags, @"</u>", string.Empty, RegexOptions.IgnoreCase);
+            string withoutItalicTags = Regex.Replace(withoutUnderlineCloseTags, @"<i>", string.Empty, RegexOptions.IgnoreCase);
+            string withoutItalicCloseTags = Regex.Replace(withoutItalicTags, @"</i>", string.Empty, RegexOptions.IgnoreCase);
+
+            return withoutItalicCloseTags;
+        }
+
+        public static string RemoveAllTags(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+
+            return RemoveColorTags(RemoveSizeTags(RemoveFormatTags(text)));
+        }
+
         public static GameObject ConvertToTextMeshProUGUI(GameObject originalText, Transform parent, string name)
         {
             GameObject newObj = new GameObject(name);
@@ -735,6 +756,30 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
 
             return res;
+        }
+
+        public static void TryAdd<A, B>(Dictionary<A, B> dict, A key, B val)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key] = val;
+            }
+            else
+            {
+                dict.Add(key, val);
+            }
+        }
+
+        public static void TryAdd<A, B>(SortedDictionary<A, B> dict, A key, B val)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key] = val;
+            }
+            else
+            {
+                dict.Add(key, val);
+            }
         }
     }
 }

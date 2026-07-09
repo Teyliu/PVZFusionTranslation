@@ -23,6 +23,8 @@ public class PluginCore : BasePlugin
 	private static DateTime? dtStartToast;
 	private static string toast_txt;
 
+	public static bool IsInitialized { get; private set; } = false;
+
 	public new static ManualLogSource Log;
 	public static PluginCore Instance { get; private set; }
 	public static MonoBehaviour MonoInstance { get; private set; }
@@ -63,6 +65,8 @@ public class PluginCore : BasePlugin
         TravelMgr_Patch.DumpTravelBuffs();
 
         replaceTextureRoutine = MonoInstance.StartCoroutine(TextureStore.ReplaceTexturesCoroutine());
+
+		IsInitialized = true;
     }
 
 	public override bool Unload()
