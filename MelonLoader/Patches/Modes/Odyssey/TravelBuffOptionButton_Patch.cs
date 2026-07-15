@@ -27,6 +27,17 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 
         public static void TranslateOptionButton(TravelBuffOptionButton button)
         {
+            if(TravelMgr_Patch.travelBuffString.ContainsKey(button.introduce.text))
+            {
+                string translatedBuff = travelBuffString[button.introduce.text];
+                button.introduce.text = AddBuffName(translatedBuff);
+            }
+
+            if(!Utils.CheckForUntranslatedText(button.introduce.text))
+            {
+                button.introduce.text = AddBuffName(button.introduce.text);
+            }
+
             if(!TravelMgr_Patch.travelBuffString.ContainsKey(button.introduce.text) && Utils.CheckForUntranslatedText(button.introduce.text))
             {
                 button.introduce.text = StringStore.TranslateText(button.introduce.text);

@@ -5,7 +5,7 @@ using PvZ_Fusion_Translator.AssetStore;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
-    [HarmonyPatch(typeof(AbyssStoreMenu))]
+    /*[HarmonyPatch(typeof(AbyssStoreMenu))]
     public static class AbyssStoreMenu_Patch
     {
         [HarmonyPatch(nameof(AbyssStoreMenu.Update))]
@@ -20,5 +20,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
                 text.font = fontAsset;
             }
         }
-    }
+    }*/
 }

@@ -205,7 +205,7 @@ namespace PvZ_Fusion_Translator
 
 				// load abyss buffs
 
-				Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
+				//Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
 
 				SaveStrings();
 				DumpJson();
@@ -259,10 +259,10 @@ namespace PvZ_Fusion_Translator
 						{
 							LoadFSStrings(jsonString);
 						}
-						else if(fileName.EndsWith("abyss_buffs"))
-						{
-							Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
-						}
+						//else if(fileName.EndsWith("abyss_buffs"))
+						//{
+						//	Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
+						//}
 						else if (fileName.EndsWith("travel_buffs"))
 						{
 							LoadTravelBuffs();
@@ -294,6 +294,8 @@ namespace PvZ_Fusion_Translator
 					{
 						LoadDetailStrings(File.ReadAllText(detailStringsPath));
 					}
+
+					LoadChangelogText();
 
 					SaveStrings();
 					DumpJson();
@@ -988,11 +990,11 @@ namespace PvZ_Fusion_Translator
 
 			// save abyss buffs
 
-			if(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData != new Dictionary<string, string>())
-			{
-				string abyssBuffData = SerializeWithIndentation(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData, 2);
-				File.WriteAllText(Path.Combine(stringDir, "abyss_buffs.json"), abyssBuffData);
-			}
+			//if(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData != new Dictionary<string, string>())
+			//{
+			//	string abyssBuffData = SerializeWithIndentation(Patches.Modes.Abyss.AbyssBuffMenu_Patch.abyssBuffData, 2);
+			//	File.WriteAllText(Path.Combine(stringDir, "abyss_buffs.json"), abyssBuffData);
+			//}
 
 			// save almanacs
 
@@ -1047,10 +1049,10 @@ namespace PvZ_Fusion_Translator
 			}
 			string LawnStrings = Resources.Load<TextAsset>("LawnStrings").text;
 			string ZombieStrings = Resources.Load<TextAsset>("ZombieStrings").text;
-			string AbyssBuffData = Resources.Load<TextAsset>("AbyssBuffData").text;
+			//string AbyssBuffData = Resources.Load<TextAsset>("AbyssBuffData").text;
 			File.WriteAllText(Path.Combine(dumpDir, "LawnStrings.json"), LawnStrings);
 			File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
-			File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
+			//File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
 
 			// dump iz tips
 			var izDump = DumpIZStrings();

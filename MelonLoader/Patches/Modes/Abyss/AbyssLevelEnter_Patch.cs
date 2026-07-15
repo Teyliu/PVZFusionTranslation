@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
-    [HarmonyPatch(typeof(AbyssLevelEnter))]
+    /*[HarmonyPatch(typeof(AbyssLevelEnter))]
     public static class AbyssLevelEnter_Patch
     {
         [HarmonyPatch(nameof(AbyssLevelEnter.SetLevel))]
@@ -15,5 +15,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
         {
             __instance.levelName = StringStore.TranslateText(__instance.levelName);
         }
-    }
+    }*/
 }

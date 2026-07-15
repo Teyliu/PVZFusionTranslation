@@ -407,6 +407,7 @@
 		<Compile Include="ModFeatures.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_Dropdown_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GardenStoreMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacCardUI_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacSelectMenu_Patch.cs" />
@@ -424,7 +425,9 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\GodShootingLevelButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ReNameMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlantCardPackageBuilder_Patch.cs" />
 		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
+		<Compile Include="Patches\Managers\PVPScareyPot_Patch.cs" />
 		<Compile Include="Patches\Modes\Abyss\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\MultipleChoiceMenu_Patch.cs" />
 		<Compile Include="Patches\Modes\Odyssey\ShootingManager_Patch.cs" />
