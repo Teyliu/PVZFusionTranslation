@@ -15,7 +15,7 @@ using static PvZ_Fusion_Translator.FileLoader;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
-    [HarmonyPatch(typeof(AbyssBuffMenu))]
+    /*[HarmonyPatch(typeof(AbyssBuffMenu))]
     public static class AbyssBuffMenu_Patch
     {
         public static Dictionary<string, string> abyssBuffData = new Dictionary<string, string>();
@@ -129,5 +129,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 
             return null;
         }
-    }
+    }*/
 }

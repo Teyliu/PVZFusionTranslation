@@ -1,12 +1,13 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppPVPScaryPot;
 using Il2CppTMPro;
 using PvZ_Fusion_Translator.AssetStore;
 using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 {
-	[HarmonyPatch(typeof(PVPPotBtn))]
+	/*[HarmonyPatch(typeof(PVPPotBtn))]
 	public class PVPPotBtn_Patch
 	{
 		[HarmonyPostfix]
@@ -38,5 +39,5 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects.ButtonObjects
 				__instance.gameObject.SetActive(true);
 			}
 		}
-	}
+	}*/
 }

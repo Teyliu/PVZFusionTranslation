@@ -103,7 +103,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
             }
             else if (travelMatch != "")
             {
-                txt.text = travelMatch;
+                txt.text = TravelMgr_Patch.AddBuffName(travelMatch);
                 if (txt.gameObject.name.Contains("main"))
                 {
                     originalText = txt.text;

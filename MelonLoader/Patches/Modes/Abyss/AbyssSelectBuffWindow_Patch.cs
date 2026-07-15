@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
-    [HarmonyPatch(typeof(AbyssSelectBuffWindow))]
+    /*[HarmonyPatch(typeof(AbyssSelectBuffWindow))]
     public static class AbyssSelectBuffWindow_Patch
     {
         [HarmonyPatch(nameof(AbyssSelectBuffWindow.OnAnimOver))]
@@ -53,5 +53,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
                 __instance.introduce.font = fontAsset;
             }
         }
-    }
+    }*/
 }

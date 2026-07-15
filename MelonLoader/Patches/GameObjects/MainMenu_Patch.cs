@@ -11,6 +11,7 @@ using UnityEngine.UIElements;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects
 {
+    [HarmonyPatch(typeof(MainMenu))]
     public class MainMenu_Patch
     {
         public static void AnimOver(BaseMenu __instance)
@@ -93,14 +94,16 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             messageText.text = "Hello this is multilanguage choose language over there ------>";*/
         }
 
-        public static void HideLangButton(GameObject btn)
+        [HarmonyPatch(nameof(MainMenu.EnterUpdateUrl))]
+        [HarmonyPrefix]
+        public static bool Pre_EnterUpdateUrl(MainMenu __instance)
         {
-            btn.GetComponent<BoxCollider2D>().enabled = false;
-        }
-
-        public static void ShowLangButton(GameObject btn)
-        {
-            btn.GetComponent<BoxCollider2D>().enabled = true;
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = @"https://github.com/Teyliu/PVZF-Translation",
+                UseShellExecute = true
+            });
+            return false;
         }
     }
 }

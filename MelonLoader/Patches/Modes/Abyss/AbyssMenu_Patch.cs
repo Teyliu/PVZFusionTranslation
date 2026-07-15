@@ -11,7 +11,7 @@ using MelonLoader.Utils;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
-    [HarmonyPatch(typeof(AbyssMenu))]
+    /*[HarmonyPatch(typeof(AbyssMenu))]
     public static class AbyssMenu_Patch
     {
         [HarmonyPatch(nameof(AbyssMenu.Awake))]
@@ -45,5 +45,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
                 txt.font = fontAsset;
             }
         }
-    }
+    }*/
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
 {
-    [HarmonyPatch(typeof(AbyssGoods))]
+    /*[HarmonyPatch(typeof(AbyssGoods))]
     public static class AbyssGoods_Patch
     {
         [HarmonyPostfix]
@@ -18,5 +18,5 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Abyss
             __instance.hasText.text = StringStore.TranslateText(__instance.hasText.text, false);
             __instance.hasText_shadow.text = StringStore.TranslateText(__instance.hasText_shadow.text, false);
         }
-    }
+    }*/
 }

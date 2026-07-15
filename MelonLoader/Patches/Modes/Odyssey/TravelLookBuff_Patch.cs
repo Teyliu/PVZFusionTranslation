@@ -44,6 +44,17 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 
             foreach (TextMeshProUGUI text in __instance.transform.FindChild("Images").FindChild("Introduce").GetComponentsInChildren<TextMeshProUGUI>())
             {
+                if(TravelMgr_Patch.travelBuffString.ContainsKey(text.text))
+                {
+                    string translatedBuff = travelBuffString[text.text];
+                    text.text = AddBuffName(translatedBuff);
+                }
+
+                if(!Utils.CheckForUntranslatedText(text.text))
+                {
+                    text.text = AddBuffName(text.text);
+                }
+
                 if(!TravelMgr_Patch.travelBuffString.ContainsKey(text.text) && Utils.CheckForUntranslatedText(text.text))
                 {
                     text.text = StringStore.TranslateText(text.text);

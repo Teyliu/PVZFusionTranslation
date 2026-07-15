@@ -27,11 +27,11 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
                 string startText = match.Groups[1].Value;
                 string affinityText = match.Groups[3].Value;
                 string affinities = TranslateAffinities(affinityText);
-                __instance.introduce.text = startText + affinities;
+                __instance.introduce.text = AddBuffName(startText) + affinities;
             }
             else
             {
-                __instance.introduce.text = originalText;
+                __instance.introduce.text = AddBuffName(originalText);
             }
 
             foreach (var text in __instance.buttonText)
