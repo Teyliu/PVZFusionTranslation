@@ -25,7 +25,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 
             bool hasAlmanacFont = false;
             TMP_FontAsset almanacFontAsset = null;
-            if (FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage + "_Almanac") || FontStore.fontAssetDictSecondary.ContainsKey(currentLanguage))
+            if (FontStore.fontAssetDictSecondary.ContainsKey((currentLanguage + "_almanac").ToLower()) || FontStore.fontAssetDictSecondary.ContainsKey((currentLanguage).ToLower()))
             {
                 almanacFontAsset = FontStore.LoadTMPFontAlmanac(currentLanguage);
                 hasAlmanacFont = true;

@@ -90,6 +90,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 			fsLevelTipDictionary.Clear();
 			fsTipCollectionString.Clear();
 			InGameText_Patch.currentText = "";
+			Utils.RegisterPlantIndices();
 			FileLoader.LoadStrings();
 		}
 
