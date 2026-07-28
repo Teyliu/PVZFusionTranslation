@@ -55,22 +55,7 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 					string fileNameLanguage = fileName.Replace("_fallback", "").Replace("_almanac", "");
 
-					if (fontAssetDictSecondary.ContainsKey(fileNameLanguage))
-					{
-						if (fileName.EndsWith("_Fallback"))
-						{
-							fontAssetDictSecondary.Add(fileNameLanguage + "_almanac", fontAssetDictSecondary[fileNameLanguage]);
-							fontAssetDictSecondary.Remove(fileNameLanguage);
-						}
-						else
-						{
-							fontAssetDictSecondary.Add(fileNameLanguage + "_fallback", fontAssetDictSecondary[fileNameLanguage]);
-							fontAssetDictSecondary.Remove(fileNameLanguage);
-						}
-						fontAssetDictSecondary.Add(fileName, fallbackFont);
-					}
-					else
-						fontAssetDictSecondary.Add(fileNameLanguage, fallbackFont);
+					Utils.TryAdd(fontAssetDictSecondary, fileName, fallbackFont);
 
 					// Log.LogInfo($"Fallback font for language '{fileNameLanguage}' loaded");
 				}
@@ -132,16 +117,16 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static TMP_FontAsset LoadTMPFontAlmanac(string language)
 		{
-			if (fontAssetDictSecondary.ContainsKey(language))
+			if (fontAssetDictSecondary.ContainsKey(language.ToLower()))
 			{
-				if (fontAssetDictSecondary.TryGetValue(language, out TMP_FontAsset almanacAsset))
+				if (fontAssetDictSecondary.TryGetValue(language.ToLower(), out TMP_FontAsset almanacAsset))
 				{
 					return almanacAsset;
 				}
 			}
-			if (fontAssetDictSecondary.ContainsKey(language + "_almanac"))
+			if (fontAssetDictSecondary.ContainsKey(language.ToLower() + "_almanac"))
 			{
-				if (fontAssetDictSecondary.TryGetValue(language + "_almanac", out TMP_FontAsset almanacAsset))
+				if (fontAssetDictSecondary.TryGetValue(language.ToLower() + "_almanac", out TMP_FontAsset almanacAsset))
 				{
 					return almanacAsset;
 				}

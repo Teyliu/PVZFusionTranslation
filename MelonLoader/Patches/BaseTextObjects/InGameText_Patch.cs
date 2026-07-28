@@ -375,6 +375,13 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                     res = StringStore.TranslateText(originalText, pair.Key);
                 }
             }
+            foreach(var pair in StringStore.translationStringRegex)
+            {
+                if(StringStore.TestRegex(originalText, pair.Key))
+                {
+                    res = "";
+                }
+            }
             return res;
         }
 
