@@ -16,7 +16,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
 		{
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
-            TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI contentText = contentObject.GetComponentInChildren<TextMeshProUGUI>();
             File.WriteAllText(Path.Combine(FileLoader.GetAssetDir(FileLoader.AssetType.Dumps), "changelog.txt"), contentText.text);
 
             string stringDir = FileLoader.GetAssetDir(FileLoader.AssetType.Strings, Utils.Language);
@@ -35,7 +35,7 @@ namespace PvZ_Fusion_Translator.Patches.GameObjects
             
             GameObject contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
 
-            TextMeshProUGUI contentText = contentObject.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI contentText = contentObject.GetComponentInChildren<TextMeshProUGUI>();
             contentText.text = changelogText;
             contentText.margin = new Vector4(6, 2, 12, 0);
 

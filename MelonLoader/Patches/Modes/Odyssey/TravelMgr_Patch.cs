@@ -155,8 +155,8 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey
 
             foreach (var pair in TravelMgr.InvestBuffsData)
             {
-                Utils.TryAdd(dumpedTravelBuffs.investmentBuffs, (int)pair.Key, new TravelBuffInfo("", pair.Value.GetDescription()));
-                Utils.TryAdd(travelBuffString, pair.Value.GetDescription(), pair.Value.GetDescription());
+                Utils.TryAdd(dumpedTravelBuffs.investmentBuffs, (int)pair.Key, new TravelBuffInfo("", pair.Value.Description));
+                Utils.TryAdd(travelBuffString, pair.Value.Description, pair.Value.Description);
             }
 
             File.WriteAllText(Path.Combine(GetAssetDir(AssetType.Dumps), "travel_buffs.json"), SerializeWithIndentation(dumpedTravelBuffs));

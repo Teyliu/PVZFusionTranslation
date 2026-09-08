@@ -29,6 +29,13 @@ namespace PvZ_Fusion_Translator.Patches.Managers
             SetLevelName(__instance);
         }
 
+        [HarmonyPatch(nameof(InGameUI.UpdateTowerDefenseTimer))]
+        [HarmonyPostfix]
+        private static void UpdateTowerDefenseTimer(InGameUI __instance)
+        {
+            SetLevelName(__instance);
+        }
+
         [HarmonyPatch(nameof(InGameUI.SetLevelName))]
         [HarmonyPostfix]
         private static void SetLevelName(InGameUI __instance)
