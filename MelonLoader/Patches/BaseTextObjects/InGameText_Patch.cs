@@ -131,10 +131,7 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
                 txt.text = customLevelRegexMatch;
             }
             else if((Regex.Match(txt.text, @"(<color[^>]*>.*?</color>)", RegexOptions.Singleline).Success) && 
-                !StringStore.translationString.ContainsKey(txt.text) && 
-                !StringStore.fsTipCollectionString.ContainsKey(txt.text) && 
-                !StringStore.izTipCollectionString.ContainsKey(txt.text) && 
-                !StringStore.customLevelString.ContainsKey(txt.text))
+                !StringStore.StringFound(txt.text))
             {
                 txt.text = StringStore.TranslateColorText(txt.text, true);
                 if (txt.gameObject.name.Contains("main"))

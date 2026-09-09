@@ -25,6 +25,10 @@ namespace PvZ_Fusion_Translator.AssetStore
 
 		public static Dictionary<string, string> fsTipCollectionString = new();
 
+		public static Dictionary<string, Dictionary<string, string>> godsEvolvedBuffDictionary = new();
+
+		public static Dictionary<string, string> godsEvolvedCollectionString = new();
+
 		public static Dictionary<string, Dictionary<string, string>> patchesStore = new()
 		{
 			{ "Difficulty", new Dictionary<string, string>
@@ -89,6 +93,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 			izTipCollectionString.Clear();
 			fsLevelTipDictionary.Clear();
 			fsTipCollectionString.Clear();
+			godsEvolvedBuffDictionary.Clear();
+			godsEvolvedCollectionString.Clear();
 			InGameText_Patch.currentText = "";
 			Utils.RegisterPlantIndices();
 			FileLoader.LoadStrings();
@@ -262,8 +268,17 @@ namespace PvZ_Fusion_Translator.AssetStore
 				}
 				return customLevelString[originalText];
 			}
-			
-			if (Utils.plantIndiceString.ContainsKey(originalText))
+
+            if (godsEvolvedCollectionString.ContainsKey(originalText))
+            {
+                if (isLog)
+                {
+                    Log.LogDebug($"Text '{originalText}' found in godsEvolvedCollectionString");
+                }
+                return godsEvolvedCollectionString[originalText];
+            }
+
+            if (Utils.plantIndiceString.ContainsKey(originalText))
 			{
 				if(isLog)
 				{
@@ -632,6 +647,18 @@ namespace PvZ_Fusion_Translator.AssetStore
 			Log.LogInfo("Logging all StringStore entries.");
 			Log.LogInfo("Regex Entries: {0}", translationStringRegex.Count);
 			Log.LogInfo("String Entries: {0}", translationString.Count);
+		}
+
+		public static bool StringFound(string originalText)
+		{
+			bool res = false;
+
+			res = (translationString.ContainsKey(originalText) ||
+				fsTipCollectionString.ContainsKey(originalText) ||
+				izTipCollectionString.ContainsKey(originalText) ||
+				customLevelString.ContainsKey(originalText));
+
+			return res;
 		}
 	}
 }

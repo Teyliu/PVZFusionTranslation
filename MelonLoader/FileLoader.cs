@@ -146,9 +146,26 @@ namespace PvZ_Fusion_Translator
 					}
 				}
 
-				// load almanacs
-				
-				string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
+                // load gods evolved strings
+
+				string godsEvolvedContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/gods_evolved.json").Result;
+
+                if (godsEvolvedContent != null)
+                {
+                    LoadGodsEvolvedStrings(godsEvolvedContent);
+                }
+                else
+                {
+                    string godsEvolvedPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "gods_evolved.json");
+                    if (File.Exists(godsEvolvedPath))
+                    {
+                        LoadGodsEvolvedStrings(File.ReadAllText(godsEvolvedPath));
+                    }
+                }
+
+                // load almanacs
+
+                string almanacDir = GetAssetDir(AssetType.Almanac, Utils.Language);
 
 				if(!Directory.Exists(almanacDir))
 				{
@@ -259,11 +276,15 @@ namespace PvZ_Fusion_Translator
 						{
 							LoadFSStrings(jsonString);
 						}
-						//else if(fileName.EndsWith("abyss_buffs"))
-						//{
-						//	Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
-						//}
-						else if (fileName.EndsWith("travel_buffs"))
+                        else if (fileName.EndsWith("gods_evolved"))
+                        {
+                            LoadGodsEvolvedStrings(jsonString);
+                        }
+                        //else if(fileName.EndsWith("abyss_buffs"))
+                        //{
+                        //	Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
+                        //}
+                        else if (fileName.EndsWith("travel_buffs"))
 						{
 							LoadTravelBuffs();
 						}
@@ -393,7 +414,21 @@ namespace PvZ_Fusion_Translator
             }
 		}
 
-		internal static void LoadDetailStrings(string content)
+        internal static void LoadGodsEvolvedStrings(string content)
+        {
+            var translatedGodsEvolvedStrings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(content);
+
+			foreach (var plantSet in translatedGodsEvolvedStrings)
+			{
+				Utils.TryAdd(StringStore.godsEvolvedBuffDictionary, plantSet.Key, plantSet.Value);
+				foreach(var buffStr in plantSet.Value)
+				{
+					Utils.TryAdd(StringStore.godsEvolvedCollectionString, buffStr.Key, buffStr.Value);
+				}
+			}
+        }
+
+        internal static void LoadDetailStrings(string content)
 		{
 			var detailStringsDump = DumpDetailStrings();
 			var detailStringsData = detailStringsDump.Item1;
@@ -980,6 +1015,12 @@ namespace PvZ_Fusion_Translator
 			string fsLevelTipDictionary = SerializeWithIndentation(StringStore.fsLevelTipDictionary);
 
 			File.WriteAllText(Path.Combine(stringDir, "tips_fs.json"), fsLevelTipDictionary);
+
+			// save gods evolved strings
+
+			string godsEvolvedStrings = SerializeWithIndentation(StringStore.godsEvolvedBuffDictionary);
+
+			File.WriteAllText(Path.Combine(stringDir, "gods_evolved.json"), godsEvolvedStrings);
 
 			// save changelog
 
