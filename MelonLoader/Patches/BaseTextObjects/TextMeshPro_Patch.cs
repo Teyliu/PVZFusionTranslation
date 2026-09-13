@@ -13,16 +13,21 @@ namespace PvZ_Fusion_Translator.Patches.BaseTextObjects
         {
             if (!string.IsNullOrEmpty(__instance.text))
             {
-                if(__instance.transform.parent.name.Contains("DrawCardsText"))
+                if(__instance.transform.parent != null)
                 {
-                    return;
+                    if(__instance.transform.parent.name.Contains("DrawCardsText"))
+                    {
+                        return;
+                    }
+                    else if (__instance.transform.parent.name.StartsWith("AlmanacHelp") || __instance.transform.parent.name.StartsWith("CardBank"))
+                    {
+                        __instance = StringStore.TranslateText(__instance);
+                        __instance.autoSizeTextContainer = false;
+                        return;
+                    }
                 }
-                else if (__instance.transform.parent.name.StartsWith("AlmanacHelp") || __instance.transform.parent.name.StartsWith("CardBank"))
-                {
-                    __instance = StringStore.TranslateText(__instance);
-                    __instance.autoSizeTextContainer = false;
-                    return;
-                } else if (!(__instance.transform.name.Contains("AlmanacZombie") || __instance.transform.name.Contains("AlmanacPlant") || __instance.transform.name.Contains("Name") || __instance.transform.name.Contains("Tips") || __instance.transform.parent.name.Contains("Signboard") || __instance.transform.parent.name.Contains("text")))
+                
+                if (!(__instance.transform.name.Contains("AlmanacZombie") || __instance.transform.name.Contains("AlmanacPlant") || __instance.transform.name.Contains("Name") || __instance.transform.name.Contains("Tips") || __instance.transform.parent.name.Contains("Signboard") || __instance.transform.parent.name.Contains("text")))
                 {
                     __instance = StringStore.TranslateText(__instance);
                     __instance.autoSizeTextContainer = true;

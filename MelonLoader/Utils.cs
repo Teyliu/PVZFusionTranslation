@@ -649,12 +649,12 @@ namespace PvZ_Fusion_Translator
 			
 
 			// second column
-			//Portuguese,
+			Portuguese,
 			//Javanese, 
 			//Filipino,
 			Vietnamese,
 			Indonesian,
-			//Russian, //NOTE: legacy language
+			Russian,
 			Japanese,
 			
 
@@ -677,8 +677,10 @@ namespace PvZ_Fusion_Translator
 			{ LanguageEnum.French, "Français"},
 			{ LanguageEnum.German, "Deutsch"},
 			{ LanguageEnum.Spanish, "Español"},
+			{ LanguageEnum.Portuguese, "Português"},
 			{ LanguageEnum.Vietnamese, "Tiếng Việt"},
 			{ LanguageEnum.Indonesian, "Bahasa Indonesia"},
+			{ LanguageEnum.Russian, "русский"},
 			{ LanguageEnum.Japanese, "日本語"},
 			{ LanguageEnum.Korean, "한국어"},
 			{ LanguageEnum.Ukrainian, "українська"},
