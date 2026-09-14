@@ -21,13 +21,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects.ButtonObjects
             }
         }
 
-        [HarmonyPatch(nameof(InGameBtn.ChangeStrings))]
-        [HarmonyPostfix]
-        private static void ChangeStrings(InGameBtn __instance)
-        {
-            TranslateSceneText(__instance);
-        }
-
         private static void TranslateSceneText(InGameBtn __instance)
         {
             Transform sceneText = __instance.transform.FindChild("SceneText");

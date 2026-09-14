@@ -15,6 +15,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.AssetStore
 
 		public static Dictionary<string, string> translationString = new();
 
+		public static Dictionary<string, string> customLevelString => translationString;
+
 		public static Dictionary<string, string> izLevelTipDictionary = new();
 
 		public static Dictionary<string, string> izTipCollectionString = new();

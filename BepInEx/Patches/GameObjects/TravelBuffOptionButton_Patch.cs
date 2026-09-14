@@ -25,29 +25,35 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static void TranslateOptionButton(TravelBuffOptionButton button)
         {
-            Log.LogInfo("==== [TravelBuffOptionButton.TranslateOptionButton] ====");
-
-            if (button == null)
-            {
-                return;
-            }
+            if (button == null) return;
 
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-            if (button.introduce != null
-                && TravelMgr_Patch.TryGetTranslatedBuff(button.buff, out string translatedBuff))
+
+            if (button.introduce != null)
             {
-                button.introduce.text = translatedBuff;
+                string text = button.introduce.text;
+                if (TravelMgr_Patch.travelBuffString.TryGetValue(text, out string tb))
+                {
+                    button.introduce.text = TravelMgr_Patch.AddBuffName(tb);
+                }
+                else if (TravelMgr_Patch.TryGetTranslatedBuff(button.buff, out string translatedBuff))
+                {
+                    button.introduce.text = TravelMgr_Patch.AddBuffName(translatedBuff);
+                }
+                else if (Utils.CheckForUntranslatedText(text))
+                {
+                    button.introduce.text = TravelMgr_Patch.AddBuffName(StringStore.TranslateText(text));
+                }
+                else
+                {
+                    button.introduce.text = TravelMgr_Patch.AddBuffName(text);
+                }
             }
 
             foreach (TextMeshProUGUI text in button.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                if (text == null || string.IsNullOrEmpty(text.text))
-                    continue;
-
+                if (text == null || string.IsNullOrEmpty(text.text)) continue;
                 string translated = TravelMgr_Patch.TranslateTravelText(text.text);
-                if (translated != text.text)
-                    Log.LogInfo($"[TravelBuffOptionButton] TranslateTravelText: \"{text.text}\" -> \"{translated}\"");
-
                 text.text = translated;
                 text.font = fontAsset;
             }

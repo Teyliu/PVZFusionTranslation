@@ -16,13 +16,15 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         {
             foreach (TextMeshProUGUI text in __instance.levelName)
             {
-                string fStr = StringStore.translationStringRegex["([^\\s]+)，推荐难度：(\\d+)"];
-                string[] parts = text.text.Split("，推荐难度：");
-
-                if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(text.text))
+                if (StringStore.translationStringRegex.TryGetValue("([^\\s]+)，推荐难度：(\\d+)", out string fStr))
                 {
-                    string customName = (StringStore.translationString.ContainsKey(parts[0] + "_IZ")) ? parts[0] + "_IZ" : parts[0];
-                    text.text = string.Format(fStr, StringStore.TranslateText(customName), parts[1]);
+                    string[] parts = text.text.Split("，推荐难度：");
+
+                    if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(text.text))
+                    {
+                        string customName = (StringStore.translationString.ContainsKey(parts[0] + "_IZ")) ? parts[0] + "_IZ" : parts[0];
+                        text.text = string.Format(fStr, StringStore.TranslateText(customName), parts[1]);
+                    }
                 }
 
                 text.text = StringStore.TranslateText(text.text);
@@ -36,12 +38,14 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
         {
             foreach (TextMeshProUGUI text in __instance.levelName)
             {
-                string fStr = StringStore.translationStringRegex["([^\\s]+)，推荐难度：(\\d+)"];
-                string[] parts = text.text.Split("，推荐难度：");
-
-                if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(text.text))
+                if (StringStore.translationStringRegex.TryGetValue("([^\\s]+)，推荐难度：(\\d+)", out string fStr))
                 {
-                    text.text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
+                    string[] parts = text.text.Split("，推荐难度：");
+
+                    if (new Regex("([^\\s]+)，推荐难度：(\\d+)").IsMatch(text.text))
+                    {
+                        text.text = string.Format(fStr, StringStore.TranslateText(parts[0]), parts[1]);
+                    }
                 }
 
                 text.text = StringStore.TranslateText(text.text);

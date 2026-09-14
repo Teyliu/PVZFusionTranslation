@@ -1,0 +1,11 @@
+{
+    "schema_version": 2,
+    "commit": "d94d788aca96ec2c7cf592d6f8573c297f3fdcc1",
+    "indexed_at": "2026-07-11T17:28:40Z",
+    "project": "PvZ-Fusion-Translator-2",
+    "nodes": 37077,
+    "edges": 141992,
+    "original_size": 96206848,
+    "compressed_size": 19389166,
+    "compression_level": 9
+}

@@ -11,13 +11,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Awake(TravelAdvantureMenu __instance)
         {
-            Log.LogInfo("==== [TravelAdvantureMenu.Awake] ====");
             foreach (CustomButton_enterGame button in __instance.GetComponentsInChildren<CustomButton_enterGame>())
             {
                 string original = button.levelName.text;
                 string plantName = Utils.GetPlantNameFromAlmanac(button.levelName.text);
                 button.levelName.text = (plantName != "") ? plantName : StringStore.TranslateText(button.levelName.text);
-                Log.LogInfo($"[TravelAdvantureMenu] levelName: \"{original}\" -> \"{button.levelName.text}\" (almanac: {plantName != ""})");
             }
         }
 

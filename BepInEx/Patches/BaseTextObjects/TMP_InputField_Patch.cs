@@ -11,7 +11,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
     {
         [HarmonyPatch(nameof(TMP_InputField.OnEnable))]
         [HarmonyPostfix]
-        private static void OnEnable(TMP_InputField __instance)
+        public static void OnEnable(TMP_InputField __instance)
         {
             if (!string.IsNullOrEmpty(__instance.text))
             {

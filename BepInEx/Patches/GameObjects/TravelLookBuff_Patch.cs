@@ -29,7 +29,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_Clear(TravelLookBuff __instance)
         {
-            Log.LogInfo("==== [TravelLookBuff.Clear] ====");
             __instance.introduce.text = TravelMgr_Patch.TranslateTravelText("无");
             __instance.set = false;
 
@@ -47,11 +46,12 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Post_SetBuff(TravelLookBuff __instance, object buff)
         {
-            if (__instance != null
-                && __instance.introduce != null
-                && TravelMgr_Patch.TryGetTranslatedBuff(buff, out string translatedBuff))
+            if (__instance != null && __instance.introduce != null)
             {
-                __instance.introduce.text = translatedBuff;
+                if (TravelMgr_Patch.TryGetTranslatedBuff(buff, out string translatedBuff))
+                    __instance.introduce.text = TravelMgr_Patch.AddBuffName(translatedBuff);
+                else
+                    __instance.introduce.text = TravelMgr_Patch.AddBuffName(__instance.introduce.text);
             }
 
             TranslateAllText(__instance);

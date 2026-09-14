@@ -25,10 +25,10 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static void TranslateCreatePlayerSaveMenu()
         {
-            Transform createPlayerSaveMenuTransform = GameAPP.canvasUp.Find("CreatePlayerSaveMenu(Clone)");
-            if(createPlayerSaveMenuTransform.TryGetComponent<CreatePlayerSaveMenu>(out CreatePlayerSaveMenu createPlayerSaveMenu))
+            Transform createPlayerSaveMenuTransform = GameAPP.canvasUp.Find("ReNameMenu(Clone)");
+            if(createPlayerSaveMenuTransform.TryGetComponent<ReNameMenu>(out ReNameMenu reNameMenu))
             {
-                createPlayerSaveMenu.title.text = StringStore.TranslateText(createPlayerSaveMenu.title.text);
+                reNameMenu.title.text = StringStore.TranslateText(reNameMenu.title.text);
             }
         }
     }

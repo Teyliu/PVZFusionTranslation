@@ -14,12 +14,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         {
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
-            //foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
-            //{
-            //    txt.text = StringStore.TranslateText(txt.text);
-            //    txt.font = fontAsset;
-            //}
-
             Transform safetyBoxButtonTransform = __instance.transform.Find("SafeBox").Find("StartSafeMode");
 
             if (__instance.safeMode == false && safetyBoxButtonTransform != null)
@@ -30,6 +24,22 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 }
             }
         }
+
+        [HarmonyPatch(nameof(SeedLibrary.Start))]
+        [HarmonyPatch(nameof(SeedLibrary.SetAllCards))]
+        [HarmonyPostfix]
+        private static void SetAllCards(SeedLibrary __instance)
+        {
+            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
+
+            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>(true))
+            {
+                txt.font = fontAsset;
+                if (Utils.CheckForUntranslatedText(txt.text))
+                {
+                    txt.text = StringStore.TranslateText(txt.text);
+                }
+            }
+        }
     }
 }
-

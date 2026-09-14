@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8F0C5037-ACB0-4F25-B2F8-1D46602CC215}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\System.dll</HintPath>
+    </Reference>
+    <Reference Include="UniTask">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\UniTask.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>E:\Tools\net472\Cpp2IL-bin-net6-win-x64\cpp2il_out\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cpp2IlInjected\AddressAttribute.cs" />
+    <Compile Include="Cpp2IlInjected\AnalysisFailedException.cs" />
+    <Compile Include="Cpp2IlInjected\AttributeAttribute.cs" />
+    <Compile Include="Cpp2IlInjected\FieldOffsetAttribute.cs" />
+    <Compile Include="Cpp2IlInjected\MetadataOffsetAttribute.cs" />
+    <Compile Include="Cpp2IlInjected\TokenAttribute.cs" />
+    <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="GameMaterial.cs" />
+    <Compile Include="InGameText.cs" />
+    <Compile Include="Lawnf.cs" />
+    <Compile Include="ListExtensions.cs" />
+    <Compile Include="MaterialType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResetOnBoardDieAttribute.cs" />
+    <Compile Include="Singleton.cs" />
+    <Compile Include="UnitySourceGeneratedAssemblyMonoScriptTypes_v1.cs" />
+    <Compile Include="Vector3Extensions.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -7,13 +7,13 @@ using UnityEngine;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 {
+    [HarmonyPatch(typeof(TravelStore))]
     public static class TravelStore_Patch
     {
         [HarmonyPatch(nameof(TravelStore.Start))]
         [HarmonyPostfix]
         private static void Start(TravelStore __instance)
         {
-            Log.LogInfo("==== [TravelStore.Start] ====");
             TranslateStoreText(__instance);
         }
 

@@ -14,20 +14,36 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Start(CrisisZombieWindow __instance)
         {
-            Transform introduceTransform = __instance.transform.FindChild("Images").FindChild("Introduce");
-            TextMeshProUGUI introduceText = introduceTransform.GetComponent<TextMeshProUGUI>();
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-            introduceText.text = StringStore.TranslateText(introduceText.text);
-            introduceText.font = fontAsset;
+            TranslateIntroduceText(__instance);
         }
 
         [HarmonyPatch(nameof(CrisisZombieWindow.SetZombieType))]
         [HarmonyPostfix]
         private static void SetZombieType(CrisisZombieWindow __instance)
         {
-            Transform introduceTransform = __instance.transform.FindChild("Images").FindChild("Introduce");
+            TranslateIntroduceText(__instance);
+        }
+
+        private static void TranslateIntroduceText(CrisisZombieWindow instance)
+        {
+            Transform imagesTransform = instance.transform.Find("Images");
+            if (imagesTransform == null)
+            {
+                return;
+            }
+
+            Transform introduceTransform = imagesTransform.Find("Introduce");
+            if (introduceTransform == null)
+            {
+                return;
+            }
+
             TextMeshProUGUI introduceText = introduceTransform.GetComponent<TextMeshProUGUI>();
+            if (introduceText == null)
+            {
+                return;
+            }
+
             TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
 
             introduceText.text = StringStore.TranslateText(introduceText.text);

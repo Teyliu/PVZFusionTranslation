@@ -153,18 +153,25 @@ namespace PvZ_Fusion_Translator__BepInEx_
         {
             public static void Prefix(AudioSource __instance)
             {
+                if (__instance == null) return;
                 if (Utils.customAudio)
                 {
-                    if (__instance.clip == null)
-                        return;
-
-                    string audioClipName = overrideEnabled ? "REPLACE_ALL" : __instance.clip.name;
-
-                    if (AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
+                    try
                     {
-                        __instance.pitch = 1;
+                        var clip = __instance.clip;
+                        if (clip == null)
+                            return;
 
-                        __instance.clip = replaceClip;
+                        string audioClipName = overrideEnabled ? "REPLACE_ALL" : clip.name;
+
+                        if (AudioClips.TryGetValue(audioClipName, out AudioClip replaceClip))
+                        {
+                            __instance.pitch = 1;
+                            __instance.clip = replaceClip;
+                        }
+                    }
+                    catch
+                    {
                     }
                 }
             }

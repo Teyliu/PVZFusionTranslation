@@ -39,17 +39,25 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 {
                     AlmanacPlantWindow window = __instance.window;
                     GameObject skinButton = window.skinButton;
-                    GameObject skinTextObj = skinButton.transform.GetChild(0).gameObject;
-                    GameObject skinShadowTextObj = skinTextObj.transform.GetChild(0).gameObject;
-                    TextMeshProUGUI skinShadowText = skinShadowTextObj.GetComponent<TextMeshProUGUI>();
-                    if (skinShadowText != null)
+                    if (skinButton.transform.childCount > 0)
                     {
-                        skinShadowText.text = StringStore.TranslateText("换肤_S");
+                        GameObject skinTextObj = skinButton.transform.GetChild(0).gameObject;
+                        if (skinTextObj.transform.childCount > 0)
+                        {
+                            GameObject skinShadowTextObj = skinTextObj.transform.GetChild(0).gameObject;
+                            TextMeshProUGUI skinShadowText = skinShadowTextObj.GetComponent<TextMeshProUGUI>();
+                            if (skinShadowText != null)
+                            {
+                                skinShadowText.text = StringStore.TranslateText("换肤_S");
+                            }
+                        }
                     }
                     skinButton.transform.localScale /= 1.75f;
                     skinButton.transform.localPosition = new Vector3(0.0f, 111.345f, 0.0f);
-                    skinButton.transform.GetChild(1).Translate(new Vector3(-0.35f, 0));
-                    skinButton.transform.GetChild(2).Translate(new Vector3(0.35f, 0));
+                    if (skinButton.transform.childCount > 1)
+                        skinButton.transform.GetChild(1).Translate(new Vector3(-0.35f, 0));
+                    if (skinButton.transform.childCount > 2)
+                        skinButton.transform.GetChild(2).Translate(new Vector3(0.35f, 0));
                 }
             }
             catch (Exception ex)

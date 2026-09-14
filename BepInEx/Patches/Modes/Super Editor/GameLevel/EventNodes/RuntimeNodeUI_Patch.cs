@@ -3,6 +3,7 @@ using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects;
 using UnityEngine;
+using GameLevel.EventNodes;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor.GameLevel.EventNodes
 {
@@ -12,9 +13,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor.GameLevel.E
         [HarmonyPatch(nameof(RuntimeNodeUI.Awake))]
         [HarmonyPatch(nameof(RuntimeNodeUI.Initialize))]
         [HarmonyPatch(nameof(RuntimeNodeUI.CreatePorts))]
-        [HarmonyPatch(nameof(RuntimeNodeUI.CreateTravelEntryEditUI), new System.Type[] { typeof(RectTransform), typeof(GetTravelEntryNode) })]
-        [HarmonyPatch(nameof(RuntimeNodeUI.CreateStringInputField))]
-        [HarmonyPatch(nameof(RuntimeNodeUI.CreatePorts))]
+        [HarmonyPatch(nameof(RuntimeNodeUI.CreateValueEditUI))]
         [HarmonyPostfix]
         public static void Awake(RuntimeNodeUI __instance)
         {

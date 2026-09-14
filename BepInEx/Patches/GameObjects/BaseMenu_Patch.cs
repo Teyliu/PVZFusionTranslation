@@ -16,7 +16,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPrefix]
         private static void Pre_Awake(BaseMenu __instance)
         {
-            if(__instance.name.Contains("NoticePauseMenu"))
+            if (__instance == null || __instance.name == null) return;
+            if (__instance.name.Contains("NoticePauseMenu"))
             {
                 NoticePauseMenu_Patch.Pre_Awake(__instance);
             }
@@ -26,19 +27,16 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Post_Awake(BaseMenu __instance)
         {
-            if(__instance.name.Contains("NoticePauseMenu"))
+            if (__instance == null || __instance.name == null || __instance.transform == null) return;
+
+            if (__instance.name.Contains("NoticePauseMenu"))
             {
                 NoticePauseMenu_Patch.Post_Awake(__instance);
             }
 
-            if(__instance.name.StartsWith("MainMenu(Clone)"))
+            if (__instance.name.StartsWith("MainMenu(Clone)"))
             {
                 MainMenu_Patch.AnimOver(__instance);
-            }
-
-            if(__instance.name.StartsWith("PlantDamageMenu"))
-            {
-                PlantDamageMenu_Patch.Post_Awake(__instance);
             }
 
             TranslateBaseMenu(__instance, "Level");

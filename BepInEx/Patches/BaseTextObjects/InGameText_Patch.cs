@@ -15,11 +15,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
     {
         public static string currentText = "";
 
-        [HarmonyPatch(nameof(global::Core.InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool) })]
+        [HarmonyPatch(nameof(global::Core.InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool), typeof(float) })]
         [HarmonyPrefix]
         private static void ShowText_Pre(global::Core.InGameText __instance, ref string text) => text = StringStore.TranslateText(text, true);
 
-        [HarmonyPatch(nameof(global::Core.InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool) })]
+        [HarmonyPatch(nameof(global::Core.InGameText.ShowText), new Type[] { typeof(string), typeof(float), typeof(bool), typeof(float) })]
         [HarmonyPostfix]
         private static void ShowText_Post(global::Core.InGameText __instance)
         {
@@ -84,7 +84,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.BaseTextObjects
             }
             else if (travelMatch != "")
             {
-                txt.text = travelMatch;
+                txt.text = TravelMgr_Patch.AddBuffName(travelMatch);
                 updateShadow = true;
             }
             else if (qualityCheckMatch != "")

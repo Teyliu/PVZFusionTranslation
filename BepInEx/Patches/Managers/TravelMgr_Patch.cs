@@ -770,7 +770,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
             }
         }
 
-        private static Dictionary<string, SortedDictionary<int, string>> LoadBuffFile(string path)
+        internal static Dictionary<string, SortedDictionary<int, string>> LoadBuffFile(string path)
         {
             if (!File.Exists(path))
                 return null;
@@ -808,7 +808,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 || (TravelMgr.SynergysData != null && TravelMgr.SynergysData.Count > 0);
         }
 
-        private static void EnsureRuntimeTravelBuffsDumped()
+        internal static void EnsureRuntimeTravelBuffsDumped()
         {
             if (_runtimeTravelBuffsDumped || !HasRuntimeTravelData())
                 return;
@@ -1070,7 +1070,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                     foreach (var pair in TravelMgr.InvestBuffsData)
                     {
                         int enumId = (int)pair.Key;
-                        string desc = pair.Value.GetDescription();
+                        string desc = pair.Value.Description;
                         AddOrUpdate(dumpedTravelBuffs, "investmentBuffs", enumId, desc);
                         if (!travelBuffString.ContainsKey(desc))
                             travelBuffString.Add(desc, desc);
@@ -1206,6 +1206,101 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Managers
                 Log.LogError($"[TravelMgr_Patch] Stack trace: {ex.StackTrace}");
 #endif
             }
+        }
+
+        public class TravelBuffInfo
+        {
+            [System.Text.Json.Serialization.JsonPropertyName("name")] public string Name { get; set; } = "";
+            [System.Text.Json.Serialization.JsonPropertyName("desc")] public string Desc { get; set; } = "";
+            public TravelBuffInfo() { }
+            public TravelBuffInfo(string n, string d) { Name = n ?? ""; Desc = d ?? ""; }
+        }
+
+        public static Dictionary<string, SortedDictionary<int, string>> buffNames = new()
+        {
+            { "advancedBuffs", new SortedDictionary<int, string>() }, { "ultimateBuffs", new SortedDictionary<int, string>() },
+            { "debuffs", new SortedDictionary<int, string>() }, { "unlocks", new SortedDictionary<int, string>() },
+            { "investmentBuffs", new SortedDictionary<int, string>() }, { "synergies", new SortedDictionary<int, string>() }
+        };
+
+        public static Dictionary<string, string> modifierNameDict = new()
+        {
+            { "advancedBuffs", "COMMON_MODIFIER_TAG" }, { "ultimateBuffs", "EPIC_MODIFIER_TAG" },
+            { "debuffs", "ZOMBIE_MODIFIER_TAG" }, { "unlocks", "UNLOCK_MODIFIER_TAG" },
+            { "investmentBuffs", "INVEST_MODIFIER_TAG" }
+        };
+
+        public static Dictionary<string, string> fallbackNameDict = new()
+        {
+            { "COMMON_MODIFIER_TAG", "Common Modifier" }, { "EPIC_MODIFIER_TAG", "Epic Modifier" },
+            { "ZOMBIE_MODIFIER_TAG", "Zombie Modifier" }, { "UNLOCK_MODIFIER_TAG", "Unlock Modifier" },
+            { "INVEST_MODIFIER_TAG", "Investment Modifier" }
+        };
+
+        public static string TranslateNameTag(string cat)
+        {
+            return modifierNameDict.TryGetValue(cat, out var t)
+                ? StringStore.translationString.TryGetValue(t, out var r) ? r : fallbackNameDict.TryGetValue(t, out var f) ? f : cat
+                : cat;
+        }
+
+        public static string FindBuffCategoryKey(string text, out int idx)
+        {
+            idx = -1;
+            foreach (var c in translatedTravelBuffs) foreach (var e in c.Value) if (e.Value == text) { idx = e.Key; return c.Key; }
+            foreach (var c in dumpedTravelBuffs) foreach (var e in c.Value) if (e.Value == text) { idx = e.Key; return c.Key; }
+            return null;
+        }
+
+        public static string fallbackFBuffStr = "{0}: {1}";
+
+        public static string AddBuffName(string bt)
+        {
+            if (string.IsNullOrEmpty(bt)) return bt;
+            string tb = bt;
+            if (Utils.CheckForUntranslatedText(bt) && travelBuffString.TryGetValue(bt, out var t)) tb = t;
+            string cat = FindBuffCategoryKey(tb, out int idx);
+            if (cat == null) return tb;
+            string n = "", nTag = "";
+            if (buffNames.TryGetValue(cat, out var nc) && nc != null) nc.TryGetValue(idx, out n);
+            nTag = !string.IsNullOrEmpty(n) ? n : TranslateNameTag(cat);
+            string fmt = StringStore.translationStringRegex.TryGetValue("BUFF_NAME_FORMAT", out var f) ? f : fallbackFBuffStr;
+            return string.Format(fmt, $"{nTag} #{idx}", tb);
+        }
+
+        internal static Dictionary<string, SortedDictionary<int, string>> ParseBuffJson(string content, string src = "")
+        {
+            if (string.IsNullOrEmpty(content)) return null;
+            try
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(content);
+                var r = new Dictionary<string, SortedDictionary<int, string>>();
+                foreach (var cat in doc.RootElement.EnumerateObject())
+                {
+                    var dd = new SortedDictionary<int, string>(); var nd = new SortedDictionary<int, string>();
+                    if (cat.Value.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        foreach (var e in cat.Value.EnumerateObject())
+                            if (int.TryParse(e.Name, out var i) && e.Value.ValueKind == System.Text.Json.JsonValueKind.Object)
+                            {
+                                string en = "", ed = "";
+                                if (e.Value.TryGetProperty("name", out var np)) en = np.GetString() ?? "";
+                                if (string.IsNullOrEmpty(en) && e.Value.TryGetProperty("Name", out var n2)) en = n2.GetString() ?? "";
+                                if (e.Value.TryGetProperty("desc", out var dp)) ed = dp.GetString() ?? "";
+                                if (string.IsNullOrEmpty(ed) && e.Value.TryGetProperty("Desc", out var d2)) ed = d2.GetString() ?? "";
+                                dd[i] = string.IsNullOrEmpty(ed) ? en : ed; nd[i] = en;
+                            }
+                    r[cat.Name] = dd; buffNames[cat.Name] = nd;
+                }
+                return r;
+            }
+            catch { return null; }
+        }
+
+        public static string SerializeWithInfoFormat(Dictionary<string, SortedDictionary<int, string>> fd)
+        {
+            var id = new Dictionary<string, Dictionary<int, TravelBuffInfo>>();
+            foreach (var c in fd) { var ic = new Dictionary<int, TravelBuffInfo>(); foreach (var e in c.Value) { string n = ""; if (buffNames.TryGetValue(c.Key, out var nc) && nc != null) nc.TryGetValue(e.Key, out n); ic[e.Key] = new TravelBuffInfo(n ?? "", e.Value ?? ""); } id[c.Key] = ic; }
+            return System.Text.Json.JsonSerializer.Serialize(id, new System.Text.Json.JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         }
     }
 }

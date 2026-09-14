@@ -10,24 +10,8 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     [HarmonyPatch(typeof(InGame_openBag))]
     public static class InGame_openBag_Patch
     {
-        [HarmonyPatch(typeof(InGame_openBag), "ShowText", new Type[] { typeof(string) })]
-        [HarmonyPrefix]
-        private static void Prefix_ShowText(ref string text)
-        {
-            text = StringStore.TranslateText(text);
-        }
-
-        [HarmonyPatch(typeof(InGame_openBag), "ShowText", new Type[] { typeof(string), typeof(bool) })]
-        [HarmonyPostfix]
-        private static void Post_ShowText(InGame_openBag __instance)
-        {
-            TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-            foreach (TextMeshProUGUI text in __instance.GetComponentsInChildren<TextMeshProUGUI>(true))
-            {
-                text.text = StringStore.TranslateText(text.text);
-                text.font = fontAsset;
-            }
-        }
+        // ponytail: ShowText không tồn tại trên InGame_openBag/UIButton (3.8+3.9),
+        // patch cũ làm Harmony.CreateAndPatchAll nổ -> Load abort -> font/string không init.
+        // Giữ class rỗng để khỏi sửa csproj; dịch bag qua TextMeshProUGUI_Patch catch-all.
     }
 }

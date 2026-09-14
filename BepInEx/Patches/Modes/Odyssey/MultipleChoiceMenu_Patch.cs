@@ -19,7 +19,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Odyssey
         [HarmonyPatch(nameof(MultipleChoiceMenu.Cancel))]
         [HarmonyPatch(nameof(MultipleChoiceMenu.Refresh))]
         [HarmonyPatch(nameof(MultipleChoiceMenu.UpdateWindow))]
-        [HarmonyPatch(nameof(MultipleChoiceMenu.UpdateWindows))]
+        [HarmonyPatch(nameof(MultipleChoiceMenu.UpdateTurnPageButtonText))]
         [HarmonyPostfix]
         public static void Awake(MultipleChoiceMenu __instance)
         {

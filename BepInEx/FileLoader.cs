@@ -7,10 +7,10 @@ using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using UnityEngine;
-using PvZ_Fusion_Translator.Patches.GameObjects;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PvZ_Fusion_Translator__BepInEx_
@@ -89,18 +89,17 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     {
                         try
                         {
-                            var loaded = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(jsonString);
-                            TravelMgr_Patch.translatedTravelBuffs = loaded;
-                            TravelMgr_Patch.RebuildTravelBuffString();
-                        }
-                        catch
-                        {
-                            var flexibleLoaded = TravelMgr_Patch.LoadTravelBuffsFlexible(jsonString);
-                            if (flexibleLoaded != null)
+                            var parsed = TravelMgr_Patch.ParseBuffJson(jsonString);
+                            if (parsed != null && parsed.Count > 0
+                                && parsed.Any(c => c.Value != null && c.Value.Count > 0))
                             {
-                                TravelMgr_Patch.translatedTravelBuffs = flexibleLoaded;
+                                TravelMgr_Patch.translatedTravelBuffs = parsed;
                                 TravelMgr_Patch.RebuildTravelBuffString();
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.LogWarning("[FileLoader] travel_buffs parse failed: " + ex.Message);
                         }
                     }
                     else if (fileName.EndsWith("tips_iz"))
@@ -113,7 +112,7 @@ namespace PvZ_Fusion_Translator__BepInEx_
                     }
                     else if (fileName.EndsWith("abyss_buffs"))
                     {
-                        AbyssBuffMenu_Patch.LoadAbyssBuffData();
+                        AbyssBuffStore.LoadAbyssBuffData();
                     }
                 }
                 SaveStrings();
@@ -228,17 +227,65 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
 #if MULTI_LANGUAGE
                 string travelBuffsPath = Path.Combine(GetAssetDir(AssetType.Strings, Utils.Language), "travel_buffs.json");
+                int localCount = 0;
+                bool localOk = false;
                 if (File.Exists(travelBuffsPath))
                 {
                     try
                     {
-                        TravelMgr_Patch.translatedTravelBuffs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SortedDictionary<int, string>>>(File.ReadAllText(travelBuffsPath));
-                        TravelMgr_Patch.RebuildTravelBuffString();
+                        var loaded = TravelMgr_Patch.LoadBuffFile(travelBuffsPath);
+                        if (loaded != null)
+                        {
+                            TravelMgr_Patch.translatedTravelBuffs = loaded;
+                            TravelMgr_Patch.RebuildTravelBuffString();
+                            foreach (var kv in TravelMgr_Patch.translatedTravelBuffs)
+                                if (kv.Value != null) localCount += kv.Value.Count;
+                            localOk = localCount > 0;
+                            Log.LogInfo("[FileLoader] travel_buffs loaded locally: " + localCount + " entries");
+                        }
+                        else Log.LogWarning("[FileLoader] LoadBuffFile returned null");
                     }
-                    catch
+                    catch (System.Exception ex2)
                     {
-                        TravelMgr_Patch.translatedTravelBuffs = TravelMgr_Patch.LoadTravelBuffsFlexible(File.ReadAllText(travelBuffsPath));
-                        TravelMgr_Patch.RebuildTravelBuffString();
+                        Log.LogWarning("[FileLoader] local load failed: " + ex2.Message);
+                    }
+                }
+
+                if (!localOk && !Utils.useLocal)
+                {
+                    Log.LogInfo("[FileLoader] Attempting to download travel_buffs.json from GitHub");
+                    string url = "https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/" + Utils.Language + "/Strings/travel_buffs.json";
+                    string content = Utils.GetDataFromWeb(url).Result;
+                    if (!string.IsNullOrEmpty(content))
+                    {
+                        try
+                        {
+                            var loaded = TravelMgr_Patch.ParseBuffJson(content);
+                            if (loaded != null && loaded.Count > 0)
+                            {
+                                bool hasEntries = false;
+                                foreach (var kv in loaded)
+                                    if (kv.Value != null && kv.Value.Count > 0) { hasEntries = true; break; }
+                                if (hasEntries)
+                                {
+                                    TravelMgr_Patch.translatedTravelBuffs = loaded;
+                                    TravelMgr_Patch.RebuildTravelBuffString();
+                                    int c = 0;
+                                    foreach (var kv in TravelMgr_Patch.translatedTravelBuffs)
+                                        if (kv.Value != null) c += kv.Value.Count;
+                                    Log.LogInfo("[FileLoader] travel_buffs loaded from GitHub: " + c + " entries");
+                                    try { File.WriteAllText(travelBuffsPath, content); } catch { }
+                                }
+                            }
+                        }
+                        catch (System.Exception ex3)
+                        {
+                            Log.LogWarning("[FileLoader] GitHub download parse failed: " + ex3.Message);
+                        }
+                    }
+                    else
+                    {
+                        Log.LogWarning("[FileLoader] GitHub download returned empty content");
                     }
                 }
 #endif
@@ -515,10 +562,10 @@ namespace PvZ_Fusion_Translator__BepInEx_
                 File.WriteAllText(Path.Combine(stringDir, "changelog.txt"), NoticePauseMenu_Patch.changelogText);
             }
 
-            if (AbyssBuffMenu_Patch.abyssBuffData != null &&
-                AbyssBuffMenu_Patch.abyssBuffData.Count > 0)
+            if (AbyssBuffStore.abyssBuffData != null &&
+                AbyssBuffStore.abyssBuffData.Count > 0)
             {
-                string abyssBuffData = System.Text.Json.JsonSerializer.Serialize(AbyssBuffMenu_Patch.abyssBuffData, new JsonSerializerOptions
+                string abyssBuffData = System.Text.Json.JsonSerializer.Serialize(AbyssBuffStore.abyssBuffData, new JsonSerializerOptions
                 {
                     WriteIndented = true,
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -567,12 +614,18 @@ namespace PvZ_Fusion_Translator__BepInEx_
             {
                 Directory.CreateDirectory(dumpDir);
             }
-            string LawnStrings = Resources.Load<TextAsset>("LawnStrings").text;
-            string ZombieStrings = Resources.Load<TextAsset>("ZombieStrings").text;
-            string AbyssBuffData = Resources.Load<TextAsset>("AbyssBuffData").text;
-            File.WriteAllText(Path.Combine(dumpDir, "LawnStrings.json"), LawnStrings);
-            File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), ZombieStrings);
-            File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), AbyssBuffData);
+            if (TryLoadResourceText("LawnStrings", out string lawnStrings))
+            {
+                File.WriteAllText(Path.Combine(dumpDir, "LawnStrings.json"), lawnStrings);
+            }
+            if (TryLoadResourceText("ZombieStrings", out string zombieStrings))
+            {
+                File.WriteAllText(Path.Combine(dumpDir, "ZombieStrings.json"), zombieStrings);
+            }
+            if (TryLoadResourceText("AbyssBuffData", out string abyssBuffData))
+            {
+                File.WriteAllText(Path.Combine(dumpDir, "AbyssBuffData.json"), abyssBuffData);
+            }
 
             DumpDetailStrings();
 
@@ -635,6 +688,20 @@ namespace PvZ_Fusion_Translator__BepInEx_
             }
 
             File.WriteAllText(Path.Combine(dumpDir, "tips_fs.json"), JsonSerializer.Serialize(fusionShowcaseDataDump, options));
+        }
+
+        private static bool TryLoadResourceText(string resourceName, out string text)
+        {
+            TextAsset asset = Resources.Load<TextAsset>(resourceName);
+            if (asset == null)
+            {
+                Log.LogWarning($"[DumpJson] Resource not found: {resourceName}");
+                text = string.Empty;
+                return false;
+            }
+
+            text = asset.text;
+            return true;
         }
 
 #if MULTI_LANGUAGE
@@ -840,7 +907,10 @@ internal static void LoadDetailStrings(string content)
             Dictionary<string, string> detailStringsDump = new Dictionary<string, string>();
             try
             {
-                string detailStringsData = Resources.Load<TextAsset>("detailstrings").text;
+                if (!TryLoadResourceText("detailstrings", out string detailStringsData))
+                {
+                    return detailStringsDump;
+                }
                 var parsed = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(detailStringsData);
                 if (parsed.TryGetProperty("details", out var details) && details.ValueKind == System.Text.Json.JsonValueKind.Array)
                 {

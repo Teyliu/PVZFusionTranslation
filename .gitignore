@@ -147,3 +147,6 @@ BepInEx/Utils.cs.backup
 /Trans_ML
 MelonLoader/bin
 MelonLoader/obj
+# Workspace artifacts (large, not source)
+session-ses_*.md
+.codebase-memory/

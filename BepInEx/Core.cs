@@ -48,7 +48,7 @@ public class PluginCore : BasePlugin
         Instance = this;
         LoadConfig();
         MonoInstance = AddComponent<UnityCoroutineHelper>();
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+        PatchAllTolerant(Assembly.GetExecutingAssembly());
         dtStart = DateTime.Now;
 
         // TODO: Get game version for DllStore - may need adjustment for BepInEx
@@ -69,8 +69,23 @@ public class PluginCore : BasePlugin
 		IsInitialized = true;
     }
 
-	public override bool Unload()
-	{
+    private static void PatchAllTolerant(Assembly assembly)
+    {
+        var harmony = new Harmony("PVZFusionTranslator_BepInEx");
+        foreach (var type in assembly.GetTypes())
+        {
+            try
+            {
+                harmony.PatchAll(type);
+            }
+            catch (Exception ex)
+            {
+                Log.LogWarning($"[Harmony] Skipped stale patch {type.FullName}: {ex.GetType().Name}: {ex.Message.Split('\n')[0]}");
+            }
+        }
+    }
+
+	public override bool Unload()	{
 		if (replaceTextureRoutine != null)
 		{
 			MonoInstance.StopCoroutine(replaceTextureRoutine);

@@ -113,6 +113,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="AssetStore\AbyssBuffStore.cs" />
 		<Compile Include="AssetStore\AudioStore.cs" />
 		<Compile Include="AssetStore\CheckSumStore.cs" />
 		<Compile Include="AssetStore\DllStore.cs" />
@@ -130,19 +131,19 @@
 		<Compile Include="Patches\BaseTextObjects\TextMeshProUGUI_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_InputField_Patch.cs" />
 		<Compile Include="Patches\BaseTextObjects\TMP_Dropdown_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AbyssBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssCheckInBag_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssDevelopMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AbyssSelectBuffWindow_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AbyssMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AlmanacBuffMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AbyssSettlementMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\AbyssStoreMenu_Patch.cs" />
 		
 		
 		
 		
 		<Compile Include="Patches\GameObjects\Almanac_Patch.cs" />
+		<Compile Include="Patches\GameObjects\AlmanacCardUI_Patch.cs" />
+		<Compile Include="Patches\GameObjects\BaseWindow_Patch.cs" />
+		<Compile Include="Patches\GameObjects\CustomPlantManager_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GameSpeedMgr_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ActionCard_Patch.cs" />
 		<!-- <Compile Include="Patches\GameObjects\AlmanacData_Patch.cs" /> --> <!-- [MISSING 3.6] -->
 		<!-- <Compile Include="Patches\GameObjects\AlmanacDataTypes.cs" /> --> <!-- [MISSING 3.6] -->
@@ -153,6 +154,7 @@
 		<Compile Include="Patches\GameObjects\AlmanacZombieWindow_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MultipleChoiceMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIDifficulty_Patch.cs" />
+		<Compile Include="Patches\GameObjects\UIConfigMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AdvantureEvolutionMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AdvantureHelpMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\AdvantureMenu2_Patch.cs" />
@@ -175,8 +177,9 @@
 		<Compile Include="Patches\GameObjects\TheCard_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TowerUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssCheckSellMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ButtonObjects\AbyssLevelEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\Advanture_Btn_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\AdvantureAwardButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\TalentNode_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\CustomLevelEnter_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeSceneButton_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\ExploreMakeZombieButton_Patch.cs" />
@@ -188,7 +191,6 @@
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptLanguageBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\OptionBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\PauseMenu_Btn_Patch.cs" />
-		<Compile Include="Patches\GameObjects\ButtonObjects\PVPPotBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\SaveMenuBtn_Patch.cs" />
 		<Compile Include="Patches\GameObjects\ButtonObjects\UIButton_Patch.cs" />
 		
@@ -207,8 +209,11 @@
 		<Compile Include="Patches\GameObjects\GardenCard_Patch.cs" />
 		
 		<Compile Include="Patches\GameObjects\MainMenu_Patch.cs" />
-		<Compile Include="Patches\GameObjects\MinorObjects\AbyssGoods_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\Brain_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\AdvantureLevelText_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\GardenMoney_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\NumberPopManager_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\DamageHUD_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\DY_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\Jigsaw_Patch.cs" />
 		<Compile Include="Patches\GameObjects\MinorObjects\LanternUmbrella_Patch.cs" />
@@ -256,6 +261,12 @@
 		<Compile Include="Patches\GameObjects\TreasureUpgradeMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\TreasureWarehouseMenu_Patch.cs" />
 		<Compile Include="Patches\GameObjects\UIZombieNum_Patch.cs" />
+		<Compile Include="Patches\Modes\Abyss\AbyssLotteryMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Abyss\AbyssMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Abyss\AbyssStorageMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Harvest\GardenItem_Patch.cs" />
+		<Compile Include="Patches\Modes\Harvest\GardenShopSlot_Patch.cs" />
+		<Compile Include="Patches\Modes\Harvest\GardenStoreMenu_Patch.cs" />
 		<Compile Include="Patches\Managers\OppositeBuffManager_Patch.cs" />
 		<Compile Include="Patches\Managers\AbyssBuffData_Patch.cs" />
 		<Compile Include="Patches\Managers\AbyssInfo_Patch.cs" />
@@ -283,6 +294,43 @@
 		<Compile Include="Patches\AlmanacCompatibility.cs" />
 		<Compile Include="Utils.cs" />
 		<Compile Include="Patches\Outdated\Playername_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\MultipleChoiceMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Odyssey\ShootingManager_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlantCardPackageBuilder_Patch.cs" />
+		<Compile Include="Patches\Managers\PVPScareyPot_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GardenPlant_Patch.cs" />
+		<Compile Include="Patches\GameObjects\GodShootingMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\InGame_openBag_Patch.cs" />
+		<Compile Include="Patches\GameObjects\OptionMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlantDataMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PlayerSaveMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\PVPRandomManager_Patch.cs" />
+		<Compile Include="Patches\GameObjects\TravelBuff_Patch.cs" />
+		<Compile Include="Patches\GameObjects\WarningMenu_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\GodShootingLevelButton_Patch.cs" />
+		<Compile Include="Patches\GameObjects\ButtonObjects\InGameBtn_Patch.cs" />
+		<Compile Include="Patches\GameObjects\MinorObjects\UIProgress2_Patch.cs" />
+		<Compile Include="Patches\Managers\CustomLevelShower_Patch.cs" />
+		<Compile Include="Patches\Managers\DrawCardManager_Patch.cs" />
+		<Compile Include="Patches\Managers\EndlessMgr_Patch.cs" />
+		<Compile Include="Patches\Managers\GameAPP_Patch.cs" />
+		<Compile Include="Patches\Managers\Garden_Patch.cs" />
+		<Compile Include="Patches\Managers\InGameUIMgr_Patch.cs" />
+		<Compile Include="Patches\Managers\TravelBuffMgr_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomButton_enterGame_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomLevelMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_initZombies_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_page3_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomMenuPage_shooting_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\CustomOnlineMenu_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\LevelManager_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeEventNodeEditor_Patch.cs" />
+		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\RuntimeNodeUI_Patch.cs" />
+  		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\NodeInfoPanel_Patch.cs" />
+  		<Compile Include="Patches\Modes\Super Editor\GameLevel\EventNodes\NodeGroupUI_Patch.cs" />
+  		<Compile Include="Patches\Modes\Super Editor\RhythmGameEditor\RhythmGameChartEditorUI_Patch.cs" />
+		<Compile Include="Patches\OtherManagers\GardenUI_Patch.cs" />
+
 	</ItemGroup>
 	
 <ItemGroup>

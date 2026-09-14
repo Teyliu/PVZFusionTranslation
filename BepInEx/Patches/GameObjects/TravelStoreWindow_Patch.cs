@@ -15,26 +15,29 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void SetType(TravelStoreWindow __instance, object buff)
         {
-            Log.LogInfo("==== [TravelStoreWindow.SetType] ====");
-            
-            string originalText = __instance.introduce.text;
+            string affinities = null;
+
             string affinityPattern = "([\\s\\S]+)(\\\n<color=red>)([\\s\\S]+)(<\\/color>)";
             if (Regex.IsMatch(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline))
             {
                 Match match = Regex.Match(__instance.introduce.text, affinityPattern, options: RegexOptions.Singleline);
                 string startText = match.Groups[1].Value;
                 string affinityText = match.Groups[3].Value;
-                string affinities = TranslateAffinities(affinityText);
-                __instance.introduce.text = startText + affinities;
-            }
-            else
-            {
-                __instance.introduce.text = originalText;
+                affinities = TranslateAffinities(affinityText);
+                __instance.introduce.text = TravelMgr_Patch.AddBuffName(startText) + affinities;
             }
 
-            __instance.introduce.text = TravelMgr_Patch.TranslateTravelText(__instance.introduce.text);
             if (TravelMgr_Patch.TryGetTranslatedBuff(buff, out string translatedBuff))
-                __instance.introduce.text = translatedBuff;
+            {
+                if (affinities != null)
+                    __instance.introduce.text = TravelMgr_Patch.AddBuffName(translatedBuff) + affinities;
+                else
+                    __instance.introduce.text = TravelMgr_Patch.AddBuffName(translatedBuff);
+            }
+            else if (affinities == null)
+            {
+                __instance.introduce.text = TravelMgr_Patch.AddBuffName(__instance.introduce.text);
+            }
 
             if (__instance.buttonText != null)
             {
@@ -60,8 +63,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
 
         public static string TranslateAffinities(string originalText)
         {
-            string result = "";
-            List<string> translatedAffinities = new List<string>();
+            List<string> translatedAffinities = new();
 
             string[] lines = originalText.Split('\n');
 
@@ -69,19 +71,21 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             {
                 if (string.IsNullOrEmpty(line)) continue;
 
-                string fStr = StringStore.translationStringRegex.ContainsKey("【([^\\s]+)】_IV") ? StringStore.translationStringRegex["【([^\\s]+)】_IV"] : "[{0}]";
+                string fStr = StringStore.translationStringRegex.TryGetValue("【([^\\s]+)】_IV", out string tmpl)
+                    ? tmpl
+                    : "[{0}]";
 
                 var regex = new Regex("【([^\\s]+)】");
                 var match = regex.Match(line);
                 int groupCount = match.Groups.Count;
 
-                List<string> dynamicParts = new List<string>();
+                List<string> dynamicParts = new();
 
                 for (int i = 1; i < groupCount; i++)
                 {
                     string groupValue = match.Groups[i].Value;
-                    string translatedValue = StringStore.translationString.ContainsKey(groupValue)
-                        ? StringStore.translationString[groupValue]
+                    string translatedValue = StringStore.translationString.TryGetValue(groupValue, out string tv)
+                        ? tv
                         : groupValue;
                     dynamicParts.Add(translatedValue);
                 }
@@ -90,9 +94,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
                 translatedAffinities.Add(translatedAffinity);
             }
 
-            result = "\n" + "<color=red>" + string.Join("\n", translatedAffinities) + "</color>";
-
-            return result;
+            return "\n" + "<color=red>" + string.Join("\n", translatedAffinities) + "</color>";
         }
     }
 }

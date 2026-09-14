@@ -13,7 +13,6 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         private static void Start(TravelInvestMenu __instance)
         {
-            Log.LogInfo("==== [TravelInvestMenu.Start] ====");
             
             Transform titleText = __instance.transform.Find("Title");
             TextMeshProUGUI shadowText = titleText.GetComponent<TextMeshProUGUI>();

@@ -6,6 +6,7 @@ using System.Text.Json;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using UnityEngine;
+using GameLevel;
 
 namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 {

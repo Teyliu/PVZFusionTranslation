@@ -1,8 +1,8 @@
 using HarmonyLib;
-using Il2Cpp;
-using Il2CppTMPro;
+using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using System;
+using static BepInEx.Logging.Logger;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

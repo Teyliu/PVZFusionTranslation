@@ -47,40 +47,11 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
         [HarmonyPostfix]
         public static void Postfix_OnMouseUpAsButton(UIButton __instance)
         {
-            try
+            foreach (TextMeshProUGUI txt in __instance.GetComponentsInChildren<TextMeshProUGUI>())
             {
-                if (__instance.transform.childCount >= 2)
-                {
-                    if (__instance.name == "EditMode")
-                    {
-                        TMP_FontAsset fontAsset = FontStore.LoadTMPFont(Utils.Language.ToString());
-
-                        TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-                        TextMeshProUGUI[] extraTexts = __instance.transform.GetChild(1).GetComponentsInChildren<TextMeshProUGUI>();
-
-                        text.text = TravelMgr_Patch.TranslateTravelText(text.text);
-                        text.font = fontAsset;
-
-                        foreach (TextMeshProUGUI extraText in extraTexts)
-                        {
-                            extraText.text = TravelMgr_Patch.TranslateTravelText(extraText.text);
-                            extraText.font = fontAsset;
-                        }
-                    }
-                    else
-                    {
-                        TextMeshProUGUI text = __instance.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-                        TextMeshProUGUI textShadow = __instance.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-
-                        text.text = TravelMgr_Patch.TranslateTravelText(text.text);
-                        textShadow.text = TravelMgr_Patch.TranslateTravelText(textShadow.text);
-
-                        text.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                        textShadow.font = FontStore.LoadTMPFont(Utils.Language.ToString());
-                    }
-                }
+                txt.text = TravelMgr_Patch.TranslateTravelText(txt.text);
+                txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
             }
-            catch (Exception) { }
         }
     }
 }

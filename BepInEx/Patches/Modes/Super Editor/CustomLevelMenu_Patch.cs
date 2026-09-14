@@ -66,7 +66,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
 
             if (!File.Exists(dumpPath))
             {
-                File.WriteAllText(dumpPath, JsonSerializer.Serialize(dumpData, JsonOptions));
+                File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, JsonOptions));
             }
 
             foreach (CustomButton_enterGame level in __instance.levels)
@@ -96,7 +96,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.Modes.Super_Editor
                 }
             }
 
-            File.WriteAllText(dumpPath, JsonSerializer.Serialize(dumpData, JsonOptions));
+            File.WriteAllText(dumpPath, System.Text.Json.JsonSerializer.Serialize(dumpData, JsonOptions));
         }
 
         public static async Task<Dictionary<string, TranslatedLevelData>> GetTranslatedLevelData()

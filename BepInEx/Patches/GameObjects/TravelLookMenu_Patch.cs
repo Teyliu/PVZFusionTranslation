@@ -1,5 +1,6 @@
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using PvZ_Fusion_Translator__BepInEx_.AssetStore;
 using PvZ_Fusion_Translator__BepInEx_.Patches.Managers;
@@ -10,7 +11,7 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
     [HarmonyPatch(typeof(TravelLookMenu))]
     public static class TravelLookMenu_Patch
     {
-        public static string savedAssetString = "";
+        private static readonly Dictionary<IntPtr, string> _assetCache = new();
 
         [HarmonyPatch(nameof(TravelLookMenu.Start))]
         [HarmonyPostfix]
@@ -23,25 +24,37 @@ namespace PvZ_Fusion_Translator__BepInEx_.Patches.GameObjects
             }
 
             Transform quitButtonTransform = __instance.transform.Find("Quit");
-            foreach (TextMeshProUGUI txt in quitButtonTransform.GetComponentsInChildren<TextMeshProUGUI>())
+            if (quitButtonTransform != null)
             {
-                txt.text = StringStore.TranslateText("合上");
-                txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                foreach (TextMeshProUGUI txt in quitButtonTransform.GetComponentsInChildren<TextMeshProUGUI>())
+                {
+                    txt.text = StringStore.TranslateText("合上");
+                    txt.font = FontStore.LoadTMPFont(Utils.Language.ToString());
+                }
             }
 
-            __instance.treasureText.text = TravelMgr_Patch.TranslateTravelText(__instance.treasureText.text);
-            savedAssetString = __instance.treasureText.text;
+            if (__instance.treasureText != null)
+            {
+                __instance.treasureText.text = TravelMgr_Patch.TranslateTravelText(__instance.treasureText.text);
+                _assetCache[__instance.Pointer] = __instance.treasureText.text;
+            }
         }
 
         [HarmonyPatch(nameof(TravelLookMenu.Update))]
         [HarmonyPostfix]
         private static void Update(TravelLookMenu __instance)
         {
-            if (savedAssetString != __instance.treasureText.text)
-            {
-                __instance.treasureText.text = TravelMgr_Patch.TranslateTravelText(__instance.treasureText.text);
-                savedAssetString = __instance.treasureText.text;
-            }
+            if (__instance == null || __instance.treasureText == null)
+                return;
+
+            IntPtr key = __instance.Pointer;
+            string current = __instance.treasureText.text;
+
+            if (_assetCache.TryGetValue(key, out string cached) && cached == current)
+                return;
+
+            __instance.treasureText.text = TravelMgr_Patch.TranslateTravelText(current);
+            _assetCache[key] = __instance.treasureText.text;
         }
     }
 }
