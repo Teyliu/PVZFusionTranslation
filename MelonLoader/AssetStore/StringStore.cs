@@ -93,8 +93,8 @@ namespace PvZ_Fusion_Translator.AssetStore
 			izTipCollectionString.Clear();
 			fsLevelTipDictionary.Clear();
 			fsTipCollectionString.Clear();
-			godsEvolvedBuffDictionary.Clear();
-			godsEvolvedCollectionString.Clear();
+			/*godsEvolvedBuffDictionary.Clear();
+			godsEvolvedCollectionString.Clear();*/
 			InGameText_Patch.currentText = "";
 			Utils.RegisterPlantIndices();
 			FileLoader.LoadStrings();
@@ -269,14 +269,14 @@ namespace PvZ_Fusion_Translator.AssetStore
 				return customLevelString[originalText];
 			}
 
-            if (godsEvolvedCollectionString.ContainsKey(originalText))
+            /*if (godsEvolvedCollectionString.ContainsKey(originalText))
             {
                 if (isLog)
                 {
                     Log.LogDebug($"Text '{originalText}' found in godsEvolvedCollectionString");
                 }
                 return godsEvolvedCollectionString[originalText];
-            }
+            }*/
 
             if (Utils.plantIndiceString.ContainsKey(originalText))
 			{

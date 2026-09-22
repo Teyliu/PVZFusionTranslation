@@ -1,5 +1,6 @@
 ﻿using Il2Cpp;
 using Il2CppAlmanacData;
+using Il2CppGameLevel.RogueShooting;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using JetBrains.Annotations;
 using MelonLoader;
@@ -148,7 +149,7 @@ namespace PvZ_Fusion_Translator
 
                 // load gods evolved strings
 
-				string godsEvolvedContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/gods_evolved.json").Result;
+				/*string godsEvolvedContent = Utils.GetDataFromWeb($"https://raw.githubusercontent.com/Teyliu/PVZF-Translation/refs/heads/main/PvZ_Fusion_Translator/Localization/{Utils.Language.ToString()}/Strings/gods_evolved.json").Result;
 
                 if (godsEvolvedContent != null)
                 {
@@ -161,7 +162,7 @@ namespace PvZ_Fusion_Translator
                     {
                         LoadGodsEvolvedStrings(File.ReadAllText(godsEvolvedPath));
                     }
-                }
+                }*/
 
                 // load almanacs
 
@@ -276,10 +277,10 @@ namespace PvZ_Fusion_Translator
 						{
 							LoadFSStrings(jsonString);
 						}
-                        else if (fileName.EndsWith("gods_evolved"))
+                        /*else if (fileName.EndsWith("gods_evolved"))
                         {
                             LoadGodsEvolvedStrings(jsonString);
-                        }
+                        }*/
                         //else if(fileName.EndsWith("abyss_buffs"))
                         //{
                         //	Patches.Modes.Abyss.AbyssBuffMenu_Patch.LoadAbyssBuffData();
@@ -1018,9 +1019,9 @@ namespace PvZ_Fusion_Translator
 
 			// save gods evolved strings
 
-			string godsEvolvedStrings = SerializeWithIndentation(StringStore.godsEvolvedBuffDictionary);
+			/*string godsEvolvedStrings = SerializeWithIndentation(StringStore.godsEvolvedBuffDictionary);
 
-			File.WriteAllText(Path.Combine(stringDir, "gods_evolved.json"), godsEvolvedStrings);
+			File.WriteAllText(Path.Combine(stringDir, "gods_evolved.json"), godsEvolvedStrings);*/
 
 			// save changelog
 
@@ -1192,8 +1193,28 @@ namespace PvZ_Fusion_Translator
 			return new ValueTuple<Il2CppAlmanacData.AlmanacData, Dictionary<string, string>>(detailStrings, detailStringsDump);
 		}
 
-		#if DEBUG
-		public static void DumpUntranslatedStrings(string text)
+        public static ShootingAlmanacIndexFile DumpDetailStrings()
+        {
+            string detailStringsData = Resources.Load<TextAsset>("detailstrings").text;
+            Il2CppAlmanacData.AlmanacData detailStrings = JsonUtility.FromJson<Il2CppAlmanacData.AlmanacData>(detailStringsData);
+
+            Dictionary<string, string> detailStringsDump = new Dictionary<string, string>();
+            foreach (var detailString in detailStrings.details)
+            {
+                if (detailStringsDump.ContainsKey(detailString.title))
+                {
+                    detailStringsDump[detailString.title] = detailString.text;
+                }
+                else
+                {
+                    detailStringsDump.Add(detailString.title, detailString.text);
+                }
+            }
+            return new ValueTuple<Il2CppAlmanacData.AlmanacData, Dictionary<string, string>>(detailStrings, detailStringsDump);
+        }
+
+#if DEBUG
+        public static void DumpUntranslatedStrings(string text)
 		{
 			string dumpDir = GetAssetDir(AssetType.Dumps);
 			string jsonFile = Path.Combine(dumpDir, "UntranslatedStrings.json");
