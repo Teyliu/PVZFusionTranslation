@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<IsPackable>false</IsPackable>
+		<LangVersion>latest</LangVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<GamePath>/home/emik/PvZ</GamePath>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<TargetFramework>net6.0</TargetFramework>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AssemblyName>PvZ_Fusion_Translator</AssemblyName>
+		<RootNamespace>PvZ_Fusion_Translator</RootNamespace>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<Configuration>BepInEx</Configuration>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'BepInEx'">
+		<DefineConstants>$(DefineConstants);BEPINEX</DefineConstants>
+		<RestoreAdditionalProjectSources>
+			https://api.nuget.org/v3/index.json;
+			https://nuget.bepinex.dev/v3/index.json;
+			https://nuget.samboy.dev/v3/index.json
+		</RestoreAdditionalProjectSources>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'MelonLoader'">
+		<DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="*.cs" />
+		<Compile Include="Patches/**/*.cs" />
+		<Compile Include="AssetStore/**/*.cs" />
+		<None Remove=".gitignore" />
+		<Folder Include="Resources/" />
+		<None Remove=".gitattributes" />
+		<None Remove="Instantiation\**" />
+		<None Remove="Storage_Strings\**" />
+		<None Remove="Storage_Textures\**" />
+		<None Remove="Translation Files\**" />
+		<EmbeddedResource Remove="Instantiation\**" />
+		<EmbeddedResource Remove="Storage_Strings\**" />
+		<EmbeddedResource Remove="Storage_Textures\**" />
+		<EmbeddedResource Remove="Translation Files\**" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'BepInEx'">
+		<Reference Include="$(GamePath)\BepInEx\core\*.dll"/>
+		<Reference Include="$(GamePath)\BepInEx\interop\*.dll"/>
+		<PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+	    <Reference Include="$(GamePath)/BepInEx/plugins/AudioImportLib.BepInEx.dll"/>
+		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'MelonLoader'">
+		<Reference Include="$(GamePath)/MelonLoader/net6/*.dll"/>
+		<Reference Include="$(GamePath)/Mods/AudioImportLib.dll"/>
+		<Reference Include="$(GamePath)/MelonLoader/Il2CppAssemblies/*.dll"/>
+	</ItemGroup>
+	<!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Mods\&quot;" />
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Translation Builds\&quot;" />
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PVZF-Translation\&quot;" />
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PvZF-Translation-DLLs\&quot;" />
+	</Target> -->
+</Project>

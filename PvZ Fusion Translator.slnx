@@ -1,0 +1,7 @@
+﻿<Solution>
+	<Configurations>
+		<BuildType Name="BepInEx" />
+		<BuildType Name="MelonLoader" />
+	</Configurations>
+	<Project Path="Source/PvZ Fusion Translator.csproj" />
+</Solution>

@@ -28,4 +28,3 @@ PvZ Fusion Translator is a **Melon Mod** that allows for an easier method of tra
 
 # Contribution
 If you'd like to contribute in any way, please join us on our [Discord](https://discord.gg/DPAC5ZVJ8T).
-

@@ -1,0 +1,25 @@
+﻿using HarmonyLib;
+using PvZ_Fusion_Translator.AssetStore;
+
+namespace PvZ_Fusion_Translator.Patches.GameObjects;
+
+[HarmonyPatch(typeof(AlmanacCardUI))]
+public static class AlmanacCardUI_Patch
+{
+    [HarmonyPatch(nameof(AlmanacCardUI.Awake)), HarmonyPostfix]
+    public static void Awake(AlmanacCardUI __instance)
+    {
+        if (!Utils.CheckForUntranslatedText(__instance.cost.text))
+            return;
+
+        __instance.cost.text = StringStore.TranslateText(__instance.cost.text);
+    }
+#if false
+    [HarmonyPatch(nameof(AlmanacCardUI.OnPointerDown)), HarmonyPostfix]
+    public static void OnPointerDown(AlmanacCardUI __instance)
+    {
+        foreach (var almanacCardUI in __instance.menu.GetComponentsInChildren<AlmanacCardUI>())
+            Awake(almanacCardUI);
+    }
+#endif
+}
