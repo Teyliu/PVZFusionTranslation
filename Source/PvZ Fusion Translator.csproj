@@ -2,8 +2,8 @@
 	<PropertyGroup>
 		<Nullable>disable</Nullable>
 		<IsPackable>false</IsPackable>
+		<FileVersion>1.0.0</FileVersion>
 		<LangVersion>latest</LangVersion>
-		<FileVersion>1.0.0.0</FileVersion>
 		<GamePath>/home/emik/PvZ</GamePath>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<NeutralLanguage>en-US</NeutralLanguage>
