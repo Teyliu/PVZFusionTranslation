@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if false // TODO: 4.1 breaking change
+using HarmonyLib;
 using PvZ_Fusion_Translator.AssetStore;
 
 namespace PvZ_Fusion_Translator.Patches.GameObjects;
@@ -28,3 +29,4 @@ public static class CrisisZombieWindow_Patch
         introduceText.font = fontAsset;
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if false // TODO: 4.1 breaking change
+using HarmonyLib;
 using PvZ_Fusion_Translator.AssetStore;
 using System.Text.RegularExpressions;
 
@@ -64,3 +65,4 @@ public static class PlantDataMenu_Patch
             text.text = StringStore.TranslateText(text.text);
     }
 }
+#endif
