@@ -404,3 +404,6 @@ FodyWeavers.xsd
 /Directory.Build.targets
 /global.json
 /stylecop.json
+
+# Local configuration
+Paths.local.props

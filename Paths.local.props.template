@@ -1,0 +1,15 @@
+<Project>
+    <!-- All of the directories that are system-dependent. -->
+    <PropertyGroup>
+        <!--
+        Specifies the location of the BepInEx version. Required for compiling in BepInEx.
+        This cannot be the directory of BepInEx itself, but the directory that contains PlantsVsZombiesRH.exe.
+        -->
+        <BepInExGamePath></BepInExGamePath>
+        <!--
+        Specifies the location of the MelonLoader version. Required for compiling in MelonLoader.
+        This cannot be the directory of MelonLoader itself, but the directory that contains PlantsVsZombiesRH.exe.
+        -->
+        <MelonLoaderGamePath></MelonLoader>
+    </PropertyGroup>
+</Project>

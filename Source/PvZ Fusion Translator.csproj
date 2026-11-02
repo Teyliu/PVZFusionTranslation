@@ -4,7 +4,6 @@
 		<IsPackable>false</IsPackable>
 		<FileVersion>1.0.0</FileVersion>
 		<LangVersion>latest</LangVersion>
-		<GamePath>/home/emik/PvZ</GamePath>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<TargetFramework>net6.0</TargetFramework>
@@ -13,7 +12,6 @@
 		<AssemblyName>PvZ_Fusion_Translator</AssemblyName>
 		<RootNamespace>PvZ_Fusion_Translator</RootNamespace>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-		<Configuration>BepInEx</Configuration>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)' == 'BepInEx'">
 		<DefineConstants>$(DefineConstants);BEPINEX</DefineConstants>
@@ -31,34 +29,39 @@
 		<Compile Include="Patches/**/*.cs" />
 		<Compile Include="AssetStore/**/*.cs" />
 		<None Remove=".gitignore" />
-		<Folder Include="Resources/" />
 		<None Remove=".gitattributes" />
-		<None Remove="Instantiation\**" />
-		<None Remove="Storage_Strings\**" />
-		<None Remove="Storage_Textures\**" />
-		<None Remove="Translation Files\**" />
-		<EmbeddedResource Remove="Instantiation\**" />
-		<EmbeddedResource Remove="Storage_Strings\**" />
-		<EmbeddedResource Remove="Storage_Textures\**" />
-		<EmbeddedResource Remove="Translation Files\**" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<None Remove="Instantiation/**" />
+		<None Remove="Storage_Strings/**" />
+		<None Remove="Storage_Textures/**" />
+		<None Remove="Translation Files/**" />
+        <Content Include="../Paths.local.props*"/>
+		<EmbeddedResource Remove="Instantiation/**" />
+		<EmbeddedResource Remove="Storage_Strings/**" />
+		<EmbeddedResource Remove="Storage_Textures/**" />
+        <AdditionalFiles Include="../Paths.local.props*"/>
+		<EmbeddedResource Remove="Translation Files/**" />
+	    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(Configuration)' == 'BepInEx'">
-		<Reference Include="$(GamePath)\BepInEx\core\*.dll"/>
-		<Reference Include="$(GamePath)\BepInEx\interop\*.dll"/>
+		<Reference Include="$(BepInExGamePath)/BepInEx/core/*.dll"/>
+		<Reference Include="$(BepInExGamePath)/BepInEx/interop/*.dll"/>
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
-	    <Reference Include="$(GamePath)/BepInEx/plugins/AudioImportLib.BepInEx.dll"/>
+	    <Reference Include="$(BepInExGamePath)/BepInEx/plugins/AudioImportLib.BepInEx.dll"/>
 		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(Configuration)' == 'MelonLoader'">
-		<Reference Include="$(GamePath)/MelonLoader/net6/*.dll"/>
-		<Reference Include="$(GamePath)/Mods/AudioImportLib.dll"/>
-		<Reference Include="$(GamePath)/MelonLoader/Il2CppAssemblies/*.dll"/>
+		<Reference Include="$(MelonLoaderGamePath)/MelonLoader/net6/*.dll"/>
+		<Reference Include="$(MelonLoaderGamePath)/Mods/AudioImportLib.dll"/>
+		<Reference Include="$(MelonLoaderGamePath)/MelonLoader/Il2CppAssemblies/*.dll"/>
 	</ItemGroup>
-	<!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Mods\&quot;" />
-		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(GamePath)\Translation Builds\&quot;" />
-		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PVZF-Translation\&quot;" />
-		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\rainb\Documents\GitHub\PvZF-Translation-DLLs\&quot;" />
-	</Target> -->
+	<Import Condition="Exists('../Paths.local.props')" Project="../Paths.local.props"/>
+	<!-- Remove the template if all necessary item groups are filled. -->
+    <ItemGroup Condition="('$(Configuration)' == 'BepInEx' and '$(BepInExGamePath)' != '') or ('$(Configuration)' == 'MelonLoader' and '$(MelonLoaderGamePath)' != '')">
+        <Content Remove="../Paths.local.props.template"/>
+        <AdditionalFiles Remove="../Paths.local.props.template"/>
+    </ItemGroup>
+    <Target Name="ValidateLocalProperties" BeforeTargets="PreBuildEvent">
+        <Error Condition="'$(Configuration)' == 'BepInEx' and '$(BepInExGamePath)' == ''" Text="Game path for BepInEx missing. Copy the template Paths.local.props.template and rename it to Paths.local.props and fill each tag with the respective directories on your local system."/>
+        <Error Condition="'$(Configuration)' == 'MelonLoader' and '$(MelonLoaderGamePath)' == ''" Text="Game path for MelonLoader missing. Copy the template Paths.local.props.template and rename it to Paths.local.props and fill each tag with the respective directories on your local system."/>
+    </Target>
 </Project>
