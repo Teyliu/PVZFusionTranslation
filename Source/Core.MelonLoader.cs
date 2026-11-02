@@ -29,7 +29,7 @@ using PvZ_Fusion_Translator.Patches.Modes.Super_Editor;
         typeof(PvZ_Fusion_Translator.Core),
         "PvZ Fusion Translator",
         "231.0.0",
-        "dynaslash / arifrios1st / lancerx0 / JustNull / Dakosha / Mamoru-kun / cassidy / Teyliu / Emik"
+        "dynaslash / arifrios1st / lancerx0 / JustNull / Dakosha / Mamoru-kun / cassidy / Teyliu / Emik / sunfun"
     )]
 
 namespace PvZ_Fusion_Translator;
