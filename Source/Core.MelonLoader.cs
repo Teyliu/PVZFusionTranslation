@@ -36,10 +36,10 @@ namespace PvZ_Fusion_Translator;
 #pragma warning disable CA1822 // ReSharper disable once ClassNeverInstantiated.Global
 public class Core : MelonMod
 {
+    public static bool IsInitialized { get; set; }
+
     public static string ModDirectory =>
         Path.Combine(MelonEnvironment.ModsDirectory, "PvZ_Fusion_Translator");
-
-    public static bool IsInitialized { get; set; }
 
     public static Core Instance { get; private set; }
 
