@@ -38,16 +38,7 @@ public sealed class TravelBuffSet
         };
     }
 
-    public SortedDictionary<int, TravelBuffInfo> TryGet(string name) =>
-        name switch
-        {
-            "advancedBuffs" => AdvancedBuffs,
-            "ultimateBuffs" => UltimateBuffs,
-            "debuffs" => Debuffs,
-            "unlocks" => Unlocks,
-            "investmentBuffs" => InvestmentBuffs,
-            _ => null,
-        };
+    public SortedDictionary<int, TravelBuffInfo> TryGet(string name) => _travelBuffSets.GetValueOrDefault(name);
 
     public IEnumerator<ValueTuple<string, SortedDictionary<int, TravelBuffInfo>>> GetEnumerator() =>
         _travelBuffSets.Select(item => (item.Key, item.Value)).GetEnumerator();
@@ -78,8 +69,8 @@ public static class TravelMgr_Patch
     {
         if (TravelBuffString.TryGetValue(__result, out var value))
             __result = value;
-        else if (TravelBuffString.ContainsKey(RemoveBuffName(__result)))
-            __result = TravelBuffString[RemoveBuffName(__result)];
+        else if (TravelBuffString.TryGetValue(RemoveBuffName(__result), out var buffValue))
+            __result = TravelBuffString[buffValue];
         else
             __result = StringStore.TranslateText(__result);
     }
