@@ -74,14 +74,14 @@ public static class TravelMgr_Patch
     };
 #pragma warning restore CA2211
     [HarmonyPatch(nameof(TravelMgr.GetText)), HarmonyPostfix]
-    public static void GetText(TravelMgr __instance, ref string result)
+    public static void GetText(TravelMgr __instance, ref string __result)
     {
-        if (TravelBuffString.TryGetValue(result, out var value))
-            result = value;
-        else if (TravelBuffString.ContainsKey(RemoveBuffName(result)))
-            result = TravelBuffString[RemoveBuffName(result)];
+        if (TravelBuffString.TryGetValue(__result, out var value))
+            __result = value;
+        else if (TravelBuffString.ContainsKey(RemoveBuffName(__result)))
+            __result = TravelBuffString[RemoveBuffName(__result)];
         else
-            result = StringStore.TranslateText(result);
+            __result = StringStore.TranslateText(__result);
     }
 
     public static void DumpTravelBuffs()

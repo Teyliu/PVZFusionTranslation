@@ -57,8 +57,8 @@ public static class AlmanacPlantMenu_Patch
         Il2CppSystem.Collections.Generic.List<PlantType> searchedPlants = new();
 
         foreach (var plantInfo in plantData.plants)
-            if (plantInfo.name.ToLower().Contains(search.ToLower()) ||
-                $"{plantInfo.seedType}".ToLower().StartsWith(search.ToLower()))
+            if (plantInfo.name.ToLowerInvariant().Contains(search.ToLowerInvariant()) ||
+                $"{plantInfo.seedType}".ToLowerInvariant().StartsWith(search.ToLowerInvariant()))
                 searchedPlants.Add((PlantType)plantInfo.seedType);
 
         __instance.ShowPlants(searchedPlants);

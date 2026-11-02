@@ -1,9 +1,10 @@
 ﻿#if MELONLOADER
-using System.Drawing;
+using System.Runtime.CompilerServices;
+using Il2CppInterop.Runtime.InteropTypes;
 
 namespace PvZ_Fusion_Translator;
 
-internal static class Log
+internal static partial class Log
 {
     public static void LogDebug(object txt) => Melon<Core>.Logger.Msg(ColorARGB.Gray, txt);
 

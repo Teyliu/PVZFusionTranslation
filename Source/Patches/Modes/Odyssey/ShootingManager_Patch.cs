@@ -6,10 +6,13 @@ namespace PvZ_Fusion_Translator.Patches.Modes.Odyssey;
 public static class ShootingManager_Patch
 {
     [HarmonyPatch(nameof(ShootingManager.RegisterCoreBuff)), HarmonyPatch(nameof(ShootingManager.RegisterExpertBuff)),
-     HarmonyPatch(nameof(ShootingManager.RegisterGetPlantBuff)),
      HarmonyPatch(nameof(ShootingManager.RegisterOtherBuff)), HarmonyPostfix]
     public static void UpgradeBuff(ShootingManager __instance, ref MultipleChoiceMenu menu) =>
         MultipleChoiceMenu_Patch.Awake(menu);
+
+    [HarmonyPatch(nameof(ShootingManager.RegisterGetPlantBuff)), HarmonyPostfix]
+    public static void UpgradeBuffNamedBaseMenu(ShootingManager __instance, ref MultipleChoiceMenu baseMenu) =>
+        MultipleChoiceMenu_Patch.Awake(baseMenu);
 
     public static void GetBuffs()
     {

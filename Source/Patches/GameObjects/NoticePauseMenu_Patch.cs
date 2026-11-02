@@ -10,7 +10,7 @@ public static class NoticePauseMenu_Patch
 #pragma warning restore CA2211
     public static void Pre_Awake(BaseMenu __instance)
     {
-        var contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
+        var contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content/Text").gameObject;
 
         var contentText = contentObject.GetComponent<TextMeshProUGUI>();
 
@@ -31,7 +31,7 @@ public static class NoticePauseMenu_Patch
         _ = FontStore.LoadTMPFont(Utils.Language.ToString());
         FileLoader.LoadChangelogText();
 
-        var contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content").gameObject;
+        var contentObject = __instance.transform.FindChild("Scroll View/Viewport/Content/Text").gameObject;
 
         var contentText = contentObject.GetComponent<TextMeshProUGUI>();
         contentText.text = ChangelogText;
